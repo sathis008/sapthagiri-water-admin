@@ -6,6 +6,7 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
 import { APP_ROUTES } from "@/constants/routes";
+import CustomerList from "@/pages/Customer/CustomerList";
 
 const AppRoutes = () => {
   return (
@@ -32,7 +33,10 @@ const AppRoutes = () => {
         path={APP_ROUTES.DASHBOARD}
         element={<Dashboard />}
       />
-
+      <Route
+          path={APP_ROUTES.CUSTOMERS}
+          element={<CustomerList />}
+      />
     </Route>
 
   </Route>

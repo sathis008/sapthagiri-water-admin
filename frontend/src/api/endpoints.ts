@@ -12,13 +12,11 @@ export const API_ENDPOINTS = {
       LOGOUT: "/api/auth/logout",
   },
 
-  CUSTOMER: {
+   CUSTOMER: {
     LIST: "/api/customers",
-
     CREATE: "/api/customers",
-
+    DETAILS: (id: string) => `/api/customers/${id}`,
     UPDATE: (id: string) => `/api/customers/${id}`,
-
     DELETE: (id: string) => `/api/customers/${id}`,
   },
 

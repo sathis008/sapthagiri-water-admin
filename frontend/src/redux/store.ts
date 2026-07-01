@@ -1,17 +1,21 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/es/storage";
+import storage from "redux-persist/lib/storage";
 
 import { authReducer } from "./auth";
+import { customerReducer } from "./customer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  customer: customerReducer,
 });
+
+const storageEngine = (storage as { default?: typeof storage }).default ?? storage;
 
 const persistConfig = {
   key: "root",
-  storage,
-  whitelist: ["auth"],
+  storage: storageEngine,
+  whitelist: ["auth"], // Only auth will be persisted
 };
 
 const persistedReducer = persistReducer(

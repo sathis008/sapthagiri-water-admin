@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { APP_ROUTES } from "@/constants/routes";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { loginThunk } from "@/redux/auth";
-
+import { toast } from "sonner";
 const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -34,18 +34,24 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleLogin = async () => {
-    const result = await dispatch(
-      loginThunk({
-        email,
-        password,
-      })
-    );
+const handleLogin = async () => {
+  const result = await dispatch(
+    loginThunk({
+      email,
+      password,
+    })
+  );
 
-    if (loginThunk.fulfilled.match(result)) {
-      navigate(APP_ROUTES.DASHBOARD);
-    }
-  };
+  if (loginThunk.fulfilled.match(result)) {
+    toast.success("Login Successful");
+
+    navigate(APP_ROUTES.DASHBOARD);
+  }
+
+  if (loginThunk.rejected.match(result)) {
+    toast.error(result.payload as string);
+  }
+};
 
   return (
     <div className="min-h-screen bg-slate-100">

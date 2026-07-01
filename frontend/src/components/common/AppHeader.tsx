@@ -1,9 +1,10 @@
 import {
   Bell,
-  ChevronsLeft,
-  ChevronsRight,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
   Avatar,
   AvatarFallback,
@@ -41,19 +42,25 @@ const AppHeader = ({ isSidebarCollapsed, onSidebarToggle }: AppHeaderProps) => {
 
       <div className="flex items-center gap-4">
 
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onSidebarToggle}
-          className="inline-flex h-12 w-12 items-center justify-center rounded-3xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+          className="size-9 rounded-md"
           aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {isSidebarCollapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
-        </button>
+          {isSidebarCollapsed ? (
+            <PanelLeftOpen className="h-4 w-4" />
+          ) : (
+            <PanelLeftClose className="h-4 w-4" />
+          )}
+        </Button>
 
         <div>
           <h1 className="text-xl font-semibold text-slate-950">Dashboard</h1>
-          <p className="text-sm text-slate-500">
+          {/* <p className="text-sm text-slate-500">
             A quick look at everything happening right now.
-          </p>
+          </p> */}
         </div>
 
       </div>
