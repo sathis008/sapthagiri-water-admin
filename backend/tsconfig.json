@@ -5,8 +5,7 @@
     "lib": ["ES2022"],
 
     /* Module Settings */
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",
 
     /* Project Structure */
     "rootDir": "./src",

@@ -1,5 +1,8 @@
+import AppRoutes from "@/routes/AppRoutes";
+
+
 function App() {
-  return <h1>Sapthagiri Water Supplies</h1>;
+  return <AppRoutes />;
 }
 
-export default App; 
+export default App;
