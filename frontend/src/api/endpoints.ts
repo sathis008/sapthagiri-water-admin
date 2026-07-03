@@ -28,7 +28,10 @@ export const API_ENDPOINTS = {
 
   VEHICLE: {
     LIST: "/api/vehicles",
-
     CREATE: "/api/vehicles",
+    DETAILS: (id: string) => `/api/vehicles/${id}`,
+    UPDATE: (id: string) => `/api/vehicles/${id}`,
+    DELETE: (id: string) => `/api/vehicles/${id}`,
+    UPLOAD: (id: string, documentType: string) => `/api/vehicles/${id}/upload/${documentType}`,
   },
 } as const;

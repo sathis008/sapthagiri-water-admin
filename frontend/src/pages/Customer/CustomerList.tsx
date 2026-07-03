@@ -1,62 +1,137 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { useAppDispatch } from "@/redux/hooks";
-import { getCustomersThunk } from "@/redux/customer";
+import { Plus } from "lucide-react";
 
-import CustomerToolbar from "@/components/customer/CustomerToolbar";
-import CustomerTable from "@/components/customer/CustomerTable";
+import { Button } from "@/components/ui/button";
 
-const allColumns = [
-  { key: "name", label: "Name" },
-  { key: "phone", label: "Phone" },
-  { key: "area", label: "Area" },
-  { key: "capacity", label: "Capacity" },
-  { key: "price", label: "Price" },
-  { key: "status", label: "Status" },
-  { key: "address", label: "Address" },
-  { key: "city", label: "City" },
-  { key: "pincode", label: "Pincode" },
-];
+import { DataTable } from "@/components/common/DataTable";
+
+import { customerColumns } from "@/components/customer/CustomerColumns";
+import CustomerDialog from "@/components/customer/CustomerDialog";
+
+import type { Customer } from "@/types/customer";
+import DeleteCustomerDialog  from "@/components/customer/DeleteCustomerDialog";
+import { toast } from "sonner";
+
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "@/redux/hooks";
+
+import {
+  getCustomersThunk,
+  // deleteCustomerThunk
+} from "@/redux/customer";
+import { deleteCustomerThunk } from "@/redux/customer/customerThunk";
 
 const CustomerList = () => {
   const dispatch = useAppDispatch();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [visibleColumns, setVisibleColumns] = useState([
-    "name",
-    "phone",
-    "address",
-    "status",
-  ]);
+
+  const [open, setOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] =
+  useState(false);
+
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<Customer | null>(null);
+
+  const {
+    customers,
+    loading,
+  } = useAppSelector(
+    (state) => state.customer
+  );
 
   useEffect(() => {
     dispatch(getCustomersThunk());
   }, [dispatch]);
 
-  const handleToggleColumn = (columnKey: string) => {
-    setVisibleColumns((current) =>
-      current.includes(columnKey)
-        ? current.filter((key) => key !== columnKey)
-        : [...current, columnKey]
-    );
+  const handleAddCustomer = () => {
+    setSelectedCustomer(null);
+    setOpen(true);
   };
 
+  const handleEditCustomer = (
+    customer: Customer
+  ) => {
+    setSelectedCustomer(customer);
+    setOpen(true);
+  };
+
+ const handleDeleteCustomer = (
+  customer: Customer
+) => {
+  setSelectedCustomer(customer);
+  setDeleteOpen(true);
+};
+
+const confirmDelete = async () => {
+  if (!selectedCustomer) return;
+
+  const result = await dispatch(
+    deleteCustomerThunk(selectedCustomer._id)
+  );
+
+  if (
+    deleteCustomerThunk.fulfilled.match(result)
+  ) {
+    toast.success(
+      "Customer deleted successfully."
+    );
+
+    setDeleteOpen(false);
+
+    setSelectedCustomer(null);
+
+    dispatch(getCustomersThunk());
+  } else {
+    toast.error(result.payload as string);
+  }
+};
+
+  const columns = useMemo(
+    () =>
+      customerColumns(
+        handleEditCustomer,
+        handleDeleteCustomer
+      ),
+    []
+  );
+
   return (
-    <div className="space-y-6">
-      <CustomerToolbar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        visibleColumns={visibleColumns}
-        onToggleColumn={handleToggleColumn}
-        columns={allColumns}
+    <div className="min-w-0 space-y-6">
+
+      <DataTable
+        columns={columns}
+        data={customers}
+        loading={loading}
+        searchColumn="name"
+        searchColumns={["name", "phone"]}
+        searchPlaceholder="Search customers"
+        toolbarActions={
+          <Button
+            onClick={handleAddCustomer}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+
+            Add Customer
+
+          </Button>
+        }
       />
-      <CustomerTable
-        searchQuery={searchQuery}
-        statusFilter={statusFilter}
-        visibleColumns={visibleColumns}
+
+      <CustomerDialog
+        open={open}
+        onOpenChange={setOpen}
+        customer={selectedCustomer}
       />
+
+      <DeleteCustomerDialog
+        open={deleteOpen}
+        customer={selectedCustomer}
+        onOpenChange={setDeleteOpen}
+        onConfirm={confirmDelete}
+      />
+
     </div>
   );
 };

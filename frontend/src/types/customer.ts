@@ -13,7 +13,7 @@ export interface Customer {
   pincode?: string;
   landmark?: string;
 
-  capacity?: number;
+  capacity?: string;
   price?: number;
 
   status: "ACTIVE" | "INACTIVE";
@@ -27,26 +27,19 @@ export interface Customer {
 export interface CreateCustomerRequest {
   name: string;
   phone: string;
-
   alternatePhone?: string;
-
   address: string;
-
   area?: string;
   city?: string;
   pincode?: string;
   landmark?: string;
-
-  capacity?: number;
+  capacity?: string;
   price?: number;
-
-  status: "ACTIVE" | "INACTIVE";
-
+  status?: "ACTIVE" | "INACTIVE";
   notes?: string;
 }
 
-export type UpdateCustomerRequest =
-  Partial<CreateCustomerRequest>;
+export type UpdateCustomerRequest = CreateCustomerRequest;
 
 export interface CustomerListResponse {
   success: boolean;

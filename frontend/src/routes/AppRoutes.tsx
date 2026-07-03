@@ -7,7 +7,7 @@ import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
 import { APP_ROUTES } from "@/constants/routes";
 import CustomerList from "@/pages/Customer/CustomerList";
-
+import VehicleList from "@/pages/vehicle/VehicleList";
 const AppRoutes = () => {
   return (
    <Routes>
@@ -36,6 +36,10 @@ const AppRoutes = () => {
       <Route
           path={APP_ROUTES.CUSTOMERS}
           element={<CustomerList />}
+      />
+      <Route
+          path={APP_ROUTES.VEHICLES}
+          element={<VehicleList />}
       />
     </Route>
 

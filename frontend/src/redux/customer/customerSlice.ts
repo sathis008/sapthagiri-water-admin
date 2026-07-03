@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import type { CustomerState } from "./customerTypes";
 
-import { getCustomersThunk } from "./customerThunk";
+import { deleteCustomerThunk, getCustomersThunk, updateCustomerThunk } from "./customerThunk";
 
 const initialState: CustomerState = {
   customers: [],
@@ -46,6 +46,33 @@ const customerSlice = createSlice({
 
         }
       )
+            .addCase(updateCustomerThunk.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(updateCustomerThunk.fulfilled, (state) => {
+        state.loading = false;
+      })
+
+      .addCase(updateCustomerThunk.rejected, (state) => {
+        state.loading = false;
+      })
+
+      .addCase(deleteCustomerThunk.pending, (state) => {
+  state.loading = true;
+})
+
+      .addCase(deleteCustomerThunk.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.customers = state.customers.filter(
+          (customer) => customer._id !== action.payload
+        );
+      })
+
+      .addCase(deleteCustomerThunk.rejected, (state) => {
+        state.loading = false;
+      })
 
       .addCase(
         getCustomersThunk.rejected,
@@ -58,6 +85,7 @@ const customerSlice = createSlice({
 
         }
       );
+      
 
   },
 });

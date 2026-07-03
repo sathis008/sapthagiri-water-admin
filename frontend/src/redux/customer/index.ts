@@ -1,5 +1,8 @@
 export {
   getCustomersThunk,
+  createCustomerThunk,
+  updateCustomerThunk,
+  deleteCustomerThunk
 } from "./customerThunk";
 
 export {

@@ -4,10 +4,12 @@ import storage from "redux-persist/lib/storage";
 
 import { authReducer } from "./auth";
 import { customerReducer } from "./customer";
+import vehicleReducer  from "./vehicle";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   customer: customerReducer,
+  vehicle: vehicleReducer,
 });
 
 const storageEngine = (storage as { default?: typeof storage }).default ?? storage;
