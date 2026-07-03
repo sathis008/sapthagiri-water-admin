@@ -1,18 +1,21 @@
-import { Bell, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Bell, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { navigation } from "@/config/navigation";
+
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '@/redux/hooks';
-import { logoutThunk } from '@/redux/auth/authThunk';
-import { APP_ROUTES } from '@/constants/routes';
+} from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/redux/hooks";
+import { logoutThunk } from "@/redux/auth/authThunk";
+import { APP_ROUTES } from "@/constants/routes";
 
 interface AppHeaderProps {
   isSidebarCollapsed: boolean;
@@ -22,6 +25,7 @@ interface AppHeaderProps {
 const AppHeader = ({ isSidebarCollapsed, onSidebarToggle }: AppHeaderProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await dispatch(logoutThunk());
@@ -38,7 +42,9 @@ const AppHeader = ({ isSidebarCollapsed, onSidebarToggle }: AppHeaderProps) => {
           size="icon"
           onClick={onSidebarToggle}
           className="size-9 rounded-md"
-          aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={
+            isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+          }
         >
           {isSidebarCollapsed ? (
             <PanelLeftOpen className="h-4 w-4" />
@@ -48,10 +54,10 @@ const AppHeader = ({ isSidebarCollapsed, onSidebarToggle }: AppHeaderProps) => {
         </Button>
 
         <div>
-          <h1 className="text-xl font-semibold text-slate-950">Dashboard</h1>
-          {/* <p className="text-sm text-slate-500">
-            A quick look at everything happening right now.
-          </p> */}
+          <h1 className="text-xl font-semibold text-slate-950">
+            {navigation.find((n) => n.path === location.pathname)?.title ??
+              "Dashboard"}
+          </h1>
         </div>
       </div>
 

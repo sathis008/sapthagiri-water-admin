@@ -7,6 +7,7 @@ import customerRoutes from './routes/customer.routes';
 import vehicleRoutes from './routes/vehicle.routes';
 import uploadRoutes from './routes/upload.routes';
 import driverRoutes from './routes/driver.routes';
+import bookingRoutes from './routes/booking.routes';
 const app = express();
 
 // Middleware
@@ -20,6 +21,7 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/drivers', driverRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Test Route
 app.get('/', (req, res) => {

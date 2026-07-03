@@ -1,13 +1,6 @@
 {
-  "scripts": {
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
-  },
   "dependencies": {
     "dotenv": "^17.4.2",
     "mongodb": "^7.4.0"
-  },
-  "devDependencies": {
-    "prettier": "^3.0.0"
   }
 }

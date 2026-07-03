@@ -1,19 +1,25 @@
-import api from '@/api/axios';
-import { API_ENDPOINTS } from '@/api/endpoints';
+import api from "@/api/axios";
+import { API_ENDPOINTS } from "@/api/endpoints";
 
 import type {
   Customer,
   CustomerListResponse,
   CreateCustomerRequest,
   UpdateCustomerRequest,
-} from '@/types/customer';
+} from "@/types/customer";
 
 class CustomerService {
   /**
    * Get All Customers
    */
-  async getCustomers(): Promise<Customer[]> {
-    const response = await api.get<CustomerListResponse>(API_ENDPOINTS.CUSTOMER.LIST);
+  async getCustomers(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<Customer[]> {
+    const response = await api.get<CustomerListResponse>(
+      API_ENDPOINTS.CUSTOMER.LIST,
+    );
 
     return response.data.data;
   }
@@ -22,7 +28,9 @@ class CustomerService {
    * Get Customer By Id
    */
   async getCustomerById(id: string): Promise<Customer> {
-    const response = await api.get<Customer>(API_ENDPOINTS.CUSTOMER.DETAILS(id));
+    const response = await api.get<Customer>(
+      API_ENDPOINTS.CUSTOMER.DETAILS(id),
+    );
 
     return response.data;
   }
@@ -31,7 +39,10 @@ class CustomerService {
    * Create Customer
    */
   async createCustomer(payload: CreateCustomerRequest): Promise<Customer> {
-    const response = await api.post<Customer>(API_ENDPOINTS.CUSTOMER.CREATE, payload);
+    const response = await api.post<Customer>(
+      API_ENDPOINTS.CUSTOMER.CREATE,
+      payload,
+    );
 
     return response.data;
   }
@@ -39,8 +50,14 @@ class CustomerService {
   /**
    * Update Customer
    */
-  async updateCustomer(id: string, payload: UpdateCustomerRequest): Promise<Customer> {
-    const response = await api.put<Customer>(API_ENDPOINTS.CUSTOMER.UPDATE(id), payload);
+  async updateCustomer(
+    id: string,
+    payload: UpdateCustomerRequest,
+  ): Promise<Customer> {
+    const response = await api.put<Customer>(
+      API_ENDPOINTS.CUSTOMER.UPDATE(id),
+      payload,
+    );
 
     return response.data;
   }

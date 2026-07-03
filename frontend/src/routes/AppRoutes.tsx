@@ -9,6 +9,7 @@ import { APP_ROUTES } from '@/constants/routes';
 import CustomerList from '@/pages/Customer/CustomerList';
 import VehicleList from '@/pages/vehicle/VehicleList';
 import DriverList from '@/pages/driver/DriverList';
+import BookingList from '@/pages/booking/BookingList';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -26,6 +27,7 @@ const AppRoutes = () => {
           <Route path={APP_ROUTES.CUSTOMERS} element={<CustomerList />} />
           <Route path={APP_ROUTES.VEHICLES} element={<VehicleList />} />
           <Route path={APP_ROUTES.DRIVERS} element={<DriverList />} />
+          <Route path={APP_ROUTES.BOOKINGS} element={<BookingList />} />
         </Route>
       </Route>
 

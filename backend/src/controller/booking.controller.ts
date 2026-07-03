@@ -1,13 +1,21 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 
-import Booking from '../models/booking.model';
+import Booking from "../models/booking.model";
 
-import Customer from '../models/customer.model';
+import Customer from "../models/customer.model";
 
-import Vehicle from '../models/vehicle.model';
-import Driver from '../models/driver.models';
+import Vehicle from "../models/vehicle.model";
+import Driver from "../models/driver.models";
+import { getPagination } from "../utils/pagination";
+import { getSorting } from "../utils/queryBuilder";
+import { buildSearchQuery } from "../utils/search";
 
-export const createBooking = async (req: Request, res: Response): Promise<void> => {
+import { successResponse, errorResponse } from "../utils/response";
+
+export const createBooking = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const {
       customerId,
@@ -31,7 +39,7 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
       res.status(404).json({
         success: false,
 
-        message: 'Customer not found.',
+        message: "Customer not found.",
       });
 
       return;
@@ -43,7 +51,7 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
 
     const totalBookings = await Booking.countDocuments();
 
-    const bookingNumber = `BK${String(totalBookings + 1).padStart(6, '0')}`;
+    const bookingNumber = `BK${String(totalBookings + 1).padStart(6, "0")}`;
 
     /**
      * Create Booking
@@ -72,7 +80,7 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
     res.status(201).json({
       success: true,
 
-      message: 'Booking created successfully.',
+      message: "Booking created successfully.",
 
       data: booking,
     });
@@ -85,29 +93,107 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-export const getBookings = async (req: Request, res: Response): Promise<void> => {
+export const getBookings = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
-    const bookings = await Booking.find()
+    const { page, limit, skip } = getPagination(req);
 
-      .sort({
-        createdAt: -1,
-      });
+    const search = String(req.query.search || "");
 
-    res.status(200).json({
-      success: true,
+    const status = String(req.query.status || "");
 
-      data: bookings,
+    const paymentStatus = String(req.query.paymentStatus || "");
+
+    const bookingDate = String(req.query.bookingDate || "");
+
+    const today = req.query.today === "true";
+
+    const query: any = {
+      ...buildSearchQuery(search, ["bookingNumber", "customerName", "phone"]),
+    };
+
+    /**
+     * Status Filter
+     */
+    if (status) {
+      query.status = status;
+    }
+
+    /**
+     * Payment Status Filter
+     */
+    if (paymentStatus) {
+      query.paymentStatus = paymentStatus;
+    }
+
+    /**
+     * Booking Date Filter
+     */
+    if (bookingDate) {
+      const startDate = new Date(bookingDate);
+
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date(bookingDate);
+
+      endDate.setHours(23, 59, 59, 999);
+
+      query.bookingDate = {
+        $gte: startDate,
+
+        $lte: endDate,
+      };
+    }
+
+    /**
+     * Today's Bookings
+     */
+    if (today) {
+      const startDate = new Date();
+
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date();
+
+      endDate.setHours(23, 59, 59, 999);
+
+      query.bookingDate = {
+        $gte: startDate,
+
+        $lte: endDate,
+      };
+    }
+
+    const total = await Booking.countDocuments(query);
+    const sort = getSorting(req);
+    const bookings = await Booking.find(query)
+
+      .sort(sort)
+
+      .skip(skip)
+
+      .limit(limit);
+
+    successResponse(res, "Bookings fetched successfully.", bookings, {
+      page,
+
+      limit,
+
+      total,
+
+      totalPages: Math.ceil(total / limit),
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-
-      message: error.message,
-    });
+    errorResponse(res, 500, error.message);
   }
 };
 
-export const getBookingById = async (req: Request, res: Response): Promise<void> => {
+export const getBookingById = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const booking = await Booking.findById(req.params.id);
 
@@ -115,7 +201,7 @@ export const getBookingById = async (req: Request, res: Response): Promise<void>
       res.status(404).json({
         success: false,
 
-        message: 'Booking not found.',
+        message: "Booking not found.",
       });
 
       return;
@@ -138,7 +224,10 @@ export const getBookingById = async (req: Request, res: Response): Promise<void>
 /**
  * Assign Booking
  */
-export const assignBooking = async (req: Request, res: Response): Promise<void> => {
+export const assignBooking = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { vehicleId, driverId, notes } = req.body;
 
@@ -151,7 +240,7 @@ export const assignBooking = async (req: Request, res: Response): Promise<void> 
       res.status(404).json({
         success: false,
 
-        message: 'Booking not found.',
+        message: "Booking not found.",
       });
 
       return;
@@ -166,7 +255,7 @@ export const assignBooking = async (req: Request, res: Response): Promise<void> 
       res.status(404).json({
         success: false,
 
-        message: 'Vehicle not found.',
+        message: "Vehicle not found.",
       });
 
       return;
@@ -181,7 +270,7 @@ export const assignBooking = async (req: Request, res: Response): Promise<void> 
       res.status(404).json({
         success: false,
 
-        message: 'Driver not found.',
+        message: "Driver not found.",
       });
 
       return;
@@ -197,14 +286,14 @@ export const assignBooking = async (req: Request, res: Response): Promise<void> 
 
     booking.notes = notes;
 
-    booking.status = 'ASSIGNED';
+    booking.status = "ASSIGNED";
 
     await booking.save();
 
     res.status(200).json({
       success: true,
 
-      message: 'Booking assigned successfully.',
+      message: "Booking assigned successfully.",
 
       data: booking,
     });
@@ -220,7 +309,10 @@ export const assignBooking = async (req: Request, res: Response): Promise<void> 
 /**
  * Complete Delivery
  */
-export const completeDelivery = async (req: Request, res: Response): Promise<void> => {
+export const completeDelivery = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { collectionMethod, notes } = req.body;
 
@@ -229,7 +321,7 @@ export const completeDelivery = async (req: Request, res: Response): Promise<voi
     if (!booking) {
       res.status(404).json({
         success: false,
-        message: 'Booking not found.',
+        message: "Booking not found.",
       });
 
       return;
@@ -239,12 +331,12 @@ export const completeDelivery = async (req: Request, res: Response): Promise<voi
 
     booking.notes = notes;
 
-    booking.status = 'DELIVERED';
+    booking.status = "DELIVERED";
 
-    if (collectionMethod === 'ACCOUNT_COLLECTION') {
-      booking.paymentStatus = 'PAID';
+    if (collectionMethod === "ACCOUNT_COLLECTION") {
+      booking.paymentStatus = "PAID";
     } else {
-      booking.paymentStatus = 'PENDING';
+      booking.paymentStatus = "PENDING";
     }
 
     await booking.save();
@@ -252,7 +344,7 @@ export const completeDelivery = async (req: Request, res: Response): Promise<voi
     res.status(200).json({
       success: true,
 
-      message: 'Delivery completed successfully.',
+      message: "Delivery completed successfully.",
 
       data: booking,
     });
@@ -260,7 +352,67 @@ export const completeDelivery = async (req: Request, res: Response): Promise<voi
     res.status(500).json({
       success: false,
 
-      message: error.message || 'Failed to complete delivery.',
+      message: error.message || "Failed to complete delivery.",
+    });
+  }
+};
+
+export const updateBooking = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const booking = await Booking.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!booking) {
+      res.status(404).json({
+        success: false,
+        message: "Booking not found.",
+      });
+
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Booking updated successfully.",
+      data: booking,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const deleteBooking = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const booking = await Booking.findByIdAndDelete(req.params.id);
+
+    if (!booking) {
+      res.status(404).json({
+        success: false,
+        message: "Booking not found.",
+      });
+
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Booking deleted successfully.",
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

@@ -1,10 +1,13 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
-import CustomerService from '@/services/customer.service';
-import type { CreateCustomerRequest, UpdateCustomerRequest } from '@/types/customer';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { AxiosError } from "axios";
+import CustomerService from "@/services/customer.service";
+import type {
+  CreateCustomerRequest,
+  UpdateCustomerRequest,
+} from "@/types/customer";
 
 export const createCustomerThunk = createAsyncThunk(
-  'customer/createCustomer',
+  "customer/createCustomer",
 
   async (payload: CreateCustomerRequest, { rejectWithValue }) => {
     try {
@@ -16,13 +19,15 @@ export const createCustomerThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to create customer.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to create customer.",
+      );
     }
-  }
+  },
 );
 
 export const updateCustomerThunk = createAsyncThunk(
-  'customer/updateCustomer',
+  "customer/updateCustomer",
   async (
     {
       id,
@@ -31,7 +36,7 @@ export const updateCustomerThunk = createAsyncThunk(
       id: string;
       payload: UpdateCustomerRequest;
     },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const customer = await CustomerService.updateCustomer(id, payload);
@@ -42,13 +47,15 @@ export const updateCustomerThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to update customer.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to update customer.",
+      );
     }
-  }
+  },
 );
 
 export const getCustomersThunk = createAsyncThunk(
-  'customer/getCustomers',
+  "customer/getCustomers",
 
   async (_, { rejectWithValue }) => {
     try {
@@ -60,13 +67,15 @@ export const getCustomersThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to fetch customers.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to fetch customers.",
+      );
     }
-  }
+  },
 );
 
 export const deleteCustomerThunk = createAsyncThunk(
-  'customer/deleteCustomer',
+  "customer/deleteCustomer",
   async (id: string, { rejectWithValue }) => {
     try {
       await CustomerService.deleteCustomer(id);
@@ -77,7 +86,29 @@ export const deleteCustomerThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to delete customer.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to delete customer.",
+      );
     }
-  }
+  },
+);
+
+export const searchCustomersThunk = createAsyncThunk(
+  "customer/searchCustomers",
+  async (
+    params: {
+      page?: number;
+      limit?: number;
+      search?: string;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      return await CustomerService.getCustomers(params);
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message ?? "Failed to fetch customers.",
+      );
+    }
+  },
 );

@@ -6,12 +6,14 @@ import { authReducer } from './auth';
 import { customerReducer } from './customer';
 import vehicleReducer from './vehicle';
 import driverReducer from './driver';
+import bookingReducer from './booking';
 
 const rootReducer = combineReducers({
   auth: authReducer,
   customer: customerReducer,
   vehicle: vehicleReducer,
   driver: driverReducer,
+  booking: bookingReducer,
 });
 
 const storageEngine = (storage as { default?: typeof storage }).default ?? storage;
