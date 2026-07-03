@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react';
 
 import {
   flexRender,
@@ -7,14 +7,9 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
-
-import type {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-} from "@tanstack/react-table";
+import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/react-table';
 
 import {
   Table,
@@ -23,10 +18,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
-import { DataTableToolbar } from "./DataTableToolbar";
-import { DataTablePagination } from "./DataTablePagination";
+import { DataTableToolbar } from './DataTableToolbar';
+import { DataTablePagination } from './DataTablePagination';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -51,24 +46,21 @@ export function DataTable<TData, TValue>({
 
   loading = false,
 
-  emptyMessage = "No records found.",
+  emptyMessage = 'No records found.',
 
-  searchColumn = "name",
+  searchColumn = 'name',
 
   searchColumns,
 
-  searchPlaceholder = "Search...",
+  searchPlaceholder = 'Search...',
 
   toolbarActions,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] =
-    useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
-  const [columnFilters, setColumnFilters] =
-    useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const [searchValue, setSearchValue] =
-    useState("");
+  const [searchValue, setSearchValue] = useState('');
 
   const filteredData = useMemo(() => {
     if (!searchValue.trim()) {
@@ -76,17 +68,13 @@ export function DataTable<TData, TValue>({
     }
 
     const search = searchValue.toLowerCase();
-    const columnsToSearch =
-      searchColumns?.length
-        ? searchColumns
-        : [searchColumn];
+    const columnsToSearch = searchColumns?.length ? searchColumns : [searchColumn];
 
     return data.filter((item) =>
       columnsToSearch.some((columnId) => {
-        const value =
-          (item as Record<string, unknown>)[columnId];
+        const value = (item as Record<string, unknown>)[columnId];
 
-        return String(value ?? "")
+        return String(value ?? '')
           .toLowerCase()
           .includes(search);
       })
@@ -105,25 +93,19 @@ export function DataTable<TData, TValue>({
 
     onSortingChange: setSorting,
 
-    onColumnFiltersChange:
-      setColumnFilters,
+    onColumnFiltersChange: setColumnFilters,
 
-    getCoreRowModel:
-      getCoreRowModel(),
+    getCoreRowModel: getCoreRowModel(),
 
-    getFilteredRowModel:
-      getFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
 
-    getSortedRowModel:
-      getSortedRowModel(),
+    getSortedRowModel: getSortedRowModel(),
 
-    getPaginationRowModel:
-      getPaginationRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
     <div className="min-w-0 space-y-4">
-
       <DataTableToolbar
         table={table}
         searchColumn={searchColumn}
@@ -136,92 +118,54 @@ export function DataTable<TData, TValue>({
 
       <div className="overflow-hidden rounded-md border bg-white">
         <div className="w-full overflow-x-auto">
-
-        <Table className="min-w-[760px]">
-
-          <TableHeader>
-
-            {table
-              .getHeaderGroups()
-              .map((headerGroup) => (
+          <Table className="min-w-[760px]">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
-
-                  {headerGroup.headers.map(
-                    (header) => (
-                      <TableHead key={header.id} className="px-3 py-3">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column
-                                .columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    )
-                  )}
-
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className="px-3 py-3">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  ))}
                 </TableRow>
               ))}
+            </TableHeader>
 
-          </TableHeader>
-
-          <TableBody>
-
-            {loading ? (
-              <TableRow>
-
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-32 text-center"
-                >
-                  Loading...
-                </TableCell>
-
-              </TableRow>
-            ) : table.getRowModel().rows.length ? (
-              table
-                .getRowModel()
-                .rows.map((row) => (
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-32 text-center">
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} className="hover:bg-slate-50">
-
-                    {row
-                      .getVisibleCells()
-                      .map((cell) => (
-                        <TableCell key={cell.id} className="px-3 py-3">
-                          {flexRender(
-                            cell.column
-                              .columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="px-3 py-3">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 ))
-            ) : (
-              <TableRow>
-
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-32 text-center text-muted-foreground"
-                >
-                  {emptyMessage}
-                </TableCell>
-
-              </TableRow>
-            )}
-
-          </TableBody>
-
-        </Table>
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-32 text-center text-muted-foreground"
+                  >
+                    {emptyMessage}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
-
       </div>
 
-      <DataTablePagination
-        table={table}
-      />
-
+      <DataTablePagination table={table} />
     </div>
   );
 }

@@ -16,7 +16,7 @@ export interface Customer {
   capacity?: string;
   price?: number;
 
-  status: "ACTIVE" | "INACTIVE";
+  status: 'ACTIVE' | 'INACTIVE';
 
   notes?: string;
 
@@ -35,7 +35,7 @@ export interface CreateCustomerRequest {
   landmark?: string;
   capacity?: string;
   price?: number;
-  status?: "ACTIVE" | "INACTIVE";
+  status?: 'ACTIVE' | 'INACTIVE';
   notes?: string;
 }
 

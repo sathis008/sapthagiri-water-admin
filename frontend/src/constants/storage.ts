@@ -3,11 +3,11 @@
  */
 
 export const STORAGE_KEYS = {
-  TOKEN: "access_token",
+  TOKEN: 'access_token',
 
-  USER: "user",
+  USER: 'user',
 
-  THEME: "theme",
+  THEME: 'theme',
 
-  LANGUAGE: "language",
+  LANGUAGE: 'language',
 } as const;

@@ -1,8 +1,5 @@
-import mongoose, {
-  Document,
-  Schema,
-} from "mongoose";
-import { documentSchema,IFileDocument } from "./common/document.schema";
+import mongoose, { Document, Schema } from 'mongoose';
+import { documentSchema, IFileDocument } from './common/document.schema';
 
 export interface IVehicle extends Document {
   vehicleNumber: string;
@@ -10,17 +7,13 @@ export interface IVehicle extends Document {
   capacity: string;
 
   documents?: {
-  rc?: IFileDocument;
-  insurance?: IFileDocument;
-  fc?: IFileDocument;
-  puc?: IFileDocument;
-};
+    rc?: IFileDocument;
+    insurance?: IFileDocument;
+    fc?: IFileDocument;
+    puc?: IFileDocument;
+  };
 
-  status:
-    | "AVAILABLE"
-    | "ON_TRIP"
-    | "MAINTENANCE"
-    | "INACTIVE";
+  status: 'AVAILABLE' | 'ON_TRIP' | 'MAINTENANCE' | 'INACTIVE';
 
   manufacturer?: string;
 
@@ -62,29 +55,24 @@ export interface IVehicle extends Document {
 }
 
 const vehicleSchema = new Schema(
-{
+  {
     vehicleNumber: {
-        type: String,
-        required: true,
-        unique: true,
-        uppercase: true,
-        trim: true,
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true,
+      trim: true,
     },
 
     capacity: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
 
     status: {
-        type: String,
-        enum: [
-            "AVAILABLE",
-            "ON_TRIP",
-            "MAINTENANCE",
-            "INACTIVE",
-        ],
-        default: "AVAILABLE",
+      type: String,
+      enum: ['AVAILABLE', 'ON_TRIP', 'MAINTENANCE', 'INACTIVE'],
+      default: 'AVAILABLE',
     },
 
     manufacturer: String,
@@ -94,8 +82,8 @@ const vehicleSchema = new Schema(
     year: Number,
 
     rcNumber: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
 
     rcExpiry: Date,
@@ -115,27 +103,25 @@ const vehicleSchema = new Schema(
     pucExpiry: Date,
 
     documents: {
+      rc: {
+        type: documentSchema,
+        default: {},
+      },
 
-        rc: {
-            type: documentSchema,
-            default: {},
-        },
+      insurance: {
+        type: documentSchema,
+        default: {},
+      },
 
-        insurance: {
-            type: documentSchema,
-            default: {},
-        },
+      fc: {
+        type: documentSchema,
+        default: {},
+      },
 
-        fc: {
-            type: documentSchema,
-            default: {},
-        },
-
-        puc: {
-            type: documentSchema,
-            default: {},
-        },
-
+      puc: {
+        type: documentSchema,
+        default: {},
+      },
     },
 
     currentKm: Number,
@@ -143,15 +129,13 @@ const vehicleSchema = new Schema(
     notes: String,
 
     isDeleted: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      default: false,
     },
-},
-{
+  },
+  {
     timestamps: true,
-});
-
-export default mongoose.model<IVehicle>(
-  "Vehicle",
-  vehicleSchema
+  }
 );
+
+export default mongoose.model<IVehicle>('Vehicle', vehicleSchema);

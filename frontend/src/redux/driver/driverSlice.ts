@@ -1,6 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
-import type { Driver } from "@/types/driver";
+import type { Driver } from '@/types/driver';
 
 import {
   getDriversThunk,
@@ -8,7 +8,7 @@ import {
   updateDriverThunk,
   deleteDriverThunk,
   uploadDriverLicenseThunk,
-} from "./driverThunk";
+} from './driverThunk';
 
 interface DriverState {
   drivers: Driver[];
@@ -27,229 +27,129 @@ const initialState: DriverState = {
 };
 
 const driverSlice = createSlice({
-  name: "driver",
+  name: 'driver',
 
   initialState,
 
   reducers: {},
 
   extraReducers: (builder) => {
-
     /**
      * Get Drivers
      */
     builder
 
-      .addCase(
-        getDriversThunk.pending,
-        (state) => {
+      .addCase(getDriversThunk.pending, (state) => {
+        state.loading = true;
 
-          state.loading = true;
+        state.error = null;
+      })
 
-          state.error = null;
+      .addCase(getDriversThunk.fulfilled, (state, action) => {
+        state.loading = false;
 
-        }
-      )
+        state.drivers = action.payload;
+      })
 
-      .addCase(
-        getDriversThunk.fulfilled,
-        (state, action) => {
+      .addCase(getDriversThunk.rejected, (state, action) => {
+        state.loading = false;
 
-          state.loading = false;
-
-          state.drivers =
-            action.payload;
-
-        }
-      )
-
-      .addCase(
-        getDriversThunk.rejected,
-        (state, action) => {
-
-          state.loading = false;
-
-          state.error =
-            action.payload as string;
-
-        }
-      );
+        state.error = action.payload as string;
+      });
 
     /**
      * Create Driver
      */
     builder
 
-      .addCase(
-        createDriverThunk.pending,
-        (state) => {
+      .addCase(createDriverThunk.pending, (state) => {
+        state.loading = true;
 
-          state.loading = true;
+        state.error = null;
+      })
 
-          state.error = null;
+      .addCase(createDriverThunk.fulfilled, (state, action) => {
+        state.loading = false;
 
-        }
-      )
+        state.drivers.unshift(action.payload);
+      })
 
-      .addCase(
-        createDriverThunk.fulfilled,
-        (state, action) => {
+      .addCase(createDriverThunk.rejected, (state, action) => {
+        state.loading = false;
 
-          state.loading = false;
-
-          state.drivers.unshift(
-            action.payload
-          );
-
-        }
-      )
-
-      .addCase(
-        createDriverThunk.rejected,
-        (state, action) => {
-
-          state.loading = false;
-
-          state.error =
-            action.payload as string;
-
-        }
-      );
+        state.error = action.payload as string;
+      });
 
     /**
      * Update Driver
      */
     builder
 
-      .addCase(
-        updateDriverThunk.pending,
-        (state) => {
+      .addCase(updateDriverThunk.pending, (state) => {
+        state.loading = true;
 
-          state.loading = true;
+        state.error = null;
+      })
 
-          state.error = null;
+      .addCase(updateDriverThunk.fulfilled, (state, action) => {
+        state.loading = false;
 
-        }
-      )
+        state.drivers = state.drivers.map((driver) =>
+          driver._id === action.payload._id ? action.payload : driver
+        );
+      })
 
-      .addCase(
-        updateDriverThunk.fulfilled,
-        (state, action) => {
+      .addCase(updateDriverThunk.rejected, (state, action) => {
+        state.loading = false;
 
-          state.loading = false;
-
-          state.drivers =
-            state.drivers.map(
-              (driver) =>
-                driver._id ===
-                action.payload._id
-                  ? action.payload
-                  : driver
-            );
-
-        }
-      )
-
-      .addCase(
-        updateDriverThunk.rejected,
-        (state, action) => {
-
-          state.loading = false;
-
-          state.error =
-            action.payload as string;
-
-        }
-      );
+        state.error = action.payload as string;
+      });
 
     /**
      * Delete Driver
      */
     builder
 
-      .addCase(
-        deleteDriverThunk.pending,
-        (state) => {
+      .addCase(deleteDriverThunk.pending, (state) => {
+        state.loading = true;
 
-          state.loading = true;
+        state.error = null;
+      })
 
-          state.error = null;
+      .addCase(deleteDriverThunk.fulfilled, (state, action) => {
+        state.loading = false;
 
-        }
-      )
+        state.drivers = state.drivers.filter((driver) => driver._id !== action.payload);
+      })
 
-      .addCase(
-        deleteDriverThunk.fulfilled,
-        (state, action) => {
+      .addCase(deleteDriverThunk.rejected, (state, action) => {
+        state.loading = false;
 
-          state.loading = false;
+        state.error = action.payload as string;
+      });
 
-          state.drivers =
-            state.drivers.filter(
-              (driver) =>
-                driver._id !==
-                action.payload
-            );
+    /**
+     * Upload Driver License
+     */
+    builder
 
-        }
-      )
+      .addCase(uploadDriverLicenseThunk.pending, (state) => {
+        state.loading = true;
+      })
 
-      .addCase(
-        deleteDriverThunk.rejected,
-        (state, action) => {
+      .addCase(uploadDriverLicenseThunk.fulfilled, (state, action) => {
+        state.loading = false;
 
-          state.loading = false;
-
-          state.error =
-            action.payload as string;
-
-        }
-      );
-
-      /**
- * Upload Driver License
- */
-builder
-
-  .addCase(
-    uploadDriverLicenseThunk.pending,
-    (state) => {
-
-      state.loading = true;
-
-    }
-  )
-
-  .addCase(
-    uploadDriverLicenseThunk.fulfilled,
-    (state, action) => {
-
-      state.loading = false;
-
-      state.drivers =
-        state.drivers.map(
-          (driver) =>
-            driver._id ===
-            action.payload.data._id
-              ? action.payload.data
-              : driver
+        state.drivers = state.drivers.map((driver) =>
+          driver._id === action.payload.data._id ? action.payload.data : driver
         );
+      })
 
-    }
-  )
+      .addCase(uploadDriverLicenseThunk.rejected, (state, action) => {
+        state.loading = false;
 
-  .addCase(
-    uploadDriverLicenseThunk.rejected,
-    (state, action) => {
-
-      state.loading = false;
-
-      state.error =
-        action.payload as string;
-
-    }
-  );
-
+        state.error = action.payload as string;
+      });
   },
 });
 

@@ -1,33 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import DriverBasicInfo from "./DriverBasicInfo";
-import DriverLicense from "./DriverLicense";
+import DriverBasicInfo from './DriverBasicInfo';
+import DriverLicense from './DriverLicense';
 
-import {
-  driverSchema,
-  type DriverFormValues,
-} from "./driverSchema";
+import { driverSchema, type DriverFormValues } from './driverSchema';
 
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 
-import {
-  createDriverThunk,
-  updateDriverThunk,
-  uploadDriverLicenseThunk,
-} from "@/redux/driver";
+import { createDriverThunk, updateDriverThunk, uploadDriverLicenseThunk } from '@/redux/driver';
 
-import type {
-  Driver,
-  CreateDriverRequest,
-  UpdateDriverRequest,
-} from "@/types/driver";
+import type { Driver, CreateDriverRequest, UpdateDriverRequest } from '@/types/driver';
 
 interface DriverFormProps {
   driver?: Driver | null;
@@ -37,156 +23,94 @@ interface DriverFormProps {
   onCancel: () => void;
 }
 
-const DriverForm = ({
-  driver,
-  onSuccess,
-  onCancel,
-}: DriverFormProps) => {
-
+const DriverForm = ({ driver, onSuccess, onCancel }: DriverFormProps) => {
   const dispatch = useAppDispatch();
 
-  const { loading } =
-    useAppSelector(
-      (state) => state.driver
-    );
+  const { loading } = useAppSelector((state) => state.driver);
 
-  const [licenseFile, setLicenseFile] =
-    useState<File | null>(null);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
 
-  const form =
-    useForm<DriverFormValues>({
-      resolver:
-        zodResolver(driverSchema),
+  const form = useForm<DriverFormValues>({
+    resolver: zodResolver(driverSchema),
 
-      defaultValues: {
-        name: "",
+    defaultValues: {
+      name: '',
 
-        phone: "",
+      phone: '',
 
-        alternatePhone: "",
+      alternatePhone: '',
 
-        address: "",
+      address: '',
 
-        licenseNumber: "",
+      licenseNumber: '',
 
-        licenseExpiry: "",
+      licenseExpiry: '',
 
-        notes: "",
+      notes: '',
 
-        status: "ACTIVE",
-      },
-    });
+      status: 'ACTIVE',
+    },
+  });
 
   useEffect(() => {
-
     if (driver) {
-
       form.reset({
-
         name: driver.name,
 
         phone: driver.phone,
 
-        alternatePhone:
-          driver.alternatePhone || "",
+        alternatePhone: driver.alternatePhone || '',
 
-        address:
-          driver.address || "",
+        address: driver.address || '',
 
-        licenseNumber:
-          driver.licenseNumber || "",
+        licenseNumber: driver.licenseNumber || '',
 
-        licenseExpiry:
-          driver.licenseExpiry || "",
+        licenseExpiry: driver.licenseExpiry || '',
 
-        notes:
-          driver.notes || "",
+        notes: driver.notes || '',
 
         status: driver.status,
-
       });
-
     }
-
   }, [driver, form]);
 
-  const onSubmit = async (
-    values: DriverFormValues
-  ) => {
-
+  const onSubmit = async (values: DriverFormValues) => {
     let result;
 
     if (driver) {
-
       result = await dispatch(
-
         updateDriverThunk({
-
           id: driver._id,
 
-          payload:
-            values as UpdateDriverRequest,
-
+          payload: values as UpdateDriverRequest,
         })
-
       );
-
     } else {
-
-      result = await dispatch(
-
-        createDriverThunk(
-          values as CreateDriverRequest
-        )
-
-      );
-
+      result = await dispatch(createDriverThunk(values as CreateDriverRequest));
     }
 
-if (
-  createDriverThunk.fulfilled.match(result) ||
-  updateDriverThunk.fulfilled.match(result)
-) {
+    if (createDriverThunk.fulfilled.match(result) || updateDriverThunk.fulfilled.match(result)) {
+      const driverId = result.payload._id;
 
-  const driverId =
-    result.payload._id;
+      if (licenseFile && driverId) {
+        await dispatch(
+          uploadDriverLicenseThunk({
+            id: driverId,
 
-  if (
-    licenseFile &&
-    driverId
-  ) {
+            file: licenseFile,
+          })
+        );
+      }
 
-    await dispatch(
-      uploadDriverLicenseThunk({
+      form.reset();
 
-        id: driverId,
-
-        file: licenseFile,
-
-      })
-    );
-
-  }
-
-  form.reset();
-
-  onSuccess();
-
-}
-
+      onSuccess();
+    }
   };
 
   return (
-
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-6"
-    >
-
-      <DriverBasicInfo
-        control={form.control}
-        isEdit={!!driver}
-      />
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <DriverBasicInfo control={form.control} isEdit={!!driver} />
 
       <DriverLicense
         control={form.control}
@@ -195,12 +119,7 @@ if (
       />
 
       <div className="flex justify-end gap-3">
-
-        <button
-          type="button"
-          className="rounded-md border px-4 py-2"
-          onClick={onCancel}
-        >
+        <button type="button" className="rounded-md border px-4 py-2" onClick={onCancel}>
           Cancel
         </button>
 
@@ -209,19 +128,11 @@ if (
           disabled={loading}
           className="rounded-md bg-primary px-4 py-2 text-white"
         >
-          {loading
-            ? "Saving..."
-            : driver
-            ? "Update Driver"
-            : "Save Driver"}
+          {loading ? 'Saving...' : driver ? 'Update Driver' : 'Save Driver'}
         </button>
-
       </div>
-
     </form>
-
   );
-
 };
 
 export default DriverForm;

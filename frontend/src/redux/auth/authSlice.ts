@@ -1,8 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
-import { loginThunk, logoutThunk } from "./authThunk";
+import { loginThunk, logoutThunk } from './authThunk';
 
-import type { AuthState } from "./authTypes";
+import type { AuthState } from './authTypes';
 
 const initialState: AuthState = {
   user: null,
@@ -17,18 +17,17 @@ const initialState: AuthState = {
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
 
   initialState,
 
   reducers: {
-
-        logout(state) {
+    logout(state) {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
       state.error = null;
-    }
+    },
   },
 
   extraReducers(builder) {
@@ -49,7 +48,6 @@ const authSlice = createSlice({
 
         state.isAuthenticated = true;
       })
-      
 
       .addCase(loginThunk.rejected, (state, action) => {
         state.loading = false;
@@ -58,17 +56,15 @@ const authSlice = createSlice({
       })
 
       .addCase(logoutThunk.fulfilled, (state) => {
-      state.user = null;
-      state.token = null;
-      state.isAuthenticated = false;
-      state.loading = false;
-      state.error = null;
-      });   
-      
-      
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        state.error = null;
+      });
   },
 });
 
-export const {  logout } = authSlice.actions;
+export const { logout } = authSlice.actions;
 
 export default authSlice.reducer;

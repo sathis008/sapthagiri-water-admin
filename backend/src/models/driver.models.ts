@@ -1,4 +1,4 @@
-import { Document, model,Schema } from "mongoose";
+import { Document, model, Schema } from 'mongoose';
 
 export interface IDriver extends Document {
   name: string;
@@ -9,53 +9,56 @@ export interface IDriver extends Document {
   licenseExpiry: Date;
   licenseDocument?: string;
   notes?: string;
-  status: "ACTIVE" | "INACTIVE";
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
-const driverschema = new Schema<IDriver>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
+const driverschema = new Schema<IDriver>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    alternatePhone: {
+      type: String,
+      trim: true,
+    },
+    address: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    licenseNumber: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    licenseExpiry: {
+      type: Date,
+      required: true,
+    },
+    licenseDocument: {
+      type: String,
+    },
+    notes: {
+      type: String,
+    },
+    status: {
+      type: String,
+      enum: ['ACTIVE', 'INACTIVE'],
+      default: 'ACTIVE',
+    },
   },
-  phone: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  alternatePhone: {
-    type: String,
-    trim: true,
-  },
-  address: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  licenseNumber: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  licenseExpiry: {
-    type: Date,
-    required: true,
-  },
-  licenseDocument: {
-    type: String,
-  },
-  notes: {
-    type: String,
-  },
-  status: {
-    type: String,
-    enum: ["ACTIVE", "INACTIVE"],
-    default: "ACTIVE",
-  },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-const Driver = model<IDriver>("Driver", driverschema);
+const Driver = model<IDriver>('Driver', driverschema);
 
 export default Driver;

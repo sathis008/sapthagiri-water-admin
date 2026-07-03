@@ -1,21 +1,14 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet } from 'react-router-dom';
 
-import { useAppSelector } from "@/redux/hooks";
+import { useAppSelector } from '@/redux/hooks';
 
-import { APP_ROUTES } from "@/constants/routes";
+import { APP_ROUTES } from '@/constants/routes';
 
 const ProtectedRoute = () => {
-  const { isAuthenticated } = useAppSelector(
-    (state) => state.auth
-  );
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   if (!isAuthenticated) {
-    return (
-      <Navigate
-        to={APP_ROUTES.LOGIN}
-        replace
-      />
-    );
+    return <Navigate to={APP_ROUTES.LOGIN} replace />;
   }
 
   return <Outlet />;

@@ -1,32 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import { useForm } from "react-hook-form";
-import type { Resolver } from "react-hook-form";
+import { useForm } from 'react-hook-form';
+import type { Resolver } from 'react-hook-form';
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { vehicleSchema } from "./VehicleSchema";
- 
-import VehicleBasicInfo from "./VehicleBasinInfo";
-import VehicleDocuments from "./VehicleDocuments";
-import VehicleAdditional from "./VehicleAdditional";
-import { z } from "zod";
+import { vehicleSchema } from './VehicleSchema';
 
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "@/redux/hooks";
+import VehicleBasicInfo from './VehicleBasinInfo';
+import VehicleDocuments from './VehicleDocuments';
+import VehicleAdditional from './VehicleAdditional';
+import { z } from 'zod';
+
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 
 import {
   createVehicleThunk,
   updateVehicleThunk,
   uploadVehicleDocumentThunk,
-} from "@/redux/vehicle";
+} from '@/redux/vehicle';
 
-import type {
-  Vehicle,
-  CreateVehicleRequest,
-} from "@/types/vehicle";
+import type { Vehicle, CreateVehicleRequest } from '@/types/vehicle';
 
 interface VehicleFormProps {
   vehicle?: Vehicle | null;
@@ -36,93 +30,74 @@ interface VehicleFormProps {
   onCancel: () => void;
 }
 
-const VehicleForm = ({
-  vehicle,
-  onSuccess,
-  onCancel,
-}: VehicleFormProps) => {
-
+const VehicleForm = ({ vehicle, onSuccess, onCancel }: VehicleFormProps) => {
   const dispatch = useAppDispatch();
 
-  const { loading } = useAppSelector(
-    (state) => state.vehicle
-  );
+  const { loading } = useAppSelector((state) => state.vehicle);
 
-  const [pendingFiles, setPendingFiles] = useState<
-    Record<string, File | null>
-  >({});
+  const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({});
 
-type VehicleFormValues = z.infer<typeof vehicleSchema>;
+  type VehicleFormValues = z.infer<typeof vehicleSchema>;
 
-const form = useForm<VehicleFormValues>({
-  resolver: zodResolver(vehicleSchema) as unknown as Resolver<VehicleFormValues>,
+  const form = useForm<VehicleFormValues>({
+    resolver: zodResolver(vehicleSchema) as unknown as Resolver<VehicleFormValues>,
 
-      defaultValues: {
-        vehicleNumber: "",
+    defaultValues: {
+      vehicleNumber: '',
 
-        capacity: "",
+      capacity: '',
 
-        status: "AVAILABLE",
+      status: 'AVAILABLE',
 
-        manufacturer: "",
+      manufacturer: '',
 
-        vehicleModel: "",
+      vehicleModel: '',
 
-        year: new Date().getFullYear(),
+      year: new Date().getFullYear(),
 
-        rcNumber: "",
+      rcNumber: '',
 
-        rcExpiry: "",
+      rcExpiry: '',
 
-        insuranceCompany: "",
+      insuranceCompany: '',
 
-        policyNumber: "",
+      policyNumber: '',
 
-        insuranceExpiry: "",
+      insuranceExpiry: '',
 
-        fcNumber: "",
+      fcNumber: '',
 
-        fcExpiry: "",
+      fcExpiry: '',
 
-        pucNumber: "",
+      pucNumber: '',
 
-        pucExpiry: "",
+      pucExpiry: '',
 
-        currentKm: undefined,
+      currentKm: undefined,
 
-        notes: "",
-      },
-    });
+      notes: '',
+    },
+  });
 
   useEffect(() => {
-
     if (vehicle) {
-
       form.reset({
-
         ...vehicle,
-
       });
-
     }
-
   }, [vehicle, form]);
 
-  const uploadPendingFiles = async (
-    vehicleId: string
-  ) => {
-    const entries = Object.entries(pendingFiles).filter(
-      ([, file]) => file !== null
-    );
+  const uploadPendingFiles = async (vehicleId: string) => {
+    const entries = Object.entries(pendingFiles).filter(([, file]) => file !== null);
 
     for (const [name, file] of entries) {
       if (!file) continue;
 
       const documentTypeMap: Record<string, string> = {
-        rcCopy: "rc",
-        insuranceCopy: "insurance",
-        fcCopy: "fc",
-        pucCopy: "puc",
+        rcCopy: 'rc',
+        insuranceCopy: 'insurance',
+        fcCopy: 'fc',
+        pucCopy: 'puc',
       };
 
       const documentType = documentTypeMap[name];
@@ -145,9 +120,7 @@ const form = useForm<VehicleFormValues>({
     }
   };
 
-  const onSubmit = async (
-    values: VehicleFormValues
-  ) => {
+  const onSubmit = async (values: VehicleFormValues) => {
     let result;
 
     const payload = values as unknown as CreateVehicleRequest;
@@ -186,15 +159,8 @@ const form = useForm<VehicleFormValues>({
   };
 
   return (
-
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-6"
-    >
-
-      <VehicleBasicInfo
-        control={form.control}
-      />
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <VehicleBasicInfo control={form.control} />
 
       <VehicleDocuments
         control={form.control}
@@ -209,11 +175,8 @@ const form = useForm<VehicleFormValues>({
         isEdit={!!vehicle}
         onCancel={onCancel}
       />
-
     </form>
-
   );
-
 };
 
 export default VehicleForm;

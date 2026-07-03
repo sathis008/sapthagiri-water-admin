@@ -1,15 +1,5 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  CalendarDays,
-  UserPlus,
-  Briefcase,
-  DollarSign,
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CalendarDays, UserPlus, Briefcase, DollarSign } from 'lucide-react';
 
 const Dashboard = () => {
   return (
@@ -24,14 +14,49 @@ const Dashboard = () => {
 
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
-            { label: "Total Appointments", value: "2350", change: "+20.1%", accent: "text-emerald-600", icon: CalendarDays, iconBg: "bg-blue-100", iconColor: "text-blue-600" },
-            { label: "New Patients", value: "145", change: "+180.1%", accent: "text-emerald-600", icon: UserPlus, iconBg: "bg-emerald-100", iconColor: "text-emerald-600" },
-            { label: "Operations", value: "89", change: "-19%", accent: "text-rose-600", icon: Briefcase, iconBg: "bg-violet-100", iconColor: "text-violet-600" },
-            { label: "Total Revenue", value: "$9583", change: "+20.1%", accent: "text-emerald-600", icon: DollarSign, iconBg: "bg-amber-100", iconColor: "text-amber-600" },
+            {
+              label: 'Total Appointments',
+              value: '2350',
+              change: '+20.1%',
+              accent: 'text-emerald-600',
+              icon: CalendarDays,
+              iconBg: 'bg-blue-100',
+              iconColor: 'text-blue-600',
+            },
+            {
+              label: 'New Patients',
+              value: '145',
+              change: '+180.1%',
+              accent: 'text-emerald-600',
+              icon: UserPlus,
+              iconBg: 'bg-emerald-100',
+              iconColor: 'text-emerald-600',
+            },
+            {
+              label: 'Operations',
+              value: '89',
+              change: '-19%',
+              accent: 'text-rose-600',
+              icon: Briefcase,
+              iconBg: 'bg-violet-100',
+              iconColor: 'text-violet-600',
+            },
+            {
+              label: 'Total Revenue',
+              value: '$9583',
+              change: '+20.1%',
+              accent: 'text-emerald-600',
+              icon: DollarSign,
+              iconBg: 'bg-amber-100',
+              iconColor: 'text-amber-600',
+            },
           ].map((item) => {
             const Icon = item.icon;
             return (
-              <div key={item.label} className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm">
+              <div
+                key={item.label}
+                className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm"
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -41,7 +66,9 @@ const Dashboard = () => {
                       {item.value}
                     </p>
                   </div>
-                  <div className={`${item.iconBg} flex h-12 w-12 items-center justify-center rounded-3xl`}>
+                  <div
+                    className={`${item.iconBg} flex h-12 w-12 items-center justify-center rounded-3xl`}
+                  >
                     <Icon size={20} className={item.iconColor} />
                   </div>
                 </div>
@@ -60,9 +87,7 @@ const Dashboard = () => {
             <CardTitle>Patient Visits by Gender</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-72 rounded-3xl bg-slate-50 p-6 text-slate-500">
-              Chart placeholder
-            </div>
+            <div className="h-72 rounded-3xl bg-slate-50 p-6 text-slate-500">Chart placeholder</div>
           </CardContent>
         </Card>
 
@@ -71,9 +96,7 @@ const Dashboard = () => {
             <CardTitle>Patients by Department</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-72 rounded-3xl bg-slate-50 p-6 text-slate-500">
-              Chart placeholder
-            </div>
+            <div className="h-72 rounded-3xl bg-slate-50 p-6 text-slate-500">Chart placeholder</div>
           </CardContent>
         </Card>
       </div>

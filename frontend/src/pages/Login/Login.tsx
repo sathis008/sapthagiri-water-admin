@@ -1,32 +1,24 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Droplets } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Droplets } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { APP_ROUTES } from "@/constants/routes";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { loginThunk } from "@/redux/auth";
-import { toast } from "sonner";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { APP_ROUTES } from '@/constants/routes';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { loginThunk } from '@/redux/auth';
+import { toast } from 'sonner';
 const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { loading, error, isAuthenticated } = useAppSelector(
-    (state) => state.auth
-  );
+  const { loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -34,24 +26,24 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate]);
 
-const handleLogin = async () => {
-  const result = await dispatch(
-    loginThunk({
-      email,
-      password,
-    })
-  );
+  const handleLogin = async () => {
+    const result = await dispatch(
+      loginThunk({
+        email,
+        password,
+      })
+    );
 
-  if (loginThunk.fulfilled.match(result)) {
-    toast.success("Login Successful");
+    if (loginThunk.fulfilled.match(result)) {
+      toast.success('Login Successful');
 
-    navigate(APP_ROUTES.DASHBOARD);
-  }
+      navigate(APP_ROUTES.DASHBOARD);
+    }
 
-  if (loginThunk.rejected.match(result)) {
-    toast.error(result.payload as string);
-  }
-};
+    if (loginThunk.rejected.match(result)) {
+      toast.error(result.payload as string);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -67,8 +59,8 @@ const handleLogin = async () => {
           </h1>
 
           <p className="text-lg leading-8 text-slate-500">
-            Manage customers, bookings, vehicles, drivers, expenses and reports
-            from one centralized dashboard.
+            Manage customers, bookings, vehicles, drivers, expenses and reports from one centralized
+            dashboard.
           </p>
         </div>
 
@@ -81,13 +73,9 @@ const handleLogin = async () => {
                 <Droplets size={30} />
               </div>
 
-              <CardTitle className="text-3xl">
-                Welcome Back
-              </CardTitle>
+              <CardTitle className="text-3xl">Welcome Back</CardTitle>
 
-              <CardDescription>
-                Sign in to continue
-              </CardDescription>
+              <CardDescription>Sign in to continue</CardDescription>
             </CardHeader>
 
             <CardContent>
@@ -101,9 +89,7 @@ const handleLogin = async () => {
                 {/* Email */}
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">
-                    Email
-                  </Label>
+                  <Label htmlFor="email">Email</Label>
 
                   <Input
                     id="email"
@@ -117,9 +103,7 @@ const handleLogin = async () => {
                 {/* Password */}
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">
-                    Password
-                  </Label>
+                  <Label htmlFor="password">Password</Label>
 
                   <Input
                     id="password"
@@ -132,11 +116,7 @@ const handleLogin = async () => {
 
                 {/* Error */}
 
-                {error && (
-                  <p className="text-sm text-red-500">
-                    {error}
-                  </p>
-                )}
+                {error && <p className="text-sm text-red-500">{error}</p>}
 
                 {/* Remember */}
 
@@ -144,27 +124,18 @@ const handleLogin = async () => {
                   <div className="flex items-center space-x-2">
                     <Checkbox id="remember" />
 
-                    <Label htmlFor="remember">
-                      Remember me
-                    </Label>
+                    <Label htmlFor="remember">Remember me</Label>
                   </div>
 
-                  <button
-                    type="button"
-                    className="text-sm text-blue-600 hover:text-blue-700"
-                  >
+                  <button type="button" className="text-sm text-blue-600 hover:text-blue-700">
                     Forgot Password?
                   </button>
                 </div>
 
                 {/* Login Button */}
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={loading}
-                >
-                  {loading ? "Signing In..." : "Sign In"}
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Signing In...' : 'Sign In'}
                 </Button>
               </form>
             </CardContent>

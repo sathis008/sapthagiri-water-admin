@@ -1,41 +1,33 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
 export interface AuthRequest extends Request {
   user?: any;
 }
 
-export const authenticate = (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-): void => {
+export const authenticate = (req: AuthRequest, res: Response, next: NextFunction): void => {
   try {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       res.status(401).json({
         success: false,
-        message: "Unauthorized",
+        message: 'Unauthorized',
       });
       return;
     }
 
-    const token = authHeader.split(" ")[1];
+    const token = authHeader.split(' ')[1];
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
 
     req.user = decoded;
 
     next();
-
   } catch (error) {
     res.status(401).json({
       success: false,
-      message: "Invalid Token",
+      message: 'Invalid Token',
     });
   }
 };

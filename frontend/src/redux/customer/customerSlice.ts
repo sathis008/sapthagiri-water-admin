@@ -1,8 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
-import type { CustomerState } from "./customerTypes";
+import type { CustomerState } from './customerTypes';
 
-import { deleteCustomerThunk, getCustomersThunk, updateCustomerThunk } from "./customerThunk";
+import { deleteCustomerThunk, getCustomersThunk, updateCustomerThunk } from './customerThunk';
 
 const initialState: CustomerState = {
   customers: [],
@@ -15,38 +15,27 @@ const initialState: CustomerState = {
 };
 
 const customerSlice = createSlice({
-  name: "customer",
+  name: 'customer',
 
   initialState,
 
   reducers: {},
 
   extraReducers(builder) {
-
     builder
 
-      .addCase(
-        getCustomersThunk.pending,
-        (state) => {
+      .addCase(getCustomersThunk.pending, (state) => {
+        state.loading = true;
 
-          state.loading = true;
+        state.error = null;
+      })
 
-          state.error = null;
+      .addCase(getCustomersThunk.fulfilled, (state, action) => {
+        state.loading = false;
 
-        }
-      )
-
-      .addCase(
-        getCustomersThunk.fulfilled,
-        (state, action) => {
-
-          state.loading = false;
-
-          state.customers = action.payload;
-
-        }
-      )
-            .addCase(updateCustomerThunk.pending, (state) => {
+        state.customers = action.payload;
+      })
+      .addCase(updateCustomerThunk.pending, (state) => {
         state.loading = true;
       })
 
@@ -59,34 +48,24 @@ const customerSlice = createSlice({
       })
 
       .addCase(deleteCustomerThunk.pending, (state) => {
-  state.loading = true;
-})
+        state.loading = true;
+      })
 
       .addCase(deleteCustomerThunk.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.customers = state.customers.filter(
-          (customer) => customer._id !== action.payload
-        );
+        state.customers = state.customers.filter((customer) => customer._id !== action.payload);
       })
 
       .addCase(deleteCustomerThunk.rejected, (state) => {
         state.loading = false;
       })
 
-      .addCase(
-        getCustomersThunk.rejected,
-        (state, action) => {
+      .addCase(getCustomersThunk.rejected, (state, action) => {
+        state.loading = false;
 
-          state.loading = false;
-
-          state.error =
-            action.payload as string;
-
-        }
-      );
-      
-
+        state.error = action.payload as string;
+      });
   },
 });
 

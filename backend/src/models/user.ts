@@ -4,38 +4,41 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  role: "ADMIN" | "MANAGER";
+  role: 'ADMIN' | 'MANAGER';
   isActive: boolean;
 }
 
-const userSchema = new Schema<IUser>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
+const userSchema = new Schema<IUser>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ['ADMIN', 'MANAGER'],
+      default: 'ADMIN',
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    enum: ["ADMIN", "MANAGER"],    
-    default: "ADMIN",       
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-const User = mangoose.model<IUser>('User', userSchema);      
+const User = mangoose.model<IUser>('User', userSchema);
 
 export default User;

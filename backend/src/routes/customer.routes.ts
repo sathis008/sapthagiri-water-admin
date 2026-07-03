@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from 'express';
 
 import {
   getCustomers,
@@ -6,9 +6,9 @@ import {
   createCustomer,
   updateCustomer,
   deleteCustomer,
-} from "../controller/customer.controller";
+} from '../controller/customer.controller';
 
-import { authenticate } from "../middleware/auth.middleware";
+import { authenticate } from '../middleware/auth.middleware';
 const router = Router();
 
 /**
@@ -16,38 +16,18 @@ const router = Router();
  */
 
 // Get All Customers
-router.get(
-  "/",
-  authenticate,
-  getCustomers
-);
+router.get('/', authenticate, getCustomers);
 
 // Get Customer By Id
-router.get(
-  "/:id",
-  authenticate,
-  getCustomerById
-);
+router.get('/:id', authenticate, getCustomerById);
 
 // Create Customer
-router.post(
-  "/",
-  authenticate,
-  createCustomer
-);
+router.post('/', authenticate, createCustomer);
 
 // Update Customer
-router.put(
-  "/:id",
-  authenticate,
-  updateCustomer
-);
+router.put('/:id', authenticate, updateCustomer);
 
 // Delete Customer
-router.delete(
-  "/:id",
-  authenticate,
-  deleteCustomer
-);
+router.delete('/:id', authenticate, deleteCustomer);
 
 export default router;

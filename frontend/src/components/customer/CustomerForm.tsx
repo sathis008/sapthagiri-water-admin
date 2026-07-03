@@ -1,27 +1,23 @@
-import { useState } from "react";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { toast } from 'sonner';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch } from '@/redux/hooks';
 
-import {
-  createCustomerThunk,
-  getCustomersThunk,
-  updateCustomerThunk,
-} from "@/redux/customer";
+import { createCustomerThunk, getCustomersThunk, updateCustomerThunk } from '@/redux/customer';
 
-import type { Customer } from "@/types/customer";
+import type { Customer } from '@/types/customer';
 
 interface CustomerFormProps {
   customer?: Customer | null;
@@ -29,58 +25,53 @@ interface CustomerFormProps {
 }
 
 const capacityOptions = [
-  { label: "12 KL", value: "12" },
-  { label: "24 KL", value: "24" },
-  { label: "32 KL", value: "32" },
-  { label: "40 KL", value: "40" },
-  { label: "50 KL", value: "50" },
-  { label: "60 KL", value: "60" },
-  { label: "80 KL", value: "80" },
-  { label: "100 KL", value: "100" },
+  { label: '12 KL', value: '12' },
+  { label: '24 KL', value: '24' },
+  { label: '32 KL', value: '32' },
+  { label: '40 KL', value: '40' },
+  { label: '50 KL', value: '50' },
+  { label: '60 KL', value: '60' },
+  { label: '80 KL', value: '80' },
+  { label: '100 KL', value: '100' },
 ];
 
-const fieldClass = "space-y-1.5 sm:space-y-2";
-const labelClass = "text-sm font-medium text-slate-950";
+const fieldClass = 'space-y-1.5 sm:space-y-2';
+const labelClass = 'text-sm font-medium text-slate-950';
 const inputClass =
-  "h-10 rounded-2xl bg-slate-100/80 px-4 text-sm shadow-none placeholder:text-slate-500 focus-visible:bg-white sm:h-11 sm:px-5";
+  'h-10 rounded-2xl bg-slate-100/80 px-4 text-sm shadow-none placeholder:text-slate-500 focus-visible:bg-white sm:h-11 sm:px-5';
 const selectTriggerClass =
-  "h-10 w-full rounded-2xl bg-slate-100/80 px-4 text-sm shadow-none focus-visible:bg-white sm:h-11 sm:px-5";
+  'h-10 w-full rounded-2xl bg-slate-100/80 px-4 text-sm shadow-none focus-visible:bg-white sm:h-11 sm:px-5';
 const textareaClass =
-  "min-h-20 rounded-2xl bg-slate-100/80 px-4 py-3 text-sm shadow-none placeholder:text-slate-500 focus-visible:bg-white sm:min-h-28 sm:px-5 sm:py-4";
+  'min-h-20 rounded-2xl bg-slate-100/80 px-4 py-3 text-sm shadow-none placeholder:text-slate-500 focus-visible:bg-white sm:min-h-28 sm:px-5 sm:py-4';
 
-const CustomerForm = ({
-  customer,
-  onSuccess,
-}: CustomerFormProps) => {
+const CustomerForm = ({ customer, onSuccess }: CustomerFormProps) => {
   const dispatch = useAppDispatch();
 
-  const [name, setName] = useState(customer?.name ?? "");
-  const [phone, setPhone] = useState(customer?.phone ?? "");
-  const [alternatePhone, setAlternatePhone] = useState(
-    customer?.alternatePhone ?? ""
-  );
-  const [address, setAddress] = useState(customer?.address ?? "");
-  const [area, setArea] = useState(customer?.area ?? "");
-  const [city, setCity] = useState(customer?.city ?? "");
-  const [pincode, setPincode] = useState(customer?.pincode ?? "");
-  const [landmark, setLandmark] = useState(customer?.landmark ?? "");
-  const [capacity, setCapacity] = useState(customer?.capacity?.toString() ?? "");
-  const [price, setPrice] = useState(customer?.price?.toString() ?? "");
-  const [notes, setNotes] = useState(customer?.notes ?? "");
+  const [name, setName] = useState(customer?.name ?? '');
+  const [phone, setPhone] = useState(customer?.phone ?? '');
+  const [alternatePhone, setAlternatePhone] = useState(customer?.alternatePhone ?? '');
+  const [address, setAddress] = useState(customer?.address ?? '');
+  const [area, setArea] = useState(customer?.area ?? '');
+  const [city, setCity] = useState(customer?.city ?? '');
+  const [pincode, setPincode] = useState(customer?.pincode ?? '');
+  const [landmark, setLandmark] = useState(customer?.landmark ?? '');
+  const [capacity, setCapacity] = useState(customer?.capacity?.toString() ?? '');
+  const [price, setPrice] = useState(customer?.price?.toString() ?? '');
+  const [notes, setNotes] = useState(customer?.notes ?? '');
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      toast.error("Customer name is required");
+      toast.error('Customer name is required');
       return;
     }
 
     if (!phone.trim()) {
-      toast.error("Phone number is required");
+      toast.error('Phone number is required');
       return;
     }
 
     if (!address.trim()) {
-      toast.error("Address is required");
+      toast.error('Address is required');
       return;
     }
 
@@ -95,7 +86,7 @@ const CustomerForm = ({
       landmark,
       capacity: capacity || undefined,
       price: price ? Number(price) : undefined,
-      status: customer?.status ?? "ACTIVE",
+      status: customer?.status ?? 'ACTIVE',
       notes,
     };
 
@@ -113,11 +104,7 @@ const CustomerForm = ({
       : createCustomerThunk.fulfilled.match(result);
 
     if (isSuccess) {
-      toast.success(
-        customer
-          ? "Customer updated successfully"
-          : "Customer created successfully"
-      );
+      toast.success(customer ? 'Customer updated successfully' : 'Customer created successfully');
 
       dispatch(getCustomersThunk());
 
@@ -164,7 +151,6 @@ const CustomerForm = ({
             onChange={(e) => setAlternatePhone(e.target.value)}
           />
         </div>
-
 
         <div className={`${fieldClass} md:col-span-2 lg:col-span-3`}>
           <Label className={labelClass}>
@@ -272,7 +258,7 @@ const CustomerForm = ({
           className="h-10 rounded-2xl px-5 sm:h-11 sm:px-6"
           onClick={handleSubmit}
         >
-          {customer ? "Update Customer" : "Create Customer"}
+          {customer ? 'Update Customer' : 'Create Customer'}
         </Button>
       </div>
     </div>

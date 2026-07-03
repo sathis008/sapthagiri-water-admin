@@ -1,5 +1,5 @@
-export { loginThunk } from "./authThunk";
+export { loginThunk } from './authThunk';
 
-export { logoutThunk } from "./authThunk";
+export { logoutThunk } from './authThunk';
 
-export { default as authReducer } from "./authSlice";
+export { default as authReducer } from './authSlice';

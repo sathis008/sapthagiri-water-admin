@@ -1,3 +1,3 @@
-export * from "./vehicleThunk";
+export * from './vehicleThunk';
 
-export { default } from "./vehicleSlice";
+export { default } from './vehicleSlice';

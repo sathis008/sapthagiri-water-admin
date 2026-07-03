@@ -1,22 +1,14 @@
-import api from "@/api/axios";
-import { API_ENDPOINTS } from "@/api/endpoints";
+import api from '@/api/axios';
+import { API_ENDPOINTS } from '@/api/endpoints';
 
-import type {
-  LoginRequest,
-  LoginResponse,
-} from "@/types/auth";
+import type { LoginRequest, LoginResponse } from '@/types/auth';
 
 class AuthService {
   /**
    * Login
    */
-  async login(
-    payload: LoginRequest
-  ): Promise<LoginResponse> {
-    const response = await api.post<LoginResponse>(
-      API_ENDPOINTS.AUTH.LOGIN,
-      payload
-    );
+  async login(payload: LoginRequest): Promise<LoginResponse> {
+    const response = await api.post<LoginResponse>(API_ENDPOINTS.AUTH.LOGIN, payload);
 
     return response.data;
   }
@@ -25,9 +17,7 @@ class AuthService {
    * Get Logged-in User Profile
    */
   async getProfile() {
-    const response = await api.get(
-      API_ENDPOINTS.AUTH.PROFILE
-    );
+    const response = await api.get(API_ENDPOINTS.AUTH.PROFILE);
 
     return response.data;
   }

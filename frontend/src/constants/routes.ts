@@ -3,23 +3,23 @@
  */
 
 export const APP_ROUTES = {
-  ROOT: "/",
+  ROOT: '/',
 
-  LOGIN: "/login",
+  LOGIN: '/login',
 
-  DASHBOARD: "/dashboard",
+  DASHBOARD: '/dashboard',
 
-  CUSTOMERS: "/customers",
+  CUSTOMERS: '/customers',
 
-  DRIVERS: "/drivers",
+  DRIVERS: '/drivers',
 
-  VEHICLES: "/vehicles",
+  VEHICLES: '/vehicles',
 
-  BOOKINGS: "/bookings",
+  BOOKINGS: '/bookings',
 
-  EXPENSES: "/expenses",
+  EXPENSES: '/expenses',
 
-  REPORTS: "/reports",
+  REPORTS: '/reports',
 
-  SETTINGS: "/settings",
+  SETTINGS: '/settings',
 } as const;

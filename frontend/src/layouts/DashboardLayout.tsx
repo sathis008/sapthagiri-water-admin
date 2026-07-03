@@ -1,14 +1,13 @@
-import { Outlet } from "react-router-dom";
-import { useState } from "react";
+import { Outlet } from 'react-router-dom';
+import { useState } from 'react';
 
-import AppHeader from "@/components/common/AppHeader";
-import AppSidebar from "@/components/common/AppSidebar";
+import AppHeader from '@/components/common/AppHeader';
+import AppSidebar from '@/components/common/AppSidebar';
 
 const DashboardLayout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   return (
     <div className="flex h-screen bg-[#F4F4F6] text-slate-900">
-
       {/* Sidebar */}
 
       <AppSidebar isCollapsed={isSidebarCollapsed} />
@@ -28,7 +27,6 @@ const DashboardLayout = () => {
           </main>
         </div>
       </div>
-
     </div>
   );
 };

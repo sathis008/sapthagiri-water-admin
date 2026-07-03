@@ -1,14 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
-import Driver from "../models/driver.models";
+import Driver from '../models/driver.models';
 
 /**
  * Create Driver
  */
-export const createDriver = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const createDriver = async (req: Request, res: Response): Promise<void> => {
   try {
     const { phone } = req.body;
 
@@ -19,7 +16,7 @@ export const createDriver = async (
     if (existingDriver) {
       res.status(409).json({
         success: false,
-        message: "Driver with this mobile number already exists.",
+        message: 'Driver with this mobile number already exists.',
       });
       return;
     }
@@ -28,15 +25,14 @@ export const createDriver = async (
 
     res.status(201).json({
       success: true,
-      message: "Driver created successfully.",
+      message: 'Driver created successfully.',
       data: driver,
     });
   } catch (error: any) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message:
-        error.message || "Failed to create driver.",
+      message: error.message || 'Failed to create driver.',
     });
   }
 };
@@ -44,10 +40,7 @@ export const createDriver = async (
 /**
  * Get All Drivers
  */
-export const getDrivers = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const getDrivers = async (req: Request, res: Response): Promise<void> => {
   try {
     const drivers = await Driver.find().sort({
       createdAt: -1,
@@ -60,9 +53,7 @@ export const getDrivers = async (
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message:
-        error.message ||
-        "Failed to fetch drivers.",
+      message: error.message || 'Failed to fetch drivers.',
     });
   }
 };
@@ -70,19 +61,14 @@ export const getDrivers = async (
 /**
  * Get Driver By Id
  */
-export const getDriverById = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const getDriverById = async (req: Request, res: Response): Promise<void> => {
   try {
-    const driver = await Driver.findById(
-      req.params.id
-    );
+    const driver = await Driver.findById(req.params.id);
 
     if (!driver) {
       res.status(404).json({
         success: false,
-        message: "Driver not found.",
+        message: 'Driver not found.',
       });
 
       return;
@@ -95,9 +81,7 @@ export const getDriverById = async (
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message:
-        error.message ||
-        "Failed to fetch driver.",
+      message: error.message || 'Failed to fetch driver.',
     });
   }
 };
@@ -105,25 +89,17 @@ export const getDriverById = async (
 /**
  * Update Driver
  */
-export const updateDriver = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const updateDriver = async (req: Request, res: Response): Promise<void> => {
   try {
-    const driver =
-      await Driver.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
+    const driver = await Driver.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!driver) {
       res.status(404).json({
         success: false,
-        message: "Driver not found.",
+        message: 'Driver not found.',
       });
 
       return;
@@ -131,16 +107,13 @@ export const updateDriver = async (
 
     res.status(200).json({
       success: true,
-      message:
-        "Driver updated successfully.",
+      message: 'Driver updated successfully.',
       data: driver,
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message:
-        error.message ||
-        "Failed to update driver.",
+      message: error.message || 'Failed to update driver.',
     });
   }
 };
@@ -148,20 +121,14 @@ export const updateDriver = async (
 /**
  * Delete Driver
  */
-export const deleteDriver = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const deleteDriver = async (req: Request, res: Response): Promise<void> => {
   try {
-    const driver =
-      await Driver.findByIdAndDelete(
-        req.params.id
-      );
+    const driver = await Driver.findByIdAndDelete(req.params.id);
 
     if (!driver) {
       res.status(404).json({
         success: false,
-        message: "Driver not found.",
+        message: 'Driver not found.',
       });
 
       return;
@@ -169,15 +136,12 @@ export const deleteDriver = async (
 
     res.status(200).json({
       success: true,
-      message:
-        "Driver deleted successfully.",
+      message: 'Driver deleted successfully.',
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message:
-        error.message ||
-        "Failed to delete driver.",
+      message: error.message || 'Failed to delete driver.',
     });
   }
 };
@@ -185,59 +149,47 @@ export const deleteDriver = async (
 /**
  * Upload Driving License
  */
-export const uploadDriverLicense =
-  async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
-    try {
-      const file =
-        req.file as Express.Multer.File;
+export const uploadDriverLicense = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const file = req.file as Express.Multer.File;
 
-      if (!file) {
-        res.status(400).json({
-          success: false,
-          message:
-            "No file uploaded.",
-        });
-
-        return;
-      }
-
-      const driver =
-        await Driver.findByIdAndUpdate(
-          req.params.id,
-          {
-            licenseDocument:
-              file.path,
-          },
-          {
-            new: true,
-          }
-        );
-
-      if (!driver) {
-        res.status(404).json({
-          success: false,
-          message:
-            "Driver not found.",
-        });
-
-        return;
-      }
-
-      res.status(200).json({
-        success: true,
-        message:
-          "Driving license uploaded successfully.",
-        data: driver,
-      });
-    } catch (error: any) {
-      res.status(500).json({
+    if (!file) {
+      res.status(400).json({
         success: false,
-        message:
-          error.message ||
-          "Upload failed.",
+        message: 'No file uploaded.',
       });
+
+      return;
     }
-  };
+
+    const driver = await Driver.findByIdAndUpdate(
+      req.params.id,
+      {
+        licenseDocument: file.path,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!driver) {
+      res.status(404).json({
+        success: false,
+        message: 'Driver not found.',
+      });
+
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Driving license uploaded successfully.',
+      data: driver,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Upload failed.',
+    });
+  }
+};

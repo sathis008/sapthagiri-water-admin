@@ -1,16 +1,11 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const vehicleSchema = z.object({
-  vehicleNumber: z.string().min(1, "Vehicle Number is required"),
+  vehicleNumber: z.string().min(1, 'Vehicle Number is required'),
 
-  capacity: z.string().min(1, "Capacity is required"),
+  capacity: z.string().min(1, 'Capacity is required'),
 
-  status: z.enum([
-    "AVAILABLE",
-    "ON_TRIP",
-    "MAINTENANCE",
-    "INACTIVE",
-  ]),
+  status: z.enum(['AVAILABLE', 'ON_TRIP', 'MAINTENANCE', 'INACTIVE']),
 
   manufacturer: z.string().optional(),
 
@@ -18,7 +13,7 @@ export const vehicleSchema = z.object({
 
   year: z.coerce.number().optional(),
 
-  rcNumber: z.string().min(1, "RC Number is required"),
+  rcNumber: z.string().min(1, 'RC Number is required'),
 
   rcExpiry: z.string().optional(),
 

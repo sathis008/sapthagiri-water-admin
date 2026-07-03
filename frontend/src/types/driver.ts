@@ -17,7 +17,7 @@ export interface Driver {
 
   notes?: string;
 
-  status: "ACTIVE" | "INACTIVE";
+  status: 'ACTIVE' | 'INACTIVE';
 
   createdAt: string;
 
@@ -40,9 +40,8 @@ export interface CreateDriverRequest {
   notes?: string;
 }
 
-export interface UpdateDriverRequest
-  extends CreateDriverRequest {
-  status?: "ACTIVE" | "INACTIVE";
+export interface UpdateDriverRequest extends CreateDriverRequest {
+  status?: 'ACTIVE' | 'INACTIVE';
 }
 
 export interface DriverListResponse {

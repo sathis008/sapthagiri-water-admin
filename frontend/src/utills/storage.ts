@@ -1,4 +1,4 @@
-import { STORAGE_KEYS } from "@/constants/storage";
+import { STORAGE_KEYS } from '@/constants/storage';
 
 export const Storage = {
   setToken(token: string) {
@@ -14,10 +14,7 @@ export const Storage = {
   },
 
   setUser(user: unknown) {
-    localStorage.setItem(
-      STORAGE_KEYS.USER,
-      JSON.stringify(user)
-    );
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
   },
 
   getUser() {
@@ -30,12 +27,12 @@ export const Storage = {
     localStorage.removeItem(STORAGE_KEYS.USER);
   },
 
-    getSession() {
+  getSession() {
     return {
       token: this.getToken(),
       user: this.getUser(),
     };
-  },  
+  },
 
   clear() {
     localStorage.removeItem(STORAGE_KEYS.TOKEN);

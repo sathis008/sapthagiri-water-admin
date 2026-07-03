@@ -1,66 +1,36 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from 'react-router-dom';
 
-import Login from "@/pages/Login/Login";
-import Dashboard from "@/pages/Dashboard/Dashboard";
-import DashboardLayout from "@/layouts/DashboardLayout";
-import PublicRoute from "./PublicRoute";
-import ProtectedRoute from "./ProtectedRoute";
-import { APP_ROUTES } from "@/constants/routes";
-import CustomerList from "@/pages/Customer/CustomerList";
-import VehicleList from "@/pages/vehicle/VehicleList";
-import DriverList from "@/pages/driver/DriverList";
+import Login from '@/pages/Login/Login';
+import Dashboard from '@/pages/Dashboard/Dashboard';
+import DashboardLayout from '@/layouts/DashboardLayout';
+import PublicRoute from './PublicRoute';
+import ProtectedRoute from './ProtectedRoute';
+import { APP_ROUTES } from '@/constants/routes';
+import CustomerList from '@/pages/Customer/CustomerList';
+import VehicleList from '@/pages/vehicle/VehicleList';
+import DriverList from '@/pages/driver/DriverList';
 const AppRoutes = () => {
   return (
-   <Routes>
+    <Routes>
+      {/* Public */}
 
-  {/* Public */}
+      <Route element={<PublicRoute />}>
+        <Route path={APP_ROUTES.LOGIN} element={<Login />} />
+      </Route>
 
-  <Route element={<PublicRoute />}>
+      {/* Protected */}
 
-    <Route
-      path={APP_ROUTES.LOGIN}
-      element={<Login />}
-    />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<DashboardLayout />}>
+          <Route path={APP_ROUTES.DASHBOARD} element={<Dashboard />} />
+          <Route path={APP_ROUTES.CUSTOMERS} element={<CustomerList />} />
+          <Route path={APP_ROUTES.VEHICLES} element={<VehicleList />} />
+          <Route path={APP_ROUTES.DRIVERS} element={<DriverList />} />
+        </Route>
+      </Route>
 
-  </Route>
-
-  {/* Protected */}
-
-  <Route element={<ProtectedRoute />}>
-
-    <Route element={<DashboardLayout />}>
-
-      <Route
-        path={APP_ROUTES.DASHBOARD}
-        element={<Dashboard />}
-      />
-      <Route
-          path={APP_ROUTES.CUSTOMERS}
-          element={<CustomerList />}
-      />
-      <Route
-          path={APP_ROUTES.VEHICLES}
-          element={<VehicleList />}
-      />
-      <Route
-          path={APP_ROUTES.DRIVERS}
-          element={<DriverList />}
-      />  
-    </Route>
-
-  </Route>
-
-  <Route
-    path="*"
-    element={
-      <Navigate
-        to={APP_ROUTES.LOGIN}
-        replace
-      />
-    }
-  />
-
-</Routes>
+      <Route path="*" element={<Navigate to={APP_ROUTES.LOGIN} replace />} />
+    </Routes>
   );
 };
 

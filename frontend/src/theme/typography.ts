@@ -1,13 +1,13 @@
 export const FONT = {
-  family: "Inter",
+  family: 'Inter',
 
   size: {
-    xs: "12px",
-    sm: "14px",
-    md: "16px",
-    lg: "18px",
-    xl: "24px",
-    xxl: "32px",
+    xs: '12px',
+    sm: '14px',
+    md: '16px',
+    lg: '18px',
+    xl: '24px',
+    xxl: '32px',
   },
 
   weight: {

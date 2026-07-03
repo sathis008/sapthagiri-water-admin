@@ -1,112 +1,59 @@
+import { Controller } from 'react-hook-form';
 
+import type { Control } from 'react-hook-form';
 
-import { Controller } from "react-hook-form";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import type { Control } from "react-hook-form";
+import { Input } from '@/components/ui/input';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Label } from '@/components/ui/label';
 
-import { Input } from "@/components/ui/input";
+import { Textarea } from '@/components/ui/textarea';
 
-import { Label } from "@/components/ui/label";
+import DocumentUploadCard from '@/components/common/DocumentUploadCard';
 
-import { Textarea } from "@/components/ui/textarea";
-
-import DocumentUploadCard from "@/components/common/DocumentUploadCard";
-
-import type {
-  DriverFormValues,
-} from "./driverSchema";
+import type { DriverFormValues } from './driverSchema';
 
 interface DriverLicenseProps {
   control: Control<DriverFormValues>;
 
   licenseFile: File | null;
 
-  setLicenseFile: (
-    file: File | null
-  ) => void;
+  setLicenseFile: (file: File | null) => void;
 }
 
-const DriverLicense = ({
-  control,
-  licenseFile,
-  setLicenseFile,
-}: DriverLicenseProps) => {
-
+const DriverLicense = ({ control, licenseFile, setLicenseFile }: DriverLicenseProps) => {
   return (
-
     <Card>
-
       <CardHeader>
-
-        <CardTitle>
-
-          Driving License
-
-        </CardTitle>
-
+        <CardTitle>Driving License</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-6">
-
         <div className="grid gap-5 md:grid-cols-2">
-
           {/* License Number */}
 
           <div className="space-y-2">
-
-            <Label>
-
-              License Number
-
-            </Label>
+            <Label>License Number</Label>
 
             <Controller
               name="licenseNumber"
               control={control}
-              render={({ field }) => (
-
-                <Input
-                  placeholder="License Number"
-                  {...field}
-                />
-
-              )}
+              render={({ field }) => <Input placeholder="License Number" {...field} />}
             />
-
           </div>
 
           {/* License Expiry */}
 
           <div className="space-y-2">
-
-            <Label>
-
-              License Expiry
-
-            </Label>
+            <Label>License Expiry</Label>
 
             <Controller
               name="licenseExpiry"
               control={control}
-              render={({ field }) => (
-
-                <Input
-                  type="date"
-                  {...field}
-                />
-
-              )}
+              render={({ field }) => <Input type="date" {...field} />}
             />
-
           </div>
-
         </div>
 
         {/* Upload */}
@@ -120,35 +67,17 @@ const DriverLicense = ({
         {/* Notes */}
 
         <div className="space-y-2">
-
-          <Label>
-
-            Notes
-
-          </Label>
+          <Label>Notes</Label>
 
           <Controller
             name="notes"
             control={control}
-            render={({ field }) => (
-
-              <Textarea
-                rows={4}
-                placeholder="Notes"
-                {...field}
-              />
-
-            )}
+            render={({ field }) => <Textarea rows={4} placeholder="Notes" {...field} />}
           />
-
         </div>
-
       </CardContent>
-
     </Card>
-
   );
-
 };
 
 export default DriverLicense;

@@ -1,18 +1,15 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { AxiosError } from 'axios';
 
-import VehicleService from "@/services/vehicle.service";
+import VehicleService from '@/services/vehicle.service';
 
-import type {
-  CreateVehicleRequest,
-  UpdateVehicleRequest,
-} from "@/types/vehicle";
+import type { CreateVehicleRequest, UpdateVehicleRequest } from '@/types/vehicle';
 
 /**
  * Get Vehicles
  */
 export const getVehiclesThunk = createAsyncThunk(
-  "vehicle/getVehicles",
+  'vehicle/getVehicles',
 
   async (_, { rejectWithValue }) => {
     try {
@@ -22,10 +19,7 @@ export const getVehiclesThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(
-        axiosError.response?.data?.message ??
-          "Failed to fetch vehicles."
-      );
+      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to fetch vehicles.');
     }
   }
 );
@@ -34,25 +28,17 @@ export const getVehiclesThunk = createAsyncThunk(
  * Create Vehicle
  */
 export const createVehicleThunk = createAsyncThunk(
-  "vehicle/createVehicle",
+  'vehicle/createVehicle',
 
-  async (
-    payload: CreateVehicleRequest,
-    { rejectWithValue }
-  ) => {
+  async (payload: CreateVehicleRequest, { rejectWithValue }) => {
     try {
-      return await VehicleService.createVehicle(
-        payload
-      );
+      return await VehicleService.createVehicle(payload);
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{
         message: string;
       }>;
 
-      return rejectWithValue(
-        axiosError.response?.data?.message ??
-          "Failed to create vehicle."
-      );
+      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to create vehicle.');
     }
   }
 );
@@ -61,7 +47,7 @@ export const createVehicleThunk = createAsyncThunk(
  * Update Vehicle
  */
 export const updateVehicleThunk = createAsyncThunk(
-  "vehicle/updateVehicle",
+  'vehicle/updateVehicle',
 
   async (
     {
@@ -74,19 +60,13 @@ export const updateVehicleThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      return await VehicleService.updateVehicle(
-        id,
-        payload
-      );
+      return await VehicleService.updateVehicle(id, payload);
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{
         message: string;
       }>;
 
-      return rejectWithValue(
-        axiosError.response?.data?.message ??
-          "Failed to update vehicle."
-      );
+      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to update vehicle.');
     }
   }
 );
@@ -95,12 +75,9 @@ export const updateVehicleThunk = createAsyncThunk(
  * Delete Vehicle
  */
 export const deleteVehicleThunk = createAsyncThunk(
-  "vehicle/deleteVehicle",
+  'vehicle/deleteVehicle',
 
-  async (
-    id: string,
-    { rejectWithValue }
-  ) => {
+  async (id: string, { rejectWithValue }) => {
     try {
       await VehicleService.deleteVehicle(id);
 
@@ -110,10 +87,7 @@ export const deleteVehicleThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(
-        axiosError.response?.data?.message ??
-          "Failed to delete vehicle."
-      );
+      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to delete vehicle.');
     }
   }
 );
@@ -121,37 +95,29 @@ export const deleteVehicleThunk = createAsyncThunk(
 /**
  * Upload Vehicle Document
  */
-export const uploadVehicleDocumentThunk =
-  createAsyncThunk(
-    "vehicle/uploadDocument",
+export const uploadVehicleDocumentThunk = createAsyncThunk(
+  'vehicle/uploadDocument',
 
-    async (
-      {
-        id,
-        documentType,
-        file,
-      }: {
-        id: string;
-        documentType: string;
-        file: File;
-      },
-      { rejectWithValue }
-    ) => {
-      try {
-        return await VehicleService.uploadVehicleDocument(
-          id,
-          documentType,
-          file
-        );
-      } catch (error: unknown) {
-        const axiosError = error as AxiosError<{
-          message: string;
-        }>;
+  async (
+    {
+      id,
+      documentType,
+      file,
+    }: {
+      id: string;
+      documentType: string;
+      file: File;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await VehicleService.uploadVehicleDocument(id, documentType, file);
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{
+        message: string;
+      }>;
 
-        return rejectWithValue(
-          axiosError.response?.data?.message ??
-            "Failed to upload document."
-        );
-      }
+      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to upload document.');
     }
-  );
+  }
+);
