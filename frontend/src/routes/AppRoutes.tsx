@@ -8,6 +8,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import { APP_ROUTES } from "@/constants/routes";
 import CustomerList from "@/pages/Customer/CustomerList";
 import VehicleList from "@/pages/vehicle/VehicleList";
+import DriverList from "@/pages/driver/DriverList";
 const AppRoutes = () => {
   return (
    <Routes>
@@ -41,6 +42,10 @@ const AppRoutes = () => {
           path={APP_ROUTES.VEHICLES}
           element={<VehicleList />}
       />
+      <Route
+          path={APP_ROUTES.DRIVERS}
+          element={<DriverList />}
+      />  
     </Route>
 
   </Route>

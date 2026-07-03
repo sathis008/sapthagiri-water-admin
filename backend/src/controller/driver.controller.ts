@@ -14,7 +14,6 @@ export const createDriver = async (
 
     const existingDriver = await Driver.findOne({
       phone: phone.trim(),
-      isDeleted: false,
     });
 
     if (existingDriver) {
@@ -33,6 +32,7 @@ export const createDriver = async (
       data: driver,
     });
   } catch (error: any) {
+    console.error(error);
     res.status(500).json({
       success: false,
       message:

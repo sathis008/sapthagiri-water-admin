@@ -20,12 +20,6 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/api/customers/${id}`,
   },
 
-  DRIVER: {
-    LIST: "/api/drivers",
-
-    CREATE: "/api/drivers",
-  },
-
   VEHICLE: {
     LIST: "/api/vehicles",
     CREATE: "/api/vehicles",
@@ -34,4 +28,24 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/api/vehicles/${id}`,
     UPLOAD: (id: string, documentType: string) => `/api/vehicles/${id}/upload/${documentType}`,
   },
+
+  DRIVER: {
+
+    LIST: "/api/drivers",
+
+    CREATE: "/api/drivers",
+
+    DETAILS: (id: string) =>
+        `/api/drivers/${id}`,
+
+    UPDATE: (id: string) =>
+        `/api/drivers/${id}`,
+
+    DELETE: (id: string) =>
+        `/api/drivers/${id}`,
+
+    UPLOAD: (id: string) =>
+        `/api/drivers/${id}/upload`,
+
+},
 } as const;
