@@ -12,16 +12,19 @@ class CustomerService {
   /**
    * Get All Customers
    */
-  async getCustomers(params: {
+  async getCustomers(params?: {
     page?: number;
     limit?: number;
     search?: string;
-  }): Promise<Customer[]> {
+  }): Promise<CustomerListResponse> {
     const response = await api.get<CustomerListResponse>(
       API_ENDPOINTS.CUSTOMER.LIST,
+      {
+        params,
+      },
     );
 
-    return response.data.data;
+    return response.data;
   }
 
   /**

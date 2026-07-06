@@ -1,23 +1,32 @@
-import api from '@/api/axios';
+import api from "@/api/axios";
 
-import { API_ENDPOINTS } from '@/api/endpoints';
-import type { ApiResponse } from '@/types/api';
+import { API_ENDPOINTS } from "@/api/endpoints";
+import type { ApiResponse } from "@/types/api";
 
 import type {
   Driver,
   DriverListResponse,
   CreateDriverRequest,
   UpdateDriverRequest,
-} from '@/types/driver';
+} from "@/types/driver";
 
 class DriverService {
   /**
    * Get All Drivers
    */
-  async getDrivers(): Promise<Driver[]> {
-    const response = await api.get<DriverListResponse>(API_ENDPOINTS.DRIVER.LIST);
+  async getDrivers(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<DriverListResponse> {
+    const response = await api.get<DriverListResponse>(
+      API_ENDPOINTS.DRIVER.LIST,
+      {
+        params,
+      },
+    );
 
-    return response.data.data;
+    return response.data;
   }
 
   /**
@@ -33,15 +42,24 @@ class DriverService {
    * Create Driver
    */
   async createDriver(payload: CreateDriverRequest): Promise<Driver> {
-    const response = await api.post<ApiResponse<Driver>>(API_ENDPOINTS.DRIVER.CREATE, payload);
+    const response = await api.post<ApiResponse<Driver>>(
+      API_ENDPOINTS.DRIVER.CREATE,
+      payload,
+    );
 
     return response.data.data;
   }
   /**
    * Update Driver
    */
-  async updateDriver(id: string, payload: UpdateDriverRequest): Promise<Driver> {
-    const response = await api.put<ApiResponse<Driver>>(API_ENDPOINTS.DRIVER.UPDATE(id), payload);
+  async updateDriver(
+    id: string,
+    payload: UpdateDriverRequest,
+  ): Promise<Driver> {
+    const response = await api.put<ApiResponse<Driver>>(
+      API_ENDPOINTS.DRIVER.UPDATE(id),
+      payload,
+    );
 
     return response.data.data;
   }
@@ -59,7 +77,7 @@ class DriverService {
   async uploadLicense(id: string, file: File) {
     const formData = new FormData();
 
-    formData.append('file', file);
+    formData.append("file", file);
 
     return api.post(API_ENDPOINTS.DRIVER.UPLOAD(id), formData);
   }

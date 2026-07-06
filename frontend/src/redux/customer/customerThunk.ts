@@ -1,23 +1,24 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
+
 import CustomerService from "@/services/customer.service";
+
 import type {
   CreateCustomerRequest,
   UpdateCustomerRequest,
+  CustomerListResponse,
 } from "@/types/customer";
 
+/**
+ * Create Customer
+ */
 export const createCustomerThunk = createAsyncThunk(
   "customer/createCustomer",
-
   async (payload: CreateCustomerRequest, { rejectWithValue }) => {
     try {
-      const customer = await CustomerService.createCustomer(payload);
-
-      return customer;
+      return await CustomerService.createCustomer(payload);
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<{
-        message: string;
-      }>;
+      const axiosError = error as AxiosError<{ message: string }>;
 
       return rejectWithValue(
         axiosError.response?.data?.message ?? "Failed to create customer.",
@@ -26,6 +27,9 @@ export const createCustomerThunk = createAsyncThunk(
   },
 );
 
+/**
+ * Update Customer
+ */
 export const updateCustomerThunk = createAsyncThunk(
   "customer/updateCustomer",
   async (
@@ -39,13 +43,9 @@ export const updateCustomerThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const customer = await CustomerService.updateCustomer(id, payload);
-
-      return customer;
+      return await CustomerService.updateCustomer(id, payload);
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<{
-        message: string;
-      }>;
+      const axiosError = error as AxiosError<{ message: string }>;
 
       return rejectWithValue(
         axiosError.response?.data?.message ?? "Failed to update customer.",
@@ -54,26 +54,55 @@ export const updateCustomerThunk = createAsyncThunk(
   },
 );
 
-export const getCustomersThunk = createAsyncThunk(
-  "customer/getCustomers",
+/**
+ * Get Customers
+ */
+export const getCustomersThunk = createAsyncThunk<
+  CustomerListResponse,
+  void,
+  {
+    rejectValue: string;
+  }
+>("customer/getCustomers", async (_, { rejectWithValue }) => {
+  try {
+    return await CustomerService.getCustomers();
+  } catch (error: unknown) {
+    const axiosError = error as AxiosError<{ message: string }>;
 
-  async (_, { rejectWithValue }) => {
-    try {
-      const customers = await CustomerService.getCustomers();
+    return rejectWithValue(
+      axiosError.response?.data?.message ?? "Failed to fetch customers.",
+    );
+  }
+});
 
-      return customers;
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<{
-        message: string;
-      }>;
-
-      return rejectWithValue(
-        axiosError.response?.data?.message ?? "Failed to fetch customers.",
-      );
-    }
+/**
+ * Search Customers
+ */
+export const searchCustomersThunk = createAsyncThunk<
+  CustomerListResponse,
+  {
+    page?: number;
+    limit?: number;
+    search?: string;
   },
-);
+  {
+    rejectValue: string;
+  }
+>("customer/searchCustomers", async (params, { rejectWithValue }) => {
+  try {
+    return await CustomerService.getCustomers(params);
+  } catch (error: unknown) {
+    const axiosError = error as AxiosError<{ message: string }>;
 
+    return rejectWithValue(
+      axiosError.response?.data?.message ?? "Failed to search customers.",
+    );
+  }
+});
+
+/**
+ * Delete Customer
+ */
 export const deleteCustomerThunk = createAsyncThunk(
   "customer/deleteCustomer",
   async (id: string, { rejectWithValue }) => {
@@ -82,32 +111,10 @@ export const deleteCustomerThunk = createAsyncThunk(
 
       return id;
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<{
-        message: string;
-      }>;
+      const axiosError = error as AxiosError<{ message: string }>;
 
       return rejectWithValue(
         axiosError.response?.data?.message ?? "Failed to delete customer.",
-      );
-    }
-  },
-);
-
-export const searchCustomersThunk = createAsyncThunk(
-  "customer/searchCustomers",
-  async (
-    params: {
-      page?: number;
-      limit?: number;
-      search?: string;
-    },
-    { rejectWithValue },
-  ) => {
-    try {
-      return await CustomerService.getCustomers(params);
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch customers.",
       );
     }
   },

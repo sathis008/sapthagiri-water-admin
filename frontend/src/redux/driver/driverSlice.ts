@@ -1,6 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-import type { Driver } from '@/types/driver';
+import type { Driver } from "@/types/driver";
 
 import {
   getDriversThunk,
@@ -8,10 +8,20 @@ import {
   updateDriverThunk,
   deleteDriverThunk,
   uploadDriverLicenseThunk,
-} from './driverThunk';
+  searchDriversThunk,
+} from "./driverThunk";
 
 interface DriverState {
   drivers: Driver[];
+
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+
+  selectedDriver: Driver | null;
 
   loading: boolean;
 
@@ -21,13 +31,25 @@ interface DriverState {
 const initialState: DriverState = {
   drivers: [],
 
+  pagination: {
+    page: 1,
+
+    limit: 10,
+
+    total: 0,
+
+    totalPages: 0,
+  },
+
+  selectedDriver: null,
+
   loading: false,
 
   error: null,
 };
 
 const driverSlice = createSlice({
-  name: 'driver',
+  name: "driver",
 
   initialState,
 
@@ -48,7 +70,27 @@ const driverSlice = createSlice({
       .addCase(getDriversThunk.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.drivers = action.payload;
+        state.drivers = action.payload.data;
+
+        state.pagination = action.payload.pagination;
+      })
+
+      .addCase(searchDriversThunk.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(searchDriversThunk.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.drivers = action.payload.data;
+
+        state.pagination = action.payload.pagination;
+      })
+
+      .addCase(searchDriversThunk.rejected, (state, action) => {
+        state.loading = false;
+
+        state.error = action.payload as string;
       })
 
       .addCase(getDriversThunk.rejected, (state, action) => {
@@ -95,7 +137,7 @@ const driverSlice = createSlice({
         state.loading = false;
 
         state.drivers = state.drivers.map((driver) =>
-          driver._id === action.payload._id ? action.payload : driver
+          driver._id === action.payload._id ? action.payload : driver,
         );
       })
 
@@ -119,7 +161,9 @@ const driverSlice = createSlice({
       .addCase(deleteDriverThunk.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.drivers = state.drivers.filter((driver) => driver._id !== action.payload);
+        state.drivers = state.drivers.filter(
+          (driver) => driver._id !== action.payload,
+        );
       })
 
       .addCase(deleteDriverThunk.rejected, (state, action) => {
@@ -141,7 +185,7 @@ const driverSlice = createSlice({
         state.loading = false;
 
         state.drivers = state.drivers.map((driver) =>
-          driver._id === action.payload.data._id ? action.payload.data : driver
+          driver._id === action.payload.data._id ? action.payload.data : driver,
         );
       })
 

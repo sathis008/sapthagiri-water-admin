@@ -1,12 +1,13 @@
-import { useEffect } from "react";
-
-import { useForm } from "react-hook-form";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import type { Booking } from "@/types/booking";
 
-import { bookingSchema, type BookingFormValues } from "./bookingSchema";
+import BookingCustomer from "./BookingCustomer";
+import BookingInformation from "./BookingInformation";
+import { useState } from "react";
+import type { Customer } from "@/types/customer";
+import BookingNotes from "./BookingNotes";
+import { useAppDispatch } from "@/redux/hooks";
+import { createBookingThunk, getBookingsThunk } from "@/redux/booking";
+import AssignBookingDialog from "../AssignBookingDialog";
 
 interface BookingFormProps {
   booking?: Booking | null;
@@ -14,44 +15,103 @@ interface BookingFormProps {
   onSuccess: () => void;
 }
 
-const BookingForm = ({ booking }: BookingFormProps) => {
-  const form = useForm<BookingFormValues>({
-    resolver: zodResolver(bookingSchema),
+const BookingForm = ({ onSuccess }: BookingFormProps) => {
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
+  const [capacity, setCapacity] = useState("");
 
-    defaultValues: {
-      customerId: "",
+  const [price, setPrice] = useState(0);
 
-      capacity: 0,
+  const [bookingDate, setBookingDate] = useState(
+    new Date().toISOString().substring(0, 10),
+  );
 
-      price: 0,
+  const dispatch = useAppDispatch();
 
-      bookingDate: "",
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!selectedCustomer) {
+      alert("Please select customer");
+
+      return;
+    }
+
+    const payload = {
+      customerId: selectedCustomer._id,
+
+      customerName: selectedCustomer.name,
+
+      phone: selectedCustomer.phone,
+
+      address: selectedCustomer.address,
+
+      capacity,
+
+      price,
+
+      bookingDate,
 
       notes: "",
-    },
-  });
+    };
 
-  useEffect(() => {
-    if (!booking) return;
+    try {
+      await dispatch(createBookingThunk(payload)).unwrap();
 
-    form.reset({
-      customerId: booking.customerId,
+      await dispatch(
+        getBookingsThunk({
+          page: 1,
+          limit: 10,
+        }),
+      );
 
-      capacity: booking.capacity,
-
-      price: booking.price,
-
-      bookingDate: booking.bookingDate.substring(0, 10),
-
-      notes: booking.notes,
-    });
-  }, [booking, form]);
-
-  const onSubmit = (values: BookingFormValues) => {
-    console.log(values);
+      onSuccess();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  return <form onSubmit={form.handleSubmit(onSubmit)}>Booking Form</form>;
+  // const onSubmit = (values: BookingFormValues) => {
+  //   console.log(values);
+  // };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <BookingCustomer
+        customer={selectedCustomer}
+        onCustomerSelect={(customer) => {
+          setSelectedCustomer(customer);
+          setCapacity(customer.capacity ?? "");
+
+          setPrice(customer.price ?? 0);
+        }}
+      />
+
+      <BookingInformation
+        capacity={capacity}
+
+        price={price}
+
+        bookingDate={bookingDate}
+
+        onCapacityChange={setCapacity}
+
+        onPriceChange={setPrice}
+
+        onBookingDateChange={setBookingDate}
+      />
+
+      <BookingNotes onCancel={onSuccess} />
+
+      <AssignBookingDialog
+        open={openAssignDialog}
+        booking={selectedBooking}
+        onOpenChange={setOpenAssignDialog}
+        onSuccess={fetchBookings}
+      />
+    </form>
+  );
 };
 
 export default BookingForm;

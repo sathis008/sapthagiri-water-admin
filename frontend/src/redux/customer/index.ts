@@ -3,6 +3,7 @@ export {
   createCustomerThunk,
   updateCustomerThunk,
   deleteCustomerThunk,
-} from './customerThunk';
+  searchCustomersThunk,
+} from "./customerThunk";
 
-export { default as customerReducer } from './customerSlice';
+export { default as customerReducer } from "./customerSlice";

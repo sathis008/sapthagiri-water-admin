@@ -1,58 +1,73 @@
-import type { UseFormReturn } from "react-hook-form";
+import { useEffect } from "react";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import CustomerCombobox from "./CustomerCombobox";
+import SearchableSelect from "@/components/common/SearchableSelect";
 
-import type { BookingFormValues } from "./bookingSchema";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { searchCustomersThunk } from "@/redux/customer";
+
 import type { Customer } from "@/types/customer";
 
 interface BookingCustomerProps {
-  form: UseFormReturn<BookingFormValues>;
+  customer: Customer | null;
 
-  customer?: Customer | null;
-
-  onCustomerChange: (customer: Customer) => void;
+  onCustomerSelect: (customer: Customer) => void;
 }
 
 const BookingCustomer = ({
-  form,
   customer,
-  onCustomerChange,
+  onCustomerSelect,
 }: BookingCustomerProps) => {
+  const dispatch = useAppDispatch();
+
+  const { customers, loading } = useAppSelector((state) => state.customer);
+
+  useEffect(() => {
+    dispatch(
+      searchCustomersThunk({
+        page: 1,
+        limit: 10,
+      }),
+    );
+  }, [dispatch]);
+
   return (
     <div className="space-y-4 rounded-lg border p-5">
       <h3 className="text-lg font-semibold">Customer Information</h3>
 
-      <div>
-        <Label>Customer</Label>
+      <SearchableSelect<Customer>
+        label="Customer"
+        placeholder="Search Customer"
+        value={customer?._id}
+        options={customers}
+        loading={loading}
+        getOptionLabel={(item) => item.name}
+        getOptionValue={(item) => item._id}
+        onSearch={(value) => {
+          dispatch(
+            searchCustomersThunk({
+              page: 1,
+              limit: 10,
+              search: value,
+            }),
+          );
+        }}
+        onSelect={onCustomerSelect}
+      />
 
-        <CustomerCombobox
-          value={form.watch("customerId")}
-
-          onChange={onCustomerChange}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <Label>Phone</Label>
 
-          <Input
-            value={customer?.phone || ""}
-
-            disabled
-          />
+          <Input value={customer?.phone ?? ""} readOnly />
         </div>
 
         <div>
           <Label>Address</Label>
 
-          <Input
-            value={customer?.address || ""}
-
-            disabled
-          />
+          <Input value={customer?.address ?? ""} readOnly />
         </div>
       </div>
     </div>

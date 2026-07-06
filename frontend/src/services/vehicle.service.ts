@@ -1,21 +1,30 @@
-import api from '@/api/axios';
-import { API_ENDPOINTS } from '@/api/endpoints';
+import api from "@/api/axios";
+import { API_ENDPOINTS } from "@/api/endpoints";
 
 import type {
   Vehicle,
   VehicleListResponse,
   CreateVehicleRequest,
   UpdateVehicleRequest,
-} from '@/types/vehicle';
+} from "@/types/vehicle";
 
 class VehicleService {
   /**
    * Get All Vehicles
    */
-  async getVehicles(): Promise<Vehicle[]> {
-    const response = await api.get<VehicleListResponse>(API_ENDPOINTS.VEHICLE.LIST);
+  async getVehicles(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<VehicleListResponse> {
+    const response = await api.get<VehicleListResponse>(
+      API_ENDPOINTS.VEHICLE.LIST,
+      {
+        params,
+      },
+    );
 
-    return response.data.data;
+    return response.data;
   }
 
   /**
@@ -45,7 +54,10 @@ class VehicleService {
   /**
    * Update Vehicle
    */
-  async updateVehicle(id: string, payload: UpdateVehicleRequest): Promise<Vehicle> {
+  async updateVehicle(
+    id: string,
+    payload: UpdateVehicleRequest,
+  ): Promise<Vehicle> {
     const response = await api.put<{
       success: boolean;
       data: Vehicle;
@@ -67,13 +79,17 @@ class VehicleService {
   async uploadVehicleDocument(id: string, documentType: string, file: File) {
     const formData = new FormData();
 
-    formData.append('file', file);
+    formData.append("file", file);
 
-    const response = await api.post(API_ENDPOINTS.VEHICLE.UPLOAD(id, documentType), formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    const response = await api.post(
+      API_ENDPOINTS.VEHICLE.UPLOAD(id, documentType),
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    });
+    );
 
     return response.data;
   }

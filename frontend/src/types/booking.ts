@@ -1,8 +1,10 @@
-export type BookingStatus = 'CONFIRMED' | 'ASSIGNED' | 'DELIVERED' | 'CANCELLED';
+export type BookingStatus =
+  "CONFIRMED" | "ASSIGNED" | "DELIVERED" | "CANCELLED";
 
-export type PaymentStatus = 'PENDING' | 'PAID';
+export type PaymentStatus = "PENDING" | "PAID";
 
-export type CollectionMethod = 'DRIVER_COLLECTION' | 'ACCOUNT_COLLECTION' | 'OFFICE_COLLECTION';
+export type CollectionMethod =
+  "DRIVER_COLLECTION" | "ACCOUNT_COLLECTION" | "OFFICE_COLLECTION";
 
 export interface Booking {
   _id: string;
@@ -65,7 +67,7 @@ export interface BookingListResponse {
 export interface CreateBookingRequest {
   customerId: string;
 
-  capacity: number;
+  capacity: string;
 
   price: number;
 

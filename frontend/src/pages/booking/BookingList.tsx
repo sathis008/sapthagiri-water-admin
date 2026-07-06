@@ -1,15 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { useLocation } from "react-router-dom";
-
-import { navigation } from "@/config/navigation";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getBookingsThunk } from "@/redux/booking";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-
 import BookingTableToolbar from "@/components/bookings/BookingTableToolbar";
 import { bookingColumns } from "@/components/bookings/BookingColumns";
 
@@ -21,6 +16,9 @@ import { deleteBookingThunk } from "@/redux/booking";
 import BookingDialog from "@/components/bookings/BookingDialog";
 
 import type { Booking } from "@/types/booking";
+import AssignBookingDialog from "@/components/bookings/AssignBookingDialog";
+import CompleteDeliveryDialog from "@/components/bookings/CompleteDeliveryDialog";
+import BookingViewDialog from "@/components/bookings/BookingViewDialog";
 
 const BookingList = () => {
   const dispatch = useAppDispatch();
@@ -53,8 +51,9 @@ const BookingList = () => {
 
   const [openCompleteDialog, setOpenCompleteDialog] = useState(false);
 
-  const location = useLocation();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const [openViewDialog, setOpenViewDialog] = useState(false);
   /**
    * Fetch Bookings
    */
@@ -110,6 +109,8 @@ const BookingList = () => {
   const columns = bookingColumns({
     onView: (booking) => {
       setSelectedBooking(booking);
+
+      setOpenViewDialog(true);
     },
 
     onEdit: (booking) => {
@@ -249,10 +250,29 @@ const BookingList = () => {
       />
 
       {/* Assign Booking Dialog */}
+      <AssignBookingDialog
+        open={openAssignDialog}
+        booking={selectedBooking}
+        onOpenChange={setOpenAssignDialog}
+        onSuccess={fetchBookings}
+      />
 
       {/* Complete Delivery Dialog */}
 
+      <CompleteDeliveryDialog
+        open={openCompleteDialog}
+        booking={selectedBooking}
+        onOpenChange={setOpenCompleteDialog}
+        onSuccess={fetchBookings}
+      />
       {/* Booking View Dialog */}
+      <BookingViewDialog
+        open={openViewDialog}
+        booking={selectedBooking}
+        onOpenChange={setOpenViewDialog}
+      />
+
+      {/* Booking Delete Dialog */}
 
       <DeleteDialog
         open={openDeleteDialog}

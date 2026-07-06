@@ -1,4 +1,5 @@
-export type VehicleStatus = 'AVAILABLE' | 'ON_TRIP' | 'MAINTENANCE' | 'INACTIVE';
+export type VehicleStatus =
+  "AVAILABLE" | "ON_TRIP" | "MAINTENANCE" | "INACTIVE";
 
 export interface IFileDocument {
   fileName?: string;
@@ -60,12 +61,22 @@ export interface Vehicle {
   updatedAt: string;
 }
 
-export type CreateVehicleRequest = Omit<Vehicle, '_id' | 'createdAt' | 'updatedAt'>;
+export type CreateVehicleRequest = Omit<
+  Vehicle,
+  "_id" | "createdAt" | "updatedAt"
+>;
 
 export type UpdateVehicleRequest = CreateVehicleRequest;
 
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface VehicleListResponse {
   success: boolean;
-
   data: Vehicle[];
+  pagination: Pagination;
 }

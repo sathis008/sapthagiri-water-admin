@@ -1,16 +1,16 @@
-import { MoreHorizontal } from 'lucide-react';
-import { Eye, Pencil, Trash2, Truck, CircleCheckBig } from 'lucide-react';
+import { MoreHorizontal } from "lucide-react";
+import { Eye, Pencil, Trash2, Truck, CircleCheckBig } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import type { Booking } from '@/types/booking';
+import type { Booking } from "@/types/booking";
 
 interface BookingRowActionsProps {
   booking: Booking;
@@ -48,7 +48,7 @@ const BookingRowActions = ({
           View
         </DropdownMenuItem>
 
-        {booking.status === 'CONFIRMED' && (
+        {booking.status === "CONFIRMED" && (
           <>
             <DropdownMenuItem onClick={() => onEdit(booking)}>
               <Pencil className="mr-2 h-4 w-4" />
@@ -57,17 +57,20 @@ const BookingRowActions = ({
 
             <DropdownMenuItem onClick={() => onAssign(booking)}>
               <Truck className="mr-2 h-4 w-4" />
-              Assign Driver & Vehicle
+              Assign
             </DropdownMenuItem>
 
-            <DropdownMenuItem className="text-red-600" onClick={() => onDelete(booking)}>
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={() => onDelete(booking)}
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
           </>
         )}
 
-        {booking.status === 'ASSIGNED' && (
+        {booking.status === "ASSIGNED" && (
           <DropdownMenuItem onClick={() => onComplete(booking)}>
             <CircleCheckBig className="mr-2 h-4 w-4" />
             Complete Delivery

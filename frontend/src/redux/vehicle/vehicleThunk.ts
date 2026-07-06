@@ -1,34 +1,40 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { AxiosError } from "axios";
 
-import VehicleService from '@/services/vehicle.service';
+import VehicleService from "@/services/vehicle.service";
 
-import type { CreateVehicleRequest, UpdateVehicleRequest } from '@/types/vehicle';
+import type {
+  CreateVehicleRequest,
+  UpdateVehicleRequest,
+  VehicleListResponse,
+} from "@/types/vehicle";
 
 /**
  * Get Vehicles
  */
-export const getVehiclesThunk = createAsyncThunk(
-  'vehicle/getVehicles',
-
-  async (_, { rejectWithValue }) => {
-    try {
-      return await VehicleService.getVehicles();
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<{
-        message: string;
-      }>;
-
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to fetch vehicles.');
-    }
+export const getVehiclesThunk = createAsyncThunk<
+  VehicleListResponse,
+  void,
+  {
+    rejectValue: string;
   }
-);
+>("vehicle/getVehicles", async (_, { rejectWithValue }) => {
+  try {
+    return await VehicleService.getVehicles();
+  } catch (error: unknown) {
+    const axiosError = error as AxiosError<{ message: string }>;
+
+    return rejectWithValue(
+      axiosError.response?.data?.message ?? "Failed to fetch vehicles.",
+    );
+  }
+});
 
 /**
  * Create Vehicle
  */
 export const createVehicleThunk = createAsyncThunk(
-  'vehicle/createVehicle',
+  "vehicle/createVehicle",
 
   async (payload: CreateVehicleRequest, { rejectWithValue }) => {
     try {
@@ -38,16 +44,18 @@ export const createVehicleThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to create vehicle.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to create vehicle.",
+      );
     }
-  }
+  },
 );
 
 /**
  * Update Vehicle
  */
 export const updateVehicleThunk = createAsyncThunk(
-  'vehicle/updateVehicle',
+  "vehicle/updateVehicle",
 
   async (
     {
@@ -57,7 +65,7 @@ export const updateVehicleThunk = createAsyncThunk(
       id: string;
       payload: UpdateVehicleRequest;
     },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       return await VehicleService.updateVehicle(id, payload);
@@ -66,16 +74,18 @@ export const updateVehicleThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to update vehicle.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to update vehicle.",
+      );
     }
-  }
+  },
 );
 
 /**
  * Delete Vehicle
  */
 export const deleteVehicleThunk = createAsyncThunk(
-  'vehicle/deleteVehicle',
+  "vehicle/deleteVehicle",
 
   async (id: string, { rejectWithValue }) => {
     try {
@@ -87,16 +97,18 @@ export const deleteVehicleThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to delete vehicle.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to delete vehicle.",
+      );
     }
-  }
+  },
 );
 
 /**
  * Upload Vehicle Document
  */
 export const uploadVehicleDocumentThunk = createAsyncThunk(
-  'vehicle/uploadDocument',
+  "vehicle/uploadDocument",
 
   async (
     {
@@ -108,7 +120,7 @@ export const uploadVehicleDocumentThunk = createAsyncThunk(
       documentType: string;
       file: File;
     },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       return await VehicleService.uploadVehicleDocument(id, documentType, file);
@@ -117,7 +129,31 @@ export const uploadVehicleDocumentThunk = createAsyncThunk(
         message: string;
       }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to upload document.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to upload document.",
+      );
     }
-  }
+  },
 );
+
+export const searchVehiclesThunk = createAsyncThunk<
+  VehicleListResponse,
+  {
+    page?: number;
+    limit?: number;
+    search?: string;
+  },
+  {
+    rejectValue: string;
+  }
+>("vehicle/searchVehicles", async (params, { rejectWithValue }) => {
+  try {
+    return await VehicleService.getVehicles(params);
+  } catch (error: unknown) {
+    const axiosError = error as AxiosError<{ message: string }>;
+
+    return rejectWithValue(
+      axiosError.response?.data?.message ?? "Failed to search vehicles.",
+    );
+  }
+});

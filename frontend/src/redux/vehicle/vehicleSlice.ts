@@ -1,8 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-import type { PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from "@reduxjs/toolkit";
 
-import type { Vehicle } from '@/types/vehicle';
+import type { Vehicle } from "@/types/vehicle";
 
 import {
   getVehiclesThunk,
@@ -10,10 +10,20 @@ import {
   updateVehicleThunk,
   deleteVehicleThunk,
   uploadVehicleDocumentThunk,
-} from './vehicleThunk';
+  searchVehiclesThunk,
+} from "./vehicleThunk";
 
 interface VehicleState {
   vehicles: Vehicle[];
+
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+
+  selectedVehicle: Vehicle | null;
 
   loading: boolean;
 
@@ -23,13 +33,22 @@ interface VehicleState {
 const initialState: VehicleState = {
   vehicles: [],
 
+  pagination: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  },
+
+  selectedVehicle: null,
+
   loading: false,
 
   error: null,
 };
 
 const vehicleSlice = createSlice({
-  name: 'vehicle',
+  name: "vehicle",
 
   initialState,
 
@@ -43,16 +62,19 @@ const vehicleSlice = createSlice({
        */
       .addCase(getVehiclesThunk.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
 
-      .addCase(getVehiclesThunk.fulfilled, (state, action: PayloadAction<Vehicle[]>) => {
+      .addCase(getVehiclesThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.vehicles = action.payload;
+
+        state.vehicles = action.payload.data;
+
+        state.pagination = action.payload.pagination;
       })
 
       .addCase(getVehiclesThunk.rejected, (state, action) => {
         state.loading = false;
+
         state.error = action.payload as string;
       })
 
@@ -63,11 +85,14 @@ const vehicleSlice = createSlice({
         state.loading = true;
       })
 
-      .addCase(createVehicleThunk.fulfilled, (state, action: PayloadAction<Vehicle>) => {
-        state.loading = false;
+      .addCase(
+        createVehicleThunk.fulfilled,
+        (state, action: PayloadAction<Vehicle>) => {
+          state.loading = false;
 
-        state.vehicles.unshift(action.payload);
-      })
+          state.vehicles.unshift(action.payload);
+        },
+      )
 
       .addCase(createVehicleThunk.rejected, (state, action) => {
         state.loading = false;
@@ -82,15 +107,20 @@ const vehicleSlice = createSlice({
         state.loading = true;
       })
 
-      .addCase(updateVehicleThunk.fulfilled, (state, action: PayloadAction<Vehicle>) => {
-        state.loading = false;
+      .addCase(
+        updateVehicleThunk.fulfilled,
+        (state, action: PayloadAction<Vehicle>) => {
+          state.loading = false;
 
-        const index = state.vehicles.findIndex((vehicle) => vehicle._id === action.payload._id);
+          const index = state.vehicles.findIndex(
+            (vehicle) => vehicle._id === action.payload._id,
+          );
 
-        if (index !== -1) {
-          state.vehicles[index] = action.payload;
-        }
-      })
+          if (index !== -1) {
+            state.vehicles[index] = action.payload;
+          }
+        },
+      )
 
       .addCase(updateVehicleThunk.rejected, (state, action) => {
         state.loading = false;
@@ -105,13 +135,36 @@ const vehicleSlice = createSlice({
         state.loading = true;
       })
 
-      .addCase(deleteVehicleThunk.fulfilled, (state, action: PayloadAction<string>) => {
-        state.loading = false;
+      .addCase(
+        deleteVehicleThunk.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          state.loading = false;
 
-        state.vehicles = state.vehicles.filter((vehicle) => vehicle._id !== action.payload);
-      })
+          state.vehicles = state.vehicles.filter(
+            (vehicle) => vehicle._id !== action.payload,
+          );
+        },
+      )
 
       .addCase(deleteVehicleThunk.rejected, (state, action) => {
+        state.loading = false;
+
+        state.error = action.payload as string;
+      })
+
+      .addCase(searchVehiclesThunk.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(searchVehiclesThunk.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.vehicles = action.payload.data;
+
+        state.pagination = action.payload.pagination;
+      })
+
+      .addCase(searchVehiclesThunk.rejected, (state, action) => {
         state.loading = false;
 
         state.error = action.payload as string;
@@ -124,15 +177,20 @@ const vehicleSlice = createSlice({
         state.loading = true;
       })
 
-      .addCase(uploadVehicleDocumentThunk.fulfilled, (state, action: PayloadAction<Vehicle>) => {
-        state.loading = false;
+      .addCase(
+        uploadVehicleDocumentThunk.fulfilled,
+        (state, action: PayloadAction<Vehicle>) => {
+          state.loading = false;
 
-        const index = state.vehicles.findIndex((vehicle) => vehicle._id === action.payload._id);
+          const index = state.vehicles.findIndex(
+            (vehicle) => vehicle._id === action.payload._id,
+          );
 
-        if (index !== -1) {
-          state.vehicles[index] = action.payload;
-        }
-      })
+          if (index !== -1) {
+            state.vehicles[index] = action.payload;
+          }
+        },
+      )
 
       .addCase(uploadVehicleDocumentThunk.rejected, (state, action) => {
         state.loading = false;
