@@ -58,5 +58,22 @@ export const API_ENDPOINTS = {
     ASSIGN: (id: string) => `/api/bookings/${id}/assign`,
 
     DELIVER: (id: string) => `/api/bookings/${id}/deliver`,
+
+    PENDING: (customerId: string) =>
+      `/api/bookings/customer/${customerId}/pending`,
+  },
+
+  PAYMENT: {
+    LIST: "/api/payments",
+
+    CREATE: "/api/payments",
+
+    DETAILS: (id: string) => `/api/payments/${id}`,
+
+    DELETE: (id: string) => `/api/payments/${id}`,
+  },
+
+  DASHBOARD: {
+    SUMMARY: "/api/dashboard",
   },
 } as const;

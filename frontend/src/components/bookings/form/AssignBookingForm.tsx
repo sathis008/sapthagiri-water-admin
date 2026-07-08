@@ -69,7 +69,7 @@ const AssignBookingForm = ({ booking, onSuccess }: AssignBookingFormProps) => {
     <form onSubmit={handleAssign} className="space-y-6">
       <SearchableSelect<Driver>
         label="Driver"
-
+        selectedOption={driver}
         placeholder="Search Driver"
 
         value={driver?._id}
@@ -99,6 +99,7 @@ const AssignBookingForm = ({ booking, onSuccess }: AssignBookingFormProps) => {
 
       <SearchableSelect<Vehicle>
         label="Vehicle"
+        selectedOption={vehicle}
         placeholder="Search Vehicle"
         value={vehicle?._id}
         options={vehicles}

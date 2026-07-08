@@ -6,6 +6,7 @@ import type {
   CustomerListResponse,
   CreateCustomerRequest,
   UpdateCustomerRequest,
+  CustomerResponse,
 } from "@/types/customer";
 
 class CustomerService {
@@ -31,11 +32,11 @@ class CustomerService {
    * Get Customer By Id
    */
   async getCustomerById(id: string): Promise<Customer> {
-    const response = await api.get<Customer>(
+    const response = await api.get<CustomerResponse>(
       API_ENDPOINTS.CUSTOMER.DETAILS(id),
     );
 
-    return response.data;
+    return response.data.data;
   }
 
   /**

@@ -8,6 +8,7 @@ import type {
   DriverListResponse,
   CreateDriverRequest,
   UpdateDriverRequest,
+  DriverResponse,
 } from "@/types/driver";
 
 class DriverService {
@@ -33,9 +34,11 @@ class DriverService {
    * Get Driver By Id
    */
   async getDriverById(id: string): Promise<Driver> {
-    const response = await api.get<Driver>(API_ENDPOINTS.DRIVER.DETAILS(id));
+    const response = await api.get<DriverResponse>(
+      API_ENDPOINTS.DRIVER.DETAILS(id),
+    );
 
-    return response.data;
+    return response.data.data;
   }
 
   /**

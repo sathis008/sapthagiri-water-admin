@@ -26,6 +26,8 @@ interface SearchableSelectProps<T> {
 
   value?: string;
 
+  selectedOption?: T | null;
+
   options: T[];
 
   loading?: boolean;
@@ -43,6 +45,7 @@ function SearchableSelect<T>({
   label,
   placeholder = "Search...",
   value,
+  selectedOption,
   options,
   loading = false,
   getOptionLabel,
@@ -62,7 +65,11 @@ function SearchableSelect<T>({
     return () => clearTimeout(timer);
   }, [search]);
 
-  const selected = options.find((item) => getOptionValue(item) === value);
+  console.log("selectedOption:", selectedOption);
+  console.log(
+    "label:",
+    selectedOption ? getOptionLabel(selectedOption) : "EMPTY",
+  );
 
   return (
     <div className="space-y-2">
@@ -75,7 +82,9 @@ function SearchableSelect<T>({
             role="combobox"
             className="w-full justify-between"
           >
-            {selected ? getOptionLabel(selected) : placeholder}
+            <span>
+              {selectedOption ? getOptionLabel(selectedOption) : placeholder}
+            </span>
 
             <ChevronsUpDown className="h-4 w-4 opacity-50" />
           </Button>

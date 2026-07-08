@@ -30,6 +30,8 @@ interface CustomerComboboxProps {
 
   value?: string;
 
+  selectedCustomer?: Customer | null;
+
   onSearch: (value: string) => void;
 
   onChange: (customer: Customer) => void;
@@ -39,12 +41,11 @@ const CustomerCombobox = ({
   customers,
   loading = false,
   value,
+  selectedCustomer,
   onSearch,
   onChange,
 }: CustomerComboboxProps) => {
   const [open, setOpen] = useState(false);
-
-  const selectedCustomer = customers.find((customer) => customer._id === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

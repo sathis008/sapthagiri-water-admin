@@ -76,7 +76,27 @@ export interface CreateBookingRequest {
   notes?: string;
 }
 
-export type UpdateBookingRequest = CreateBookingRequest;
+export interface UpdateBookingRequest {
+  customerId: string;
+
+  capacity: number;
+
+  price: number;
+
+  bookingDate: string;
+
+  status: BookingStatus;
+
+  paymentStatus?: PaymentStatus;
+
+  driverId?: string;
+
+  vehicleId?: string;
+
+  collectionMethod?: CollectionMethod;
+
+  notes?: string;
+}
 
 export interface AssignBookingRequest {
   vehicleId: string;

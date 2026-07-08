@@ -103,6 +103,17 @@ class BookingService {
 
     return response.data.data;
   }
+
+  /**
+   * Get Pending Bookings By Customer
+   */
+  async getPendingBookingsByCustomer(customerId: string): Promise<Booking[]> {
+    const response = await api.get<ApiResponse<Booking[]>>(
+      API_ENDPOINTS.BOOKING.PENDING(customerId),
+    );
+
+    return response.data.data;
+  }
 }
 
 export default new BookingService();

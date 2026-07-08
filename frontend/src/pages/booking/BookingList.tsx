@@ -19,6 +19,7 @@ import type { Booking } from "@/types/booking";
 import AssignBookingDialog from "@/components/bookings/AssignBookingDialog";
 import CompleteDeliveryDialog from "@/components/bookings/CompleteDeliveryDialog";
 import BookingViewDialog from "@/components/bookings/BookingViewDialog";
+import EditBookingDialog from "@/components/bookings/EditBookingDialog";
 
 const BookingList = () => {
   const dispatch = useAppDispatch();
@@ -49,11 +50,14 @@ const BookingList = () => {
 
   const [openAssignDialog, setOpenAssignDialog] = useState(false);
 
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
   const [openCompleteDialog, setOpenCompleteDialog] = useState(false);
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const [openViewDialog, setOpenViewDialog] = useState(false);
+
   /**
    * Fetch Bookings
    */
@@ -115,8 +119,7 @@ const BookingList = () => {
 
     onEdit: (booking) => {
       setSelectedBooking(booking);
-
-      setOpenBookingDialog(true);
+      setOpenEditDialog(true);
     },
 
     onAssign: (booking) => {
@@ -141,13 +144,17 @@ const BookingList = () => {
   const handleDelete = async () => {
     if (!selectedBooking) return;
 
-    await dispatch(deleteBookingThunk(selectedBooking._id));
+    try {
+      await dispatch(deleteBookingThunk(selectedBooking._id)).unwrap();
 
-    setOpenDeleteDialog(false);
+      setOpenDeleteDialog(false);
 
-    setSelectedBooking(null);
+      setSelectedBooking(null);
 
-    fetchBookings();
+      fetchBookings();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -246,6 +253,14 @@ const BookingList = () => {
         open={openBookingDialog}
         booking={selectedBooking}
         onOpenChange={setOpenBookingDialog}
+        onSuccess={fetchBookings}
+      />
+
+      {/* Edit Booking Dialog */}
+      <EditBookingDialog
+        open={openEditDialog}
+        booking={selectedBooking}
+        onOpenChange={setOpenEditDialog}
         onSuccess={fetchBookings}
       />
 

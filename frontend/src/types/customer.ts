@@ -51,3 +51,8 @@ export interface CustomerListResponse {
   data: Customer[];
   pagination: Pagination;
 }
+
+export interface CustomerResponse {
+  success: boolean;
+  data: Customer;
+}

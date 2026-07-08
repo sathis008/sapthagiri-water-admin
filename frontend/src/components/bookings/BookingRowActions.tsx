@@ -48,27 +48,27 @@ const BookingRowActions = ({
           View
         </DropdownMenuItem>
 
+        <DropdownMenuItem onClick={() => onEdit(booking)}>
+          <Pencil className="mr-2 h-4 w-4" />
+          Edit
+        </DropdownMenuItem>
+
         {booking.status === "CONFIRMED" && (
           <>
-            <DropdownMenuItem onClick={() => onEdit(booking)}>
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-
             <DropdownMenuItem onClick={() => onAssign(booking)}>
               <Truck className="mr-2 h-4 w-4" />
               Assign
             </DropdownMenuItem>
-
-            <DropdownMenuItem
-              className="text-red-600"
-              onClick={() => onDelete(booking)}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
           </>
         )}
+
+        <DropdownMenuItem
+          className="text-red-600"
+          onClick={() => onDelete(booking)}
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </DropdownMenuItem>
 
         {booking.status === "ASSIGNED" && (
           <DropdownMenuItem onClick={() => onComplete(booking)}>

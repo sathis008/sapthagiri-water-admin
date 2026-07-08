@@ -10,16 +10,16 @@ import { searchCustomersThunk } from "@/redux/customer";
 
 import type { Customer } from "@/types/customer";
 
-interface BookingCustomerProps {
+interface PaymentCustomerProps {
   customer: Customer | null;
 
   onCustomerSelect: (customer: Customer) => void;
 }
 
-const BookingCustomer = ({
+const PaymentCustomer = ({
   customer,
   onCustomerSelect,
-}: BookingCustomerProps) => {
+}: PaymentCustomerProps) => {
   const dispatch = useAppDispatch();
 
   const { customers, loading } = useAppSelector((state) => state.customer);
@@ -32,14 +32,15 @@ const BookingCustomer = ({
       }),
     );
   }, [dispatch]);
-  console.log("BookingCustomer customer:", customer);
+
   return (
     <div className="space-y-4 rounded-lg border p-5">
       <h3 className="text-lg font-semibold">Customer Information</h3>
+
       <SearchableSelect<Customer>
         label="Customer"
-        selectedOption={customer}
         placeholder="Search Customer"
+        selectedOption={customer}
         value={customer?._id}
         options={customers}
         loading={loading}
@@ -61,17 +62,17 @@ const BookingCustomer = ({
         <div>
           <Label>Phone</Label>
 
-          <Input value={customer?.phone ?? ""} readOnly />
+          <Input readOnly value={customer?.phone ?? ""} />
         </div>
 
         <div>
           <Label>Address</Label>
 
-          <Input value={customer?.address ?? ""} readOnly />
+          <Input readOnly value={customer?.address ?? ""} />
         </div>
       </div>
     </div>
   );
 };
 
-export default BookingCustomer;
+export default PaymentCustomer;

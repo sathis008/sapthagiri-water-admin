@@ -1,27 +1,31 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-import { authReducer } from './auth';
-import { customerReducer } from './customer';
-import vehicleReducer from './vehicle';
-import driverReducer from './driver';
-import bookingReducer from './booking';
-
+import { authReducer } from "./auth";
+import { customerReducer } from "./customer";
+import vehicleReducer from "./vehicle";
+import driverReducer from "./driver";
+import bookingReducer from "./booking";
+import paymentReducer from "./payment";
+import dashboardReducer from "./dashboard";
 const rootReducer = combineReducers({
   auth: authReducer,
   customer: customerReducer,
   vehicle: vehicleReducer,
   driver: driverReducer,
   booking: bookingReducer,
+  payment: paymentReducer,
+  dashboard: dashboardReducer,
 });
 
-const storageEngine = (storage as { default?: typeof storage }).default ?? storage;
+const storageEngine =
+  (storage as { default?: typeof storage }).default ?? storage;
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage: storageEngine,
-  whitelist: ['auth'], // Only auth will be persisted
+  whitelist: ["auth"], // Only auth will be persisted
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

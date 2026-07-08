@@ -7,7 +7,6 @@ import type { Customer } from "@/types/customer";
 import BookingNotes from "./BookingNotes";
 import { useAppDispatch } from "@/redux/hooks";
 import { createBookingThunk, getBookingsThunk } from "@/redux/booking";
-import AssignBookingDialog from "../AssignBookingDialog";
 
 interface BookingFormProps {
   booking?: Booking | null;
@@ -103,13 +102,6 @@ const BookingForm = ({ onSuccess }: BookingFormProps) => {
       />
 
       <BookingNotes onCancel={onSuccess} />
-
-      <AssignBookingDialog
-        open={openAssignDialog}
-        booking={selectedBooking}
-        onOpenChange={setOpenAssignDialog}
-        onSuccess={fetchBookings}
-      />
     </form>
   );
 };

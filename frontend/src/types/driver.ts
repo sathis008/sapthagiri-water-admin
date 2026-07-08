@@ -56,3 +56,7 @@ export interface DriverListResponse {
   data: Driver[];
   pagination: Pagination;
 }
+export interface DriverResponse {
+  success: boolean;
+  data: Driver;
+}
