@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface IBooking extends Document {
   bookingNumber: string;
@@ -17,21 +17,30 @@ export interface IBooking extends Document {
 
   bookingDate: Date;
 
-  status: 'CONFIRMED' | 'ASSIGNED' | 'DELIVERED' | 'CANCELLED';
+  status: "CONFIRMED" | "ASSIGNED" | "DELIVERED" | "CANCELLED";
 
-  paymentStatus: 'PENDING' | 'PAID';
+  paymentStatus: "PENDING" | "PAID";
 
-  collectionMethod?: 'DRIVER_COLLECTION' | 'ACCOUNT_COLLECTION' | 'OFFICE_COLLECTION';
+  collectionMethod?:
+    "DRIVER_COLLECTION" | "ACCOUNT_COLLECTION" | "OFFICE_COLLECTION";
 
   vehicleId?: mongoose.Types.ObjectId;
 
   vehicleNumber?: string;
+
+  isDeleted: boolean;
+
+  deletedAt?: Date | null;
 
   driverId?: mongoose.Types.ObjectId;
 
   driverName?: string;
 
   notes?: string;
+
+  createdAt: Date;
+
+  updatedAt: Date;
 }
 
 const BookingSchema = new Schema<IBooking>(
@@ -44,7 +53,7 @@ const BookingSchema = new Schema<IBooking>(
 
     customerId: {
       type: Schema.Types.ObjectId,
-      ref: 'Customer',
+      ref: "Customer",
       required: true,
     },
 
@@ -80,40 +89,53 @@ const BookingSchema = new Schema<IBooking>(
 
     status: {
       type: String,
-      enum: ['CONFIRMED', 'ASSIGNED', 'DELIVERED', 'CANCELLED'],
-      default: 'CONFIRMED',
+      enum: ["CONFIRMED", "ASSIGNED", "DELIVERED", "CANCELLED"],
+      default: "CONFIRMED",
     },
 
     paymentStatus: {
       type: String,
-      enum: ['PENDING', 'PAID'],
-      default: 'PENDING',
+      enum: ["PENDING", "PAID"],
+      default: "PENDING",
     },
 
     collectionMethod: {
       type: String,
-      enum: ['DRIVER_COLLECTION', 'ACCOUNT_COLLECTION', 'OFFICE_COLLECTION'],
+      enum: ["DRIVER_COLLECTION", "ACCOUNT_COLLECTION", "OFFICE_COLLECTION"],
     },
 
     vehicleId: {
       type: Schema.Types.ObjectId,
-      ref: 'Vehicle',
+      ref: "Vehicle",
     },
 
     vehicleNumber: String,
 
     driverId: {
       type: Schema.Types.ObjectId,
-      ref: 'Driver',
+      ref: "Driver",
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+
+    deletedAt: {
+      type: Date,
+      default: null,
     },
 
     driverName: String,
 
     notes: String,
+
+    createdAt: Date,
+
+    updatedAt: Date,
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export default mongoose.model<IBooking>('Booking', BookingSchema);
+export default mongoose.model<IBooking>("Booking", BookingSchema);
