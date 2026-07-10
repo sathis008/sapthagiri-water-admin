@@ -1,5 +1,9 @@
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import type { ColumnDef } from '@tanstack/react-table';
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -7,21 +11,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
-interface ServerDataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+interface ServerDataTableProps<TData> {
+  columns: ColumnDef<TData, unknown>[];
 
   data: TData[];
 
   loading?: boolean;
 }
 
-function ServerDataTable<TData, TValue>({
+function ServerDataTable<TData>({
   columns,
   data,
   loading = false,
-}: ServerDataTableProps<TData, TValue>) {
+}: ServerDataTableProps<TData>) {
   const table = useReactTable({
     data,
 
@@ -37,10 +41,13 @@ function ServerDataTable<TData, TValue>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} className="text-m font-bold">
                   {header.isPlaceholder
                     ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                 </TableHead>
               ))}
             </TableRow>

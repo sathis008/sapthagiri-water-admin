@@ -168,7 +168,7 @@ export const getPayments = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const { page, limit, skip } = getPagination(req);
+    const { page, limit, skip } = getPagination(req.query);
 
     const search = String(req.query.search || "");
 

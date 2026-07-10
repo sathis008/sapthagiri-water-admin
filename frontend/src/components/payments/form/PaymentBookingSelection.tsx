@@ -1,4 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 import type { Booking } from "@/types/booking";
 
@@ -15,31 +16,108 @@ const PaymentBookingSelection = ({
   selectedBookings,
   onSelectionChange,
 }: PaymentBookingSelectionProps) => {
+  //------------------------------------------
+  // Selected Booking Objects
+  //------------------------------------------
+
+  const selectedBookingObjects = bookings.filter((booking) =>
+    selectedBookings.includes(booking._id),
+  );
+
+  //------------------------------------------
+  // Collection Method
+  //------------------------------------------
+
+  const selectedCollectionMethod =
+    selectedBookingObjects.length > 0
+      ? selectedBookingObjects[0].collectionMethod
+      : null;
+
+  //------------------------------------------
+  // Select Booking
+  //------------------------------------------
+
+  const toggleBooking = (id: string) => {
+    const booking = bookings.find((b) => b._id === id);
+
+    if (!booking) return;
+
+    // Remove
+    if (selectedBookings.includes(id)) {
+      onSelectionChange(selectedBookings.filter((item) => item !== id));
+      return;
+    }
+
+    // Prevent Mixed Collection Types
+    if (
+      selectedCollectionMethod &&
+      booking.collectionMethod !== selectedCollectionMethod
+    ) {
+      alert("Please select bookings with the same collection method.");
+      return;
+    }
+
+    onSelectionChange([...selectedBookings, id]);
+  };
+
+  //------------------------------------------
+  // Select All
+  //------------------------------------------
+
   const allSelected =
     bookings.length > 0 && selectedBookings.length === bookings.length;
 
-  const toggleBooking = (id: string) => {
-    if (selectedBookings.includes(id)) {
-      onSelectionChange(selectedBookings.filter((item) => item !== id));
-    } else {
-      onSelectionChange([...selectedBookings, id]);
-    }
-  };
-
   const toggleAll = (checked: boolean) => {
-    if (checked) {
-      onSelectionChange(bookings.map((b) => b._id));
-    } else {
+    if (!checked) {
       onSelectionChange([]);
+      return;
     }
+
+    if (!bookings.length) return;
+
+    const method = bookings[0].collectionMethod;
+
+    onSelectionChange(
+      bookings.filter((b) => b.collectionMethod === method).map((b) => b._id),
+    );
   };
 
-  const totalAmount = bookings
-    .filter((b) => selectedBookings.includes(b._id))
-    .reduce((sum, b) => sum + b.price, 0);
+  //------------------------------------------
+  // Summary
+  //------------------------------------------
+
+  const totalAmount = selectedBookingObjects.reduce(
+    (sum, booking) => sum + booking.price,
+    0,
+  );
+
+  const totalCapacity = selectedBookingObjects.reduce(
+    (sum, booking) => sum + booking.capacity,
+    0,
+  );
+
+  //------------------------------------------
+  // Badge Color
+  //------------------------------------------
+
+  const getBadgeVariant = (method?: Booking["collectionMethod"]) => {
+    switch (method) {
+      case "DRIVER_COLLECTION":
+        return "default";
+
+      case "ACCOUNT_COLLECTION":
+        return "secondary";
+
+      case "OFFICE_COLLECTION":
+        return "outline";
+
+      default:
+        return "outline";
+    }
+  };
 
   return (
-    <div className="rounded-lg border p-5 space-y-5">
+    <div className="space-y-5 rounded-lg border p-5">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Pending Bookings</h3>
 
@@ -48,6 +126,13 @@ const PaymentBookingSelection = ({
         </div>
       </div>
 
+      {selectedCollectionMethod && (
+        <div className="rounded-lg border bg-blue-50 px-4 py-3">
+          <span className="font-medium">Selected Collection :</span>{" "}
+          {selectedCollectionMethod.replaceAll("_", " ")}
+        </div>
+      )}
+
       {bookings.length === 0 ? (
         <div className="rounded-lg border border-dashed py-10 text-center text-muted-foreground">
           No pending bookings found.
@@ -55,7 +140,7 @@ const PaymentBookingSelection = ({
       ) : (
         <>
           <div className="overflow-x-auto rounded-lg border">
-            <table className="w-full min-w-[900px]">
+            <table className="w-full min-w-[950px]">
               <thead className="bg-muted">
                 <tr>
                   <th className="w-12 p-3 text-center">
@@ -78,49 +163,76 @@ const PaymentBookingSelection = ({
               </thead>
 
               <tbody>
-                {bookings.map((booking) => (
-                  <tr key={booking._id} className="border-t hover:bg-muted/40">
-                    <td className="p-3 text-center">
-                      <Checkbox
-                        checked={selectedBookings.includes(booking._id)}
-                        onCheckedChange={() => toggleBooking(booking._id)}
-                      />
-                    </td>
+                {bookings.map((booking) => {
+                  const checked = selectedBookings.includes(booking._id);
 
-                    <td className="p-3 font-medium">{booking.bookingNumber}</td>
+                  return (
+                    <tr
+                      key={booking._id}
+                      className={`border-t transition ${
+                        checked ? "bg-blue-50" : "hover:bg-muted/30"
+                      }`}
+                    >
+                      <td className="p-3 text-center">
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={() => toggleBooking(booking._id)}
+                        />
+                      </td>
 
-                    <td className="p-3">
-                      {new Date(booking.bookingDate).toLocaleDateString()}
-                    </td>
+                      <td className="p-3 font-medium">
+                        {booking.bookingNumber}
+                      </td>
 
-                    <td className="p-3">{booking.capacity} L</td>
+                      <td className="p-3">
+                        {new Date(booking.bookingDate).toLocaleDateString()}
+                      </td>
 
-                    <td className="p-3">
-                      {booking.collectionMethod?.replaceAll("_", " ")}
-                    </td>
+                      <td className="p-3">{booking.capacity} L</td>
 
-                    <td className="p-3 text-right font-semibold text-green-600">
-                      ₹{booking.price.toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
+                      <td className="p-3">
+                        <Badge
+                          variant={getBadgeVariant(booking.collectionMethod)}
+                        >
+                          {booking.collectionMethod?.replaceAll("_", " ")}
+                        </Badge>
+                      </td>
+
+                      <td className="p-3 text-right font-semibold text-green-600">
+                        ₹{booking.price.toLocaleString()}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
-          <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-slate-100 p-5">
-            <div>
-              <p className="text-sm text-muted-foreground">Selected Bookings</p>
+          <div className="rounded-lg bg-slate-100 p-5">
+            <div className="grid grid-cols-3 gap-6">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Selected Bookings
+                </p>
 
-              <p className="text-2xl font-bold">{selectedBookings.length}</p>
-            </div>
+                <p className="text-3xl font-bold">{selectedBookings.length}</p>
+              </div>
 
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground">Total Amount</p>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Capacity</p>
 
-              <p className="text-3xl font-bold text-green-600">
-                ₹{totalAmount.toLocaleString()}
-              </p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {totalCapacity} L
+                </p>
+              </div>
+
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Total Amount</p>
+
+                <p className="text-3xl font-bold text-green-600">
+                  ₹{totalAmount.toLocaleString()}
+                </p>
+              </div>
             </div>
           </div>
         </>

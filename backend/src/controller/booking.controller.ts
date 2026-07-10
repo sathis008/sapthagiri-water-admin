@@ -98,7 +98,7 @@ export const getBookings = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const { page, limit, skip } = getPagination(req);
+    const { page, limit, skip } = getPagination(req.query);
 
     const search = String(req.query.search || "");
 
@@ -583,7 +583,9 @@ export const getPendingBookingsByCustomer = async (
       .sort({
         bookingDate: 1,
       })
-      .select("_id bookingNumber bookingDate capacity price collectionMethod");
+      .select(
+        "_id bookingNumber bookingDate capacity price collectionMethod driverId driverName vehicleId vehicleNumber",
+      );
 
     successResponse(res, "Pending bookings fetched successfully.", bookings);
   } catch (error: any) {

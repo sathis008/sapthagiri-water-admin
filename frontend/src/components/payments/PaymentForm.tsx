@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import type { Customer } from "@/types/customer";
-import type { Driver } from "@/types/driver";
 import type { CollectedBy, PaymentMode } from "@/types/payment";
+
 import { createPaymentThunk, getPendingBookingsThunk } from "@/redux/payment";
+
 import PaymentCustomer from "./form/PaymentCustomer";
 import PaymentBookingSelection from "./form/PaymentBookingSelection";
 import PaymentInformation from "./form/PaymentInformation";
@@ -23,7 +24,7 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
 
   const [customer, setCustomer] = useState<Customer | null>(null);
 
-  const [driver, setDriver] = useState<Driver | null>(null);
+  //const [driver, setDriver] = useState<Driver | null>(null);
 
   const [selectedBookings, setSelectedBookings] = useState<string[]>([]);
 
@@ -33,15 +34,95 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
 
   const [notes, setNotes] = useState("");
 
+  //------------------------------------------
+  // Selected Bookings
+  //------------------------------------------
+
+  const selectedBookingObjects = useMemo(() => {
+    return pendingBookings.filter((booking) =>
+      selectedBookings.includes(booking._id),
+    );
+  }, [pendingBookings, selectedBookings]);
+
+  //------------------------------------------
+  // Collection Method
+  //------------------------------------------
+
+  const collectionMethod = useMemo(() => {
+    if (!selectedBookingObjects.length) return null;
+
+    return selectedBookingObjects[0].collectionMethod;
+  }, [selectedBookingObjects]);
+
+  //------------------------------------------
+  // Initial Reset
+  //------------------------------------------
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCustomer(null);
-    setDriver(null);
+    // setDriver(null);
     setSelectedBookings([]);
-    setNotes("");
     setCollectedBy("OFFICE");
     setPaymentMode("CASH");
+    setNotes("");
   }, []);
+
+  //------------------------------------------
+  // Auto Payment Information
+  //------------------------------------------
+
+  useEffect(() => {
+    if (!collectionMethod || !selectedBookingObjects.length) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCollectedBy("OFFICE");
+      setPaymentMode("CASH");
+      //   setDriver(null);
+      return;
+    }
+
+    const booking = selectedBookingObjects[0];
+
+    switch (booking.collectionMethod) {
+      case "DRIVER_COLLECTION":
+        setCollectedBy("DRIVER");
+        setPaymentMode("CASH");
+
+        // /**
+        //  * If booking.driver is populated
+        //  */
+        // setDriver((booking as unknown).driver ?? null);
+
+        break;
+
+      case "ACCOUNT_COLLECTION":
+        setCollectedBy("OFFICE");
+        setPaymentMode("BANK");
+        //   setDriver(null);
+        break;
+
+      case "OFFICE_COLLECTION":
+        setCollectedBy("OFFICE");
+
+        /**
+         * Office can receive
+         * Cash / UPI / Bank
+         */
+
+        setPaymentMode("CASH");
+        //  setDriver(null);
+        break;
+
+      default:
+        setCollectedBy("OFFICE");
+        setPaymentMode("CASH");
+      //    setDriver(null);
+    }
+  }, [collectionMethod, selectedBookingObjects]);
+
+  //------------------------------------------
+  // Submit
+  //------------------------------------------
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,13 +132,8 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
       return;
     }
 
-    if (selectedBookings.length === 0) {
+    if (!selectedBookings.length) {
       alert("Please select at least one booking.");
-      return;
-    }
-
-    if (collectedBy === "DRIVER" && !driver) {
-      alert("Please select driver.");
       return;
     }
 
@@ -65,20 +141,31 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
       await dispatch(
         createPaymentThunk({
           customerId: customer._id,
+
           bookingIds: selectedBookings,
-          paymentMode,
+
           collectedBy,
-          driverId: driver?._id,
+
+          paymentMode,
+
+          driverId:
+            collectionMethod === "DRIVER_COLLECTION"
+              ? selectedBookingObjects[0]?.driverId
+              : undefined,
+
           notes,
         }),
       ).unwrap();
 
+      // -----------------------------
       // Reset Form
+      // -----------------------------
+
       setCustomer(null);
-      setDriver(null);
+      //   setDriver(null);
       setSelectedBookings([]);
-      setPaymentMode("CASH");
       setCollectedBy("OFFICE");
+      setPaymentMode("CASH");
       setNotes("");
 
       onSuccess();
@@ -89,6 +176,8 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Customer */}
+
       <PaymentCustomer
         customer={customer}
         onCustomerSelect={(customer) => {
@@ -100,29 +189,86 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
         }}
       />
 
+      {/* Pending Bookings */}
+
       <PaymentBookingSelection
         bookings={pendingBookings}
         selectedBookings={selectedBookings}
         onSelectionChange={setSelectedBookings}
       />
 
-      <PaymentInformation
-        collectedBy={collectedBy}
-        paymentMode={paymentMode}
-        driver={driver}
-        notes={notes}
-        onCollectedByChange={setCollectedBy}
-        onPaymentModeChange={setPaymentMode}
-        onDriverChange={setDriver}
-        onNotesChange={setNotes}
-      />
+      {/* Payment Information */}
 
-      <div className="flex justify-end gap-3">
+      {collectionMethod && (
+        <>
+          {collectionMethod === "OFFICE_COLLECTION" ? (
+            <PaymentInformation
+              paymentMode={paymentMode}
+              notes={notes}
+              onPaymentModeChange={setPaymentMode}
+              onNotesChange={setNotes}
+            />
+          ) : (
+            <div className="rounded-lg border bg-slate-50 p-5">
+              <h3 className="mb-4 text-lg font-semibold">
+                Payment Information
+              </h3>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Collected By</p>
+
+                  <p className="mt-1 font-semibold">
+                    {collectedBy === "OFFICE" ? "Office" : "Driver"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-muted-foreground">Payment Mode</p>
+
+                  <p className="mt-1 font-semibold">{paymentMode}</p>
+                </div>
+
+                {/* {collectionMethod === "DRIVER_COLLECTION" && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Driver</p>
+
+                    <p className="mt-1 font-semibold">
+                      {selectedBookingObjects[0]?.driverName}
+                    </p>
+                  </div>
+                )} */}
+              </div>
+
+              <div className="mt-5">
+                <label className="mb-2 block text-sm font-medium">Notes</label>
+
+                <textarea
+                  rows={4}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full rounded-md border p-3"
+                  placeholder="Enter payment notes..."
+                />
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Footer */}
+
+      <div className="flex justify-end gap-3 border-t pt-4">
         <Button type="button" variant="outline" onClick={onSuccess}>
           Cancel
         </Button>
 
-        <Button type="submit">Receive Payment</Button>
+        <Button
+          type="submit"
+          disabled={!customer || selectedBookings.length === 0}
+        >
+          Receive Payment
+        </Button>
       </div>
     </form>
   );

@@ -1,25 +1,25 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 
-import { Plus } from 'lucide-react';
+import { Plus } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { DataTable } from '@/components/common/DataTable';
+import { DataTable } from "@/components/common/DataTable";
 
-import { customerColumns } from '@/components/customer/CustomerColumns';
-import CustomerDialog from '@/components/customer/CustomerDialog';
+import { customerColumns } from "@/components/customer/CustomerColumns";
+import CustomerDialog from "@/components/customer/CustomerDialog";
 
-import type { Customer } from '@/types/customer';
-import DeleteCustomerDialog from '@/components/customer/DeleteCustomerDialog';
-import { toast } from 'sonner';
+import type { Customer } from "@/types/customer";
+import DeleteCustomerDialog from "@/components/customer/DeleteCustomerDialog";
+import { toast } from "sonner";
 
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import {
   getCustomersThunk,
   // deleteCustomerThunk
-} from '@/redux/customer';
-import { deleteCustomerThunk } from '@/redux/customer/customerThunk';
+} from "@/redux/customer";
+import { deleteCustomerThunk } from "@/redux/customer/customerThunk";
 
 const CustomerList = () => {
   const dispatch = useAppDispatch();
@@ -27,7 +27,9 @@ const CustomerList = () => {
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
 
   const { customers, loading } = useAppSelector((state) => state.customer);
 
@@ -56,7 +58,7 @@ const CustomerList = () => {
     const result = await dispatch(deleteCustomerThunk(selectedCustomer._id));
 
     if (deleteCustomerThunk.fulfilled.match(result)) {
-      toast.success('Customer deleted successfully.');
+      toast.success("Customer deleted successfully.");
 
       setDeleteOpen(false);
 
@@ -68,7 +70,10 @@ const CustomerList = () => {
     }
   };
 
-  const columns = useMemo(() => customerColumns(handleEditCustomer, handleDeleteCustomer), []);
+  const columns = useMemo(
+    () => customerColumns(handleEditCustomer, handleDeleteCustomer),
+    [],
+  );
 
   return (
     <div className="min-w-0 space-y-6">
@@ -77,7 +82,7 @@ const CustomerList = () => {
         data={customers}
         loading={loading}
         searchColumn="name"
-        searchColumns={['name', 'phone']}
+        searchColumns={["name", "phone"]}
         searchPlaceholder="Search customers"
         toolbarActions={
           <Button onClick={handleAddCustomer}>
@@ -87,7 +92,11 @@ const CustomerList = () => {
         }
       />
 
-      <CustomerDialog open={open} onOpenChange={setOpen} customer={selectedCustomer} />
+      <CustomerDialog
+        open={open}
+        onOpenChange={setOpen}
+        customer={selectedCustomer}
+      />
 
       <DeleteCustomerDialog
         open={deleteOpen}

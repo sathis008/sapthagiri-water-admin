@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
     DETAILS: (id: string) => `/api/customers/${id}`,
     UPDATE: (id: string) => `/api/customers/${id}`,
     DELETE: (id: string) => `/api/customers/${id}`,
+    CUSTOMER_OPTIONS: "/api/customers/options",
   },
 
   VEHICLE: {
@@ -28,6 +29,8 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/api/vehicles/${id}`,
     UPLOAD: (id: string, documentType: string) =>
       `/api/vehicles/${id}/upload/${documentType}`,
+
+    VEHICLE_OPTIONS: "/api/vehicles/options",
   },
 
   DRIVER: {
@@ -42,6 +45,8 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/api/drivers/${id}`,
 
     UPLOAD: (id: string) => `/api/drivers/${id}/upload`,
+
+    DRIVER_OPTIONS: "/api/drivers/options",
   },
 
   BOOKING: {
@@ -75,5 +80,51 @@ export const API_ENDPOINTS = {
 
   DASHBOARD: {
     SUMMARY: "/api/dashboard",
+  },
+
+  REPORT: {
+    /**
+     * Booking Report
+     */
+    BOOKINGS: "/api/reports/bookings",
+    BOOKING_EXCEL: "/api/reports/bookings/export/excel",
+    BOOKING_PDF: "/api/reports/bookings/export/pdf",
+
+    /**
+     * Payment Report
+     */
+    PAYMENTS: "/api/reports/payments",
+    PAYMENT_EXCEL: "/api/reports/payments/export/excel",
+    PAYMENT_PDF: "/api/reports/payments/export/pdf",
+
+    /**
+     * Customer Ledger
+     */
+    CUSTOMER_LEDGER: (customerId: string) =>
+      `/api/reports/customer-ledger/${customerId}`,
+
+    CUSTOMER_LEDGER_EXCEL: (customerId: string) =>
+      `/api/reports/customer-ledger/${customerId}/export/excel`,
+
+    CUSTOMER_LEDGER_PDF: (customerId: string) =>
+      `/api/reports/customer-ledger/${customerId}/export/pdf`,
+
+    /**
+     * Driver Settlement
+     */
+    DRIVER_SETTLEMENT: "/api/reports/driver-settlement",
+
+    DRIVER_SETTLEMENT_EXCEL: "/api/reports/driver-settlement/export/excel",
+
+    DRIVER_SETTLEMENT_PDF: "/api/reports/driver-settlement/export/pdf",
+
+    /**
+     * Daily Collection
+     */
+    DAILY_COLLECTION: "/api/reports/daily-collection",
+
+    DAILY_COLLECTION_EXCEL: "/api/reports/daily-collection/export/excel",
+
+    DAILY_COLLECTION_PDF: "/api/reports/daily-collection/export/pdf",
   },
 } as const;

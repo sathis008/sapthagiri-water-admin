@@ -14,10 +14,17 @@ import {
 
 export type UserRole = "admin" | "manager";
 
-export interface NavigationItem {
+export interface NavigationChild {
   id: string;
   title: string;
   path: string;
+}
+
+export interface NavigationItem {
+  id: string;
+  title: string;
+  path?: string;
+
   icon: LucideIcon;
 
   roles: UserRole[];
@@ -25,6 +32,8 @@ export interface NavigationItem {
   showInSidebar: boolean;
 
   showInBreadcrumb: boolean;
+
+  children?: NavigationChild[];
 }
 
 export const navigation: NavigationItem[] = [
@@ -101,11 +110,38 @@ export const navigation: NavigationItem[] = [
   {
     id: "reports",
     title: "Reports",
-    path: "/reports",
     icon: BarChart3,
     roles: ["admin"],
     showInSidebar: true,
-    showInBreadcrumb: true,
+    showInBreadcrumb: false,
+
+    children: [
+      {
+        id: "booking-report",
+        title: "Booking Report",
+        path: "/reports/bookings",
+      },
+      {
+        id: "payment-report",
+        title: "Payment Report",
+        path: "/reports/payments",
+      },
+      {
+        id: "customer-ledger",
+        title: "Customer Ledger",
+        path: "/reports/customer-ledger",
+      },
+      {
+        id: "driver-settlement",
+        title: "Driver Settlement",
+        path: "/reports/driver-settlement",
+      },
+      {
+        id: "daily-collection",
+        title: "Daily Collection",
+        path: "/reports/daily-collection",
+      },
+    ],
   },
 
   {

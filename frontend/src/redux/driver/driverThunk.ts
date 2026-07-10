@@ -32,23 +32,31 @@ export const createDriverThunk = createAsyncThunk(
 /**
  * Get Drivers
  */
-export const getDriversThunk = createAsyncThunk(
-  "driver/getDrivers",
+interface DriverQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
 
-  async (_, { rejectWithValue }) => {
-    try {
-      return await DriverService.getDrivers();
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<{
-        message: string;
-      }>;
+export const getDriversThunk = createAsyncThunk<
+  DriverListResponse,
+  DriverQuery | undefined,
+  {
+    rejectValue: string;
+  }
+>("driver/getDrivers", async (params, { rejectWithValue }) => {
+  try {
+    return await DriverService.getDrivers(params);
+  } catch (error: unknown) {
+    const axiosError = error as AxiosError<{
+      message: string;
+    }>;
 
-      return rejectWithValue(
-        axiosError.response?.data?.message ?? "Failed to fetch drivers.",
-      );
-    }
-  },
-);
+    return rejectWithValue(
+      axiosError.response?.data?.message ?? "Failed to fetch drivers.",
+    );
+  }
+});
 
 /**
  * Update Driver

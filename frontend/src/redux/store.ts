@@ -9,6 +9,8 @@ import driverReducer from "./driver";
 import bookingReducer from "./booking";
 import paymentReducer from "./payment";
 import dashboardReducer from "./dashboard";
+import reportReducer from "./report";
+
 const rootReducer = combineReducers({
   auth: authReducer,
   customer: customerReducer,
@@ -17,6 +19,7 @@ const rootReducer = combineReducers({
   booking: bookingReducer,
   payment: paymentReducer,
   dashboard: dashboardReducer,
+  report: reportReducer,
 });
 
 const storageEngine =

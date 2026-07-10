@@ -54,19 +54,25 @@ export const updateCustomerThunk = createAsyncThunk(
   },
 );
 
+interface CustomerQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
 /**
  * Get Customers
  */
 export const getCustomersThunk = createAsyncThunk<
   CustomerListResponse,
-  void,
+  CustomerQuery | undefined,
   {
     rejectValue: string;
   }
->("customer/getCustomers", async (_, { rejectWithValue }) => {
+>("customer/getCustomers", async (params, { rejectWithValue }) => {
   try {
-    return await CustomerService.getCustomers();
-  } catch (error: unknown) {
+    return await CustomerService.getCustomers(params);
+  } catch (error) {
     const axiosError = error as AxiosError<{ message: string }>;
 
     return rejectWithValue(

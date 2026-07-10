@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 
 import {
   createDriver,
@@ -7,40 +7,47 @@ import {
   updateDriver,
   deleteDriver,
   uploadDriverLicense,
-} from '../controller/driver.controller';
+  getDriverOptions,
+} from "../controller/driver.controller";
 
-import { uploadDriverDocument } from '../middleware/upload.middleware';
+import { uploadDriverDocument } from "../middleware/upload.middleware";
 
 const router = Router();
 
 /**
  * Create Driver
  */
-router.post('/', createDriver);
+router.post("/", createDriver);
 
 /**
  * Get All Drivers
  */
-router.get('/', getDrivers);
+router.get("/", getDrivers);
 
 /**
  * Get Driver By Id
  */
-router.get('/:id', getDriverById);
+router.get("/:id", getDriverById);
 
 /**
  * Update Driver
  */
-router.put('/:id', updateDriver);
+router.put("/:id", updateDriver);
 
 /**
  * Delete Driver
  */
-router.delete('/:id', deleteDriver);
+router.delete("/:id", deleteDriver);
 
 /**
  * Upload Driving License
  */
-router.post('/:id/upload', uploadDriverDocument.single('file'), uploadDriverLicense);
+router.post(
+  "/:id/upload",
+  uploadDriverDocument.single("file"),
+  uploadDriverLicense,
+);
+
+router.get("/options", getDriverOptions);
 
 export default router;

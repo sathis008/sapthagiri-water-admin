@@ -12,17 +12,25 @@ import type {
 /**
  * Get Vehicles
  */
+interface VehicleQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
 export const getVehiclesThunk = createAsyncThunk<
   VehicleListResponse,
-  void,
+  VehicleQuery | undefined,
   {
     rejectValue: string;
   }
->("vehicle/getVehicles", async (_, { rejectWithValue }) => {
+>("vehicle/getVehicles", async (params, { rejectWithValue }) => {
   try {
-    return await VehicleService.getVehicles();
+    return await VehicleService.getVehicles(params);
   } catch (error: unknown) {
-    const axiosError = error as AxiosError<{ message: string }>;
+    const axiosError = error as AxiosError<{
+      message: string;
+    }>;
 
     return rejectWithValue(
       axiosError.response?.data?.message ?? "Failed to fetch vehicles.",
