@@ -1,15 +1,16 @@
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import type { Customer } from '@/types/customer';
+import type { Customer } from "@/types/customer";
+import { useAppSelector } from "@/redux/hooks";
+import { canDelete } from "@/utills/auth";
 
 interface CustomerRowActionsProps {
   customer: Customer;
@@ -17,7 +18,14 @@ interface CustomerRowActionsProps {
   onDelete: (customer: Customer) => void;
 }
 
-const CustomerRowActions = ({ customer, onEdit, onDelete }: CustomerRowActionsProps) => {
+const CustomerRowActions = ({
+  customer,
+  onEdit,
+  onDelete,
+}: CustomerRowActionsProps) => {
+  const { user } = useAppSelector((state) => state.auth);
+  const showDelete = canDelete(user?.role);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -32,10 +40,15 @@ const CustomerRowActions = ({ customer, onEdit, onDelete }: CustomerRowActionsPr
           Edit
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="text-red-600" onClick={() => onDelete(customer)}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
-        </DropdownMenuItem>
+        {showDelete && (
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => onDelete(customer)}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

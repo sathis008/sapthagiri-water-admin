@@ -1,52 +1,56 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { AxiosError } from "axios";
 
-import BookingService from '@/services/booking.service';
+import BookingService from "@/services/booking.service";
 
 import type {
   CreateBookingRequest,
   UpdateBookingRequest,
   AssignBookingRequest,
   CompleteDeliveryRequest,
-} from '@/types/booking';
+} from "@/types/booking";
 
 /**
  * Get Bookings
  */
 export const getBookingsThunk = createAsyncThunk(
-  'booking/getBookings',
+  "booking/getBookings",
   async (params: Record<string, unknown>, { rejectWithValue }) => {
     try {
       return await BookingService.getBookings(params);
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{ message: string }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to fetch bookings.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to fetch bookings.",
+      );
     }
-  }
+  },
 );
 
 /**
  * Create Booking
  */
 export const createBookingThunk = createAsyncThunk(
-  'booking/createBooking',
+  "booking/createBooking",
   async (payload: CreateBookingRequest, { rejectWithValue }) => {
     try {
       return await BookingService.createBooking(payload);
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{ message: string }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to create booking.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to create booking.",
+      );
     }
-  }
+  },
 );
 
 /**
  * Update Booking
  */
 export const updateBookingThunk = createAsyncThunk(
-  'booking/updateBooking',
+  "booking/updateBooking",
   async (
     {
       id,
@@ -55,23 +59,25 @@ export const updateBookingThunk = createAsyncThunk(
       id: string;
       payload: UpdateBookingRequest;
     },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       return await BookingService.updateBooking(id, payload);
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{ message: string }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to update booking.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to update booking.",
+      );
     }
-  }
+  },
 );
 
 /**
  * Delete Booking
  */
 export const deleteBookingThunk = createAsyncThunk(
-  'booking/deleteBooking',
+  "booking/deleteBooking",
   async (id: string, { rejectWithValue }) => {
     try {
       await BookingService.deleteBooking(id);
@@ -80,16 +86,18 @@ export const deleteBookingThunk = createAsyncThunk(
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{ message: string }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to delete booking.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to delete booking.",
+      );
     }
-  }
+  },
 );
 
 /**
  * Assign Booking
  */
 export const assignBookingThunk = createAsyncThunk(
-  'booking/assignBooking',
+  "booking/assignBooking",
   async (
     {
       id,
@@ -98,23 +106,25 @@ export const assignBookingThunk = createAsyncThunk(
       id: string;
       payload: AssignBookingRequest;
     },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       return await BookingService.assignBooking(id, payload);
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{ message: string }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to assign booking.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to assign booking.",
+      );
     }
-  }
+  },
 );
 
 /**
  * Complete Delivery
  */
 export const completeDeliveryThunk = createAsyncThunk(
-  'booking/completeDelivery',
+  "booking/completeDelivery",
   async (
     {
       id,
@@ -123,30 +133,34 @@ export const completeDeliveryThunk = createAsyncThunk(
       id: string;
       payload: CompleteDeliveryRequest;
     },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       return await BookingService.completeDelivery(id, payload);
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{ message: string }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to complete delivery.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to complete delivery.",
+      );
     }
-  }
+  },
 );
 
 /**
  * Get Booking By Id
  */
 export const getBookingByIdThunk = createAsyncThunk(
-  'booking/getBookingById',
+  "booking/getBookingById",
   async (id: string, { rejectWithValue }) => {
     try {
       return await BookingService.getBookingById(id);
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{ message: string }>;
 
-      return rejectWithValue(axiosError.response?.data?.message ?? 'Failed to fetch booking.');
+      return rejectWithValue(
+        axiosError.response?.data?.message ?? "Failed to fetch booking.",
+      );
     }
-  }
+  },
 );

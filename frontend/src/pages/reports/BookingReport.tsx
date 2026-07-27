@@ -24,6 +24,7 @@ import { bookingColumns } from "@/components/reports/config/bookingColumns";
 
 import ReportService from "@/services/report.service";
 import { useReportColumns } from "@/hooks/useReportColumns";
+import { isAdmin } from "@/utills/auth";
 
 const BookingReport = () => {
   const dispatch = useAppDispatch();
@@ -35,6 +36,9 @@ const BookingReport = () => {
   const { drivers } = useAppSelector((state) => state.driver);
 
   const { vehicles } = useAppSelector((state) => state.vehicle);
+
+  const { user } = useAppSelector((state) => state.auth);
+  const adminView = isAdmin(user?.role);
 
   const [search, setSearch] = useState("");
 
@@ -262,13 +266,18 @@ const BookingReport = () => {
                 color: "bg-gradient-to-r from-purple-500 to-indigo-500",
                 icon: <Droplet size={60} />,
               },
-              {
-                title: "Revenue",
-                value: bookingReport.summary.totalAmount,
-                prefix: "₹",
-                color: "bg-gradient-to-r from-green-500 to-emerald-500",
-                icon: <DollarSign size={60} />,
-              },
+              // Revenue card hidden for Manager
+              ...(adminView
+                ? [
+                    {
+                      title: "Revenue",
+                      value: bookingReport.summary.totalAmount,
+                      prefix: "₹",
+                      color: "bg-gradient-to-r from-green-500 to-emerald-500",
+                      icon: <DollarSign size={60} />,
+                    },
+                  ]
+                : []),
             ]}
           />
         )

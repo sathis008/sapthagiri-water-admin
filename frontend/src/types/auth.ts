@@ -7,13 +7,18 @@ export interface LoginRequest {
 }
 
 /**
+ * Role values — must match backend User model enum exactly
+ */
+export type UserRole = "ADMIN" | "MANAGER";
+
+/**
  * User
  */
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: UserRole;
 }
 
 /**

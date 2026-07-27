@@ -17,17 +17,15 @@ import { getCustomerLedgerThunk } from "@/redux/report";
 import { getCustomersThunk } from "@/redux/customer";
 
 import ReportService from "@/services/report.service";
+import { isAdmin } from "@/utills/auth";
 
 const CustomerLedger = () => {
   const dispatch = useAppDispatch();
 
-  //------------------------------------------
-  // Redux
-  //------------------------------------------
-
   const { customerLedger, loading } = useAppSelector((state) => state.report);
-
   const { customers } = useAppSelector((state) => state.customer);
+  const { user } = useAppSelector((state) => state.auth);
+  const adminView = isAdmin(user?.role);
 
   //------------------------------------------
   // State
@@ -143,20 +141,25 @@ const CustomerLedger = () => {
                 icon: <Receipt size={65} />,
                 color: "bg-gradient-to-r from-blue-500 to-cyan-500",
               },
-              {
-                title: "Booked Amount",
-                value: customerLedger.summary.totalBookedAmount,
-                prefix: "₹",
-                icon: <Wallet size={65} />,
-                color: "bg-gradient-to-r from-green-500 to-emerald-500",
-              },
-              {
-                title: "Outstanding",
-                value: customerLedger.summary.outstanding,
-                prefix: "₹",
-                icon: <AlertCircle size={65} />,
-                color: "bg-gradient-to-r from-red-500 to-orange-500",
-              },
+              // Financial cards hidden for Manager
+              ...(adminView
+                ? [
+                    {
+                      title: "Booked Amount",
+                      value: customerLedger.summary.totalBookedAmount,
+                      prefix: "₹",
+                      icon: <Wallet size={65} />,
+                      color: "bg-gradient-to-r from-green-500 to-emerald-500",
+                    },
+                    {
+                      title: "Outstanding",
+                      value: customerLedger.summary.outstanding,
+                      prefix: "₹",
+                      icon: <AlertCircle size={65} />,
+                      color: "bg-gradient-to-r from-red-500 to-orange-500",
+                    },
+                  ]
+                : []),
             ]}
           />
         )

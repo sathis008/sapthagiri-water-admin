@@ -7,7 +7,12 @@ import {
   deletePayment,
 } from "../controller/payment.controller";
 
+import { authenticate } from "../middleware/auth.middleware";
+
 const router = Router();
+
+// All payment routes require authentication — both Admin and Manager can access
+router.use(authenticate);
 
 router.post("/", createPayment);
 

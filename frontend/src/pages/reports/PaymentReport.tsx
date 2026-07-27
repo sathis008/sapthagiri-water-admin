@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Receipt, Wallet, Building2 } from "lucide-react";
 
@@ -14,6 +14,8 @@ import { paymentReportColumns } from "@/components/reports/payment/PaymentReport
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getPaymentReportThunk } from "@/redux/report";
+import { getCustomersThunk } from "@/redux/customer";
+import { getDriversThunk } from "@/redux/driver";
 
 import ReportService from "@/services/report.service";
 
@@ -21,11 +23,11 @@ const PaymentReport = () => {
   const dispatch = useAppDispatch();
 
   const { paymentReport, loading } = useAppSelector((state) => state.report);
+  const { customers } = useAppSelector((state) => state.customer);
+  const { drivers } = useAppSelector((state) => state.driver);
 
   const [search, setSearch] = useState("");
-
   const [debouncedSearch, setDebouncedSearch] = useState("");
-
   const [page, setPage] = useState(1);
 
   const [filters, setFilters] = useState({
@@ -36,6 +38,31 @@ const PaymentReport = () => {
     paymentMode: "",
     collectedBy: "",
   });
+
+  /**
+   * Load master data once
+   */
+  useEffect(() => {
+    if (!customers.length) {
+      dispatch(getCustomersThunk({ page: 1, limit: 1000 }));
+    }
+    if (!drivers.length) {
+      dispatch(getDriversThunk({ page: 1, limit: 1000 }));
+    }
+  }, []);
+
+  /**
+   * Dropdown options
+   */
+  const customerOptions = useMemo(
+    () => customers.map((c) => ({ label: c.name, value: c._id })),
+    [customers],
+  );
+
+  const driverOptions = useMemo(
+    () => drivers.map((d) => ({ label: d.name, value: d._id })),
+    [drivers],
+  );
 
   /**
    * Debounce Search
@@ -97,7 +124,6 @@ const PaymentReport = () => {
     });
 
     setSearch("");
-
     setPage(1);
   };
 
@@ -119,8 +145,8 @@ const PaymentReport = () => {
               showDriver
               showPaymentMode
               showCollectedBy
-              customers={[]}
-              drivers={[]}
+              customers={customerOptions}
+              drivers={driverOptions}
               onChange={(field, value) =>
                 setFilters((prev) => ({
                   ...prev,
@@ -149,13 +175,6 @@ const PaymentReport = () => {
                 icon: <Wallet size={70} />,
                 color: "bg-gradient-to-r from-green-500 to-emerald-600",
               },
-              // {
-              //   title: "UPI",
-              //   value: paymentReport.summary.upiAmount,
-              //   prefix: "₹",
-              //   icon: <Smartphone size={70} />,
-              //   color: "bg-gradient-to-r from-violet-500 to-purple-600",
-              // },
               {
                 title: "Bank",
                 value: paymentReport.summary.bankAmount,

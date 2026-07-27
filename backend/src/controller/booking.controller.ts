@@ -75,6 +75,7 @@ export const createBooking = async (
       bookingDate,
 
       notes,
+
     });
 
     res.status(201).json({
@@ -317,43 +318,28 @@ export const completeDelivery = async (
 ): Promise<void> => {
   try {
     const { collectionMethod, notes } = req.body;
-
     const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
-      res.status(404).json({
-        success: false,
-        message: "Booking not found.",
-      });
-
+      res.status(404).json({ success: false, message: "Booking not found." });
       return;
     }
 
     booking.collectionMethod = collectionMethod;
-
     booking.notes = notes;
-
     booking.status = "DELIVERED";
-
-    if (collectionMethod === "ACCOUNT_COLLECTION") {
-      booking.paymentStatus = "PAID";
-    } else {
-      booking.paymentStatus = "PENDING";
-    }
+    booking.paymentStatus =
+      collectionMethod === "ACCOUNT_COLLECTION" ? "PAID" : "PENDING";
 
     await booking.save();
-
     res.status(200).json({
       success: true,
-
       message: "Delivery completed successfully.",
-
       data: booking,
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-
       message: error.message || "Failed to complete delivery.",
     });
   }
@@ -489,9 +475,7 @@ export const updateBooking = async (
        */
       case "DELIVERED->ASSIGNED":
         booking.collectionMethod = undefined;
-
         booking.paymentStatus = "PENDING";
-
         break;
 
       /**
@@ -500,14 +484,10 @@ export const updateBooking = async (
       case "DELIVERED->CONFIRMED":
         booking.driverId = undefined;
         booking.driverName = undefined;
-
         booking.vehicleId = undefined;
         booking.vehicleNumber = undefined;
-
         booking.collectionMethod = undefined;
-
         booking.paymentStatus = "PENDING";
-
         break;
 
       default:

@@ -263,112 +263,86 @@ const getDailyCollectionData = async (
   source: Request | Record<string, any>,
 ) => {
   const isRequest = "query" in source;
+  const params = isRequest ? (source as Request).query : source;
 
-  const params = isRequest ? source.query : source;
   const fromDate = params.fromDate as string;
   const toDate = params.toDate as string;
+  const customerId = params.customerId as string;
+  const driverId = params.driverId as string;
+  const vehicleId = params.vehicleId as string;
 
+  // Build payment filter
   const filter: any = {};
 
   if (fromDate || toDate) {
     filter.paymentDate = {};
-
-    if (fromDate) {
-      filter.paymentDate.$gte = new Date(fromDate);
-    }
-
+    if (fromDate) filter.paymentDate.$gte = new Date(fromDate);
     if (toDate) {
       const end = new Date(toDate);
-
       end.setHours(23, 59, 59, 999);
-
       filter.paymentDate.$lte = end;
     }
   }
 
+  if (customerId) filter.customerId = customerId;
+  if (driverId) filter.collectedBy = driverId; // payments linked via collectedBy driver
+
+  // If vehicleId filter is requested, first find bookings for that vehicle
+  // and then filter payments linked to those bookings
+  let bookingIdFilter: string[] | null = null;
+  if (vehicleId) {
+    const Booking = (await import("../models/booking.model")).default;
+    const bookings = await Booking.find({ vehicleId }).select("_id").lean();
+    bookingIdFilter = bookings.map((b: any) => b._id.toString());
+    if (bookingIdFilter.length > 0) {
+      filter["paymentItems.bookingId"] = { $in: bookingIdFilter };
+    } else {
+      // No bookings for that vehicle — return empty
+      return {
+        rows: [],
+        summary: { cash: 0, upi: 0, bank: 0, total: 0, totalPayments: 0 },
+      };
+    }
+  }
+
   const rows = await Payment.aggregate([
-    {
-      $match: filter,
-    },
+    { $match: filter },
     {
       $group: {
         _id: {
-          $dateToString: {
-            format: "%Y-%m-%d",
-            date: "$paymentDate",
-          },
+          $dateToString: { format: "%Y-%m-%d", date: "$paymentDate" },
         },
-
-        totalPayments: {
-          $sum: 1,
-        },
-
+        totalPayments: { $sum: 1 },
         cash: {
           $sum: {
-            $cond: [
-              {
-                $eq: ["$paymentMode", "CASH"],
-              },
-              "$totalAmount",
-              0,
-            ],
+            $cond: [{ $eq: ["$paymentMode", "CASH"] }, "$totalAmount", 0],
           },
         },
-
         upi: {
           $sum: {
-            $cond: [
-              {
-                $eq: ["$paymentMode", "UPI"],
-              },
-              "$totalAmount",
-              0,
-            ],
+            $cond: [{ $eq: ["$paymentMode", "UPI"] }, "$totalAmount", 0],
           },
         },
-
         bank: {
           $sum: {
-            $cond: [
-              {
-                $eq: ["$paymentMode", "BANK"],
-              },
-              "$totalAmount",
-              0,
-            ],
+            $cond: [{ $eq: ["$paymentMode", "BANK"] }, "$totalAmount", 0],
           },
         },
-
-        total: {
-          $sum: "$totalAmount",
-        },
+        total: { $sum: "$totalAmount" },
       },
     },
-
-    {
-      $sort: {
-        _id: -1,
-      },
-    },
+    { $sort: { _id: -1 } },
   ]);
 
   const summary = {
     cash: rows.reduce((t, r) => t + r.cash, 0),
-
     upi: rows.reduce((t, r) => t + r.upi, 0),
-
     bank: rows.reduce((t, r) => t + r.bank, 0),
-
     total: rows.reduce((t, r) => t + r.total, 0),
-
     totalPayments: rows.reduce((t, r) => t + r.totalPayments, 0),
   };
 
-  return {
-    rows,
-
-    summary,
-  };
+  return { rows, summary };
 };
 
 /**

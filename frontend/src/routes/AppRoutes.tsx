@@ -5,7 +5,9 @@ import Dashboard from "@/pages/Dashboard/Dashboard";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
+import RoleGuard from "./RoleGuard";
 import { APP_ROUTES } from "@/constants/routes";
+
 import CustomerList from "@/pages/Customer/CustomerList";
 import VehicleList from "@/pages/vehicle/VehicleList";
 import DriverList from "@/pages/driver/DriverList";
@@ -20,48 +22,42 @@ import PaymentReport from "@/pages/reports/PaymentReport";
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public */}
-
+      {/* ── Public ─────────────────────────────────────────────────── */}
       <Route element={<PublicRoute />}>
         <Route path={APP_ROUTES.LOGIN} element={<Login />} />
       </Route>
 
-      {/* Protected */}
-
+      {/* ── Protected (any authenticated user) ─────────────────────── */}
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
+          {/* Both Admin and Manager */}
           <Route path={APP_ROUTES.DASHBOARD} element={<Dashboard />} />
-
           <Route path={APP_ROUTES.CUSTOMERS} element={<CustomerList />} />
-
           <Route path={APP_ROUTES.VEHICLES} element={<VehicleList />} />
-
           <Route path={APP_ROUTES.DRIVERS} element={<DriverList />} />
-
           <Route path={APP_ROUTES.BOOKINGS} element={<BookingList />} />
-
           <Route path={APP_ROUTES.PAYMENTS} element={<PaymentList />} />
 
-          {/* Reports */}
-
+          {/* Reports — both roles, financial cards filtered per role in each page */}
           <Route path="/reports/bookings" element={<BookingReport />} />
-
-          <Route path="/reports/payments" element={<PaymentReport />} />
-
           <Route path="/reports/customer-ledger" element={<CustomerLedger />} />
-
           <Route
             path="/reports/driver-settlement"
             element={<DriverSettlement />}
           />
-
           <Route
             path="/reports/daily-collection"
             element={<DailyCollection />}
           />
+
+          {/* Payment Report — Admin only (full financial data) */}
+          <Route element={<RoleGuard allowedRoles={["ADMIN"]} />}>
+            <Route path="/reports/payments" element={<PaymentReport />} />
+          </Route>
         </Route>
       </Route>
 
+      {/* Fallback */}
       <Route path="*" element={<Navigate to={APP_ROUTES.LOGIN} replace />} />
     </Routes>
   );

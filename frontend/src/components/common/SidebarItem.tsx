@@ -3,6 +3,8 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 import type { NavigationItem } from "@/config/navigation";
+import { useAppSelector } from "@/redux/hooks";
+import { hasRole } from "@/utills/auth";
 
 interface SidebarItemProps {
   item: NavigationItem;
@@ -11,12 +13,18 @@ interface SidebarItemProps {
 
 const SidebarItem = ({ item, isCollapsed }: SidebarItemProps) => {
   const location = useLocation();
+  const { user } = useAppSelector((state) => state.auth);
 
-  const hasChildren = !!item.children?.length;
+  // Filter children by role if they have a roles restriction
+  const visibleChildren = item.children?.filter(
+    (child) => !child.roles || hasRole(user?.role, child.roles),
+  );
+
+  const hasChildren = !!visibleChildren?.length;
 
   const isChildActive =
     hasChildren &&
-    item.children!.some((child) => location.pathname.startsWith(child.path));
+    visibleChildren!.some((child) => location.pathname.startsWith(child.path));
 
   const [open, setOpen] = useState(isChildActive);
 
@@ -49,7 +57,7 @@ const SidebarItem = ({ item, isCollapsed }: SidebarItemProps) => {
 
         {!isCollapsed && open && (
           <div className="ml-8 mt-2 flex flex-col gap-1">
-            {item.children!.map((child) => (
+            {visibleChildren!.map((child) => (
               <NavLink
                 key={child.id}
                 to={child.path}

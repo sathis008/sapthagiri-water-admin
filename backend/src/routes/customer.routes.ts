@@ -10,27 +10,18 @@ import {
 } from "../controller/customer.controller";
 
 import { authenticate } from "../middleware/auth.middleware";
+import { authorize } from "../middleware/role.middleware";
+
 const router = Router();
 
-/**
- * Customer Routes
- */
-
-// Get All Customers
+// All customer routes require authentication
 router.get("/", authenticate, getCustomers);
-
-// Get Customer By Id
+router.get("/options", authenticate, getCustomerOptions);
 router.get("/:id", authenticate, getCustomerById);
-
-// Create Customer
 router.post("/", authenticate, createCustomer);
-
-// Update Customer
 router.put("/:id", authenticate, updateCustomer);
 
-// Delete Customer
-router.delete("/:id", authenticate, deleteCustomer);
-
-router.get("/options", getCustomerOptions);
+// Delete requires ADMIN role
+router.delete("/:id", authenticate, authorize("ADMIN"), deleteCustomer);
 
 export default router;

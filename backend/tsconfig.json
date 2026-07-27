@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Language and Environment */
     "target": "ES2022",
-    "lib": ["ES2022"],
+    //   "lib": ["ES2022"],
 
     /* Module Settings */
     "module": "CommonJS",
@@ -17,9 +17,9 @@
     "strictNullChecks": true,
 
     /* Node Support */
-    "types": ["node"],
+    // "types": ["node"],
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    //"allowSyntheticDefaultImports": true,
 
     /* Output */
     "sourceMap": true,
@@ -30,10 +30,10 @@
     "forceConsistentCasingInFileNames": true,
 
     /* JSON Imports */
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
 
     /* Misc */
-    "isolatedModules": true
+    // "isolatedModules": true
   },
 
   "include": ["src/**/*"],
