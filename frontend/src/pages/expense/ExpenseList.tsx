@@ -1,0 +1,35 @@
+import { useEffect, useMemo, useState } from "react";
+import { Plus } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DataTable } from "@/components/common/DataTable";
+import ExpenseDialog from "@/components/expense/ExpenseDialog";
+import { expenseColumns } from "@/components/expense/ExpenseColumns";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { deleteExpenseThunk, getExpensesThunk } from "@/redux/expense";
+import { getVehiclesThunk } from "@/redux/vehicle";
+import { getDriversThunk } from "@/redux/driver";
+import type { Expense, ExpenseCategory } from "@/types/expense";
+
+const categories: ExpenseCategory[] = ["Vehicle Expense", "Office Expense", "Salary Expense"];
+const subCategories: Record<ExpenseCategory, string[]> = { "Vehicle Expense": ["Vehicle Maintenance", "Vehicle Expense", "RTO", "Fast Tag", "Insurance", "Other Point Expense"], "Office Expense": ["Office Expense", "Tyre", "LIC Expense", "Point Expense", "Bill Book Printing", "Mobile Expense", "Pandurangan"], "Salary Expense": ["Office", "Driver"] };
+const ExpenseList = () => {
+  const dispatch = useAppDispatch();
+  const { expenses, loading } = useAppSelector((state) => state.expense);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
+  const [category, setCategory] = useState<string>("all");
+  const [subCategory, setSubCategory] = useState<string>("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  useEffect(() => { dispatch(getExpensesThunk({ limit: 100 })); dispatch(getVehiclesThunk()); dispatch(getDriversThunk()); }, [dispatch]);
+  const filtered = useMemo(() => expenses.filter((expense) => (category === "all" || expense.expenseCategory === category) && (subCategory === "all" || expense.expenseSubCategory === subCategory) && (!startDate || expense.expenseDate.slice(0, 10) >= startDate) && (!endDate || expense.expenseDate.slice(0, 10) <= endDate)), [expenses, category, subCategory, startDate, endDate]);
+  const handleDelete = async (expense: Expense) => { if (!window.confirm("Are you sure you want to delete this expense?")) return; const result = await dispatch(deleteExpenseThunk(expense._id)); if (deleteExpenseThunk.fulfilled.match(result)) toast.success("Expense deleted successfully."); else toast.error((result.payload as string) || "Unable to delete expense."); };
+  const columns = expenseColumns((expense) => { setSelectedExpense(expense); setDialogOpen(true); }, handleDelete);
+  const selectedCategory = category === "all" ? undefined : category as ExpenseCategory;
+  return <div className="space-y-6"><div className="grid grid-cols-1 gap-4 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-4"><div className="space-y-2"><Label>Expense Category</Label><Select value={category} onValueChange={(value) => { setCategory(value); setSubCategory("all"); }}><SelectTrigger><SelectValue placeholder="All categories" /></SelectTrigger><SelectContent><SelectItem value="all">All categories</SelectItem>{categories.map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select></div><div className="space-y-2"><Label>Expense Sub Category</Label><Select value={subCategory} onValueChange={setSubCategory} disabled={!selectedCategory}><SelectTrigger><SelectValue placeholder="All sub categories" /></SelectTrigger><SelectContent><SelectItem value="all">All sub categories</SelectItem>{selectedCategory && subCategories[selectedCategory].map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}</SelectContent></Select></div><div className="space-y-2"><Label>From Date</Label><Input type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></div><div className="space-y-2"><Label>To Date</Label><Input type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} /></div></div><DataTable columns={columns} data={filtered} loading={loading} searchColumn="expenseSubCategory" searchPlaceholder="Search expenses..." toolbarActions={<Button onClick={() => { setSelectedExpense(null); setDialogOpen(true); }}><Plus className="mr-2 h-4 w-4" />Add Expense</Button>} /><ExpenseDialog open={dialogOpen} onOpenChange={setDialogOpen} expense={selectedExpense} /></div>;
+};
+export default ExpenseList;

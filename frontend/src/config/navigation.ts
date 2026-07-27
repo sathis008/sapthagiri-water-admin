@@ -7,6 +7,7 @@ import {
   Car,
   Package,
   Wallet,
+  ReceiptIndianRupee,
   BarChart3,
   Settings,
 } from "lucide-react";
@@ -86,6 +87,15 @@ export const navigation: NavigationItem[] = [
     path: "/payments",
     icon: Wallet,
     // Both Admin and Manager can see Payments
+    roles: ["ADMIN", "MANAGER"],
+    showInSidebar: true,
+    showInBreadcrumb: true,
+  },
+  {
+    id: "expenses",
+    title: "Expenses",
+    path: "/expenses",
+    icon: ReceiptIndianRupee,
     roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,
     showInBreadcrumb: true,

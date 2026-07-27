@@ -18,6 +18,7 @@ import CustomerLedger from "@/pages/reports/CustomerLedger";
 import DailyCollection from "@/pages/reports/DailyCollection";
 import DriverSettlement from "@/pages/reports/DriverSettlement";
 import PaymentReport from "@/pages/reports/PaymentReport";
+import ExpenseList from "@/pages/expense/ExpenseList";
 
 const AppRoutes = () => {
   return (
@@ -37,6 +38,7 @@ const AppRoutes = () => {
           <Route path={APP_ROUTES.DRIVERS} element={<DriverList />} />
           <Route path={APP_ROUTES.BOOKINGS} element={<BookingList />} />
           <Route path={APP_ROUTES.PAYMENTS} element={<PaymentList />} />
+          <Route path={APP_ROUTES.EXPENSES} element={<ExpenseList />} />
 
           {/* Reports — both roles, financial cards filtered per role in each page */}
           <Route path="/reports/bookings" element={<BookingReport />} />

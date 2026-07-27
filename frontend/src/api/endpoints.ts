@@ -80,6 +80,14 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/api/payments/${id}`,
   },
 
+  EXPENSE: {
+    LIST: "/api/expenses",
+    CREATE: "/api/expenses",
+    DETAILS: (id: string) => `/api/expenses/${id}`,
+    UPDATE: (id: string) => `/api/expenses/${id}`,
+    DELETE: (id: string) => `/api/expenses/${id}`,
+  },
+
   DASHBOARD: {
     SUMMARY: "/api/dashboard",
   },
