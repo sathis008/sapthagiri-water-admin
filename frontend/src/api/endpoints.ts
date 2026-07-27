@@ -66,6 +66,8 @@ export const API_ENDPOINTS = {
 
     PENDING: (customerId: string) =>
       `/api/bookings/customer/${customerId}/pending`,
+
+    PENDING_FILTERED: "/api/bookings/pending",
   },
 
   PAYMENT: {

@@ -19,6 +19,7 @@ const router = Router();
 // All booking routes require authentication
 router.post("/", authenticate, createBooking);
 router.get("/", authenticate, getBookings);
+router.get("/pending", authenticate, getPendingBookingsByCustomer);
 router.get(
   "/customer/:customerId/pending",
   authenticate,

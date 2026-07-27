@@ -107,9 +107,13 @@ class BookingService {
   /**
    * Get Pending Bookings By Customer
    */
-  async getPendingBookingsByCustomer(customerId: string): Promise<Booking[]> {
+  async getPendingBookingsByCustomer(
+    customerId?: string,
+    filters?: { driverId?: string; fromDate?: string; toDate?: string },
+  ): Promise<Booking[]> {
     const response = await api.get<ApiResponse<Booking[]>>(
-      API_ENDPOINTS.BOOKING.PENDING(customerId),
+      API_ENDPOINTS.BOOKING.PENDING_FILTERED,
+      { params: { customerId, ...filters } },
     );
 
     return response.data.data;

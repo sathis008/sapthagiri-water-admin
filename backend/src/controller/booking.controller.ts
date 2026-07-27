@@ -292,6 +292,10 @@ export const assignBooking = async (
 
     booking.notes = notes;
 
+    // Use the latest collection method selected on the customer profile.
+    const customer = await Customer.findById(booking.customerId);
+    booking.collectionMethod = customer?.collectionMethod ?? undefined;
+
     // Assigning a driver and vehicle completes the delivery workflow.
     booking.status = "DELIVERED";
 
@@ -533,19 +537,38 @@ export const getPendingBookingsByCustomer = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const { customerId } = req.params;
+    const { customerId: customerIdParam } = req.params;
+    const { customerId, driverId, fromDate, toDate } = req.query;
 
-    const bookings = await Booking.find({
-      customerId,
+    const bookingDate: Record<string, Date> = {};
+    if (typeof fromDate === "string" && !Number.isNaN(Date.parse(fromDate))) {
+      bookingDate.$gte = new Date(fromDate);
+    }
+    if (typeof toDate === "string" && !Number.isNaN(Date.parse(toDate))) {
+      const endOfDay = new Date(toDate);
+      endOfDay.setDate(endOfDay.getDate() + 1);
+      bookingDate.$lt = endOfDay;
+    }
+
+    const filter: Record<string, unknown> = {
       status: "DELIVERED",
       paymentStatus: "PENDING",
       isDeleted: false,
-    })
+    };
+
+    const selectedCustomerId = customerIdParam || customerId;
+    if (typeof selectedCustomerId === "string" && selectedCustomerId) {
+      filter.customerId = selectedCustomerId;
+    }
+    if (typeof driverId === "string" && driverId) filter.driverId = driverId;
+    if (Object.keys(bookingDate).length) filter.bookingDate = bookingDate;
+
+    const bookings = await Booking.find(filter)
       .sort({
         bookingDate: 1,
       })
       .select(
-        "_id bookingNumber bookingDate capacity price collectionMethod driverId driverName vehicleId vehicleNumber",
+        "_id customerId customerName bookingNumber bookingDate capacity price collectionMethod driverId driverName vehicleId vehicleNumber",
       );
 
     successResponse(res, "Pending bookings fetched successfully.", bookings);

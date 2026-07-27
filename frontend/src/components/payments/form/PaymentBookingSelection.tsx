@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { CalendarDays } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 
@@ -9,13 +11,22 @@ interface PaymentBookingSelectionProps {
   selectedBookings: string[];
 
   onSelectionChange: (ids: string[]) => void;
+  fromDate: string;
+  toDate: string;
+  onFromDateChange: (date: string) => void;
+  onToDateChange: (date: string) => void;
 }
 
 const PaymentBookingSelection = ({
   bookings,
   selectedBookings,
   onSelectionChange,
+  fromDate,
+  toDate,
+  onFromDateChange,
+  onToDateChange,
 }: PaymentBookingSelectionProps) => {
+  const [showDateFilters, setShowDateFilters] = useState(false);
   //------------------------------------------
   // Selected Booking Objects
   //------------------------------------------
@@ -76,9 +87,10 @@ const PaymentBookingSelection = ({
     if (!bookings.length) return;
 
     const method = bookings[0].collectionMethod;
-
     onSelectionChange(
-      bookings.filter((b) => b.collectionMethod === method).map((b) => b._id),
+      bookings
+        .filter((booking) => booking.collectionMethod === method)
+        .map((booking) => booking._id),
     );
   };
 
@@ -103,12 +115,15 @@ const PaymentBookingSelection = ({
   const getBadgeVariant = (method?: Booking["collectionMethod"]) => {
     switch (method) {
       case "DRIVER_COLLECTION":
+      case "DRIVER":
         return "default";
 
       case "ACCOUNT_COLLECTION":
+      case "MANAGER":
         return "secondary";
 
       case "OFFICE_COLLECTION":
+      case "OFFICE":
         return "outline";
 
       default:
@@ -116,15 +131,53 @@ const PaymentBookingSelection = ({
     }
   };
 
+  const getCollectionLabel = (method?: string) => {
+    if (!method) return "Not set";
+
+    return method.replaceAll("_", " ");
+  };
+
   return (
     <div className="space-y-5 rounded-lg border p-5">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Pending Bookings</h3>
 
-        <div className="text-sm text-muted-foreground">
-          {bookings.length} Bookings
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowDateFilters((visible) => !visible)}
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <CalendarDays className="h-4 w-4" />
+            Date filter
+          </button>
+          <div className="text-sm text-muted-foreground">
+            {bookings.length} Bookings
+          </div>
         </div>
       </div>
+
+      {showDateFilters && <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <label className="space-y-1 text-sm font-medium">
+          From Date
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(event) => onFromDateChange(event.target.value)}
+            className="block h-10 w-full rounded-md border px-3 text-sm"
+          />
+        </label>
+        <label className="space-y-1 text-sm font-medium">
+          To Date
+          <input
+            type="date"
+            value={toDate}
+            min={fromDate || undefined}
+            onChange={(event) => onToDateChange(event.target.value)}
+            className="block h-10 w-full rounded-md border px-3 text-sm"
+          />
+        </label>
+      </div>}
 
       {selectedCollectionMethod && (
         <div className="rounded-lg border bg-blue-50 px-4 py-3">
@@ -194,7 +247,7 @@ const PaymentBookingSelection = ({
                         <Badge
                           variant={getBadgeVariant(booking.collectionMethod)}
                         >
-                          {booking.collectionMethod?.replaceAll("_", " ")}
+                          {getCollectionLabel(booking.collectionMethod)}
                         </Badge>
                       </td>
 

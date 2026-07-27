@@ -61,7 +61,7 @@ export interface PaymentListResponse {
 }
 
 export interface CreatePaymentRequest {
-  customerId: string;
+  customerId?: string;
 
   bookingIds: string[];
 
