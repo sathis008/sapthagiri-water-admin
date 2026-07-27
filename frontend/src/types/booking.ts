@@ -3,10 +3,7 @@ export type BookingStatus =
 
 export type PaymentStatus = "PENDING" | "PAID";
 
-export type CollectionMethod =
-  | "DRIVER_COLLECTION"
-  | "ACCOUNT_COLLECTION"
-  | "OFFICE_COLLECTION";
+export type CollectionMethod = "DRIVER" | "MANAGER" | "OFFICE";
 
 export interface Booking {
   _id: string;

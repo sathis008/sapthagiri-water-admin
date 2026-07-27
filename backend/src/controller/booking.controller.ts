@@ -76,6 +76,9 @@ export const createBooking = async (
 
       notes,
 
+      // Delivery collection method is configured on the customer profile.
+      collectionMethod: customer.collectionMethod ?? undefined,
+
     });
 
     res.status(201).json({
@@ -289,14 +292,15 @@ export const assignBooking = async (
 
     booking.notes = notes;
 
-    booking.status = "ASSIGNED";
+    // Assigning a driver and vehicle completes the delivery workflow.
+    booking.status = "DELIVERED";
 
     await booking.save();
 
     res.status(200).json({
       success: true,
 
-      message: "Booking assigned successfully.",
+      message: "Booking assigned and delivered successfully.",
 
       data: booking,
     });
@@ -310,39 +314,16 @@ export const assignBooking = async (
 };
 
 /**
- * Complete Delivery
+ * Legacy endpoint: delivery is completed when the booking is assigned.
  */
 export const completeDelivery = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  try {
-    const { collectionMethod, notes } = req.body;
-    const booking = await Booking.findById(req.params.id);
-
-    if (!booking) {
-      res.status(404).json({ success: false, message: "Booking not found." });
-      return;
-    }
-
-    booking.collectionMethod = collectionMethod;
-    booking.notes = notes;
-    booking.status = "DELIVERED";
-    booking.paymentStatus =
-      collectionMethod === "ACCOUNT_COLLECTION" ? "PAID" : "PENDING";
-
-    await booking.save();
-    res.status(200).json({
-      success: true,
-      message: "Delivery completed successfully.",
-      data: booking,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || "Failed to complete delivery.",
-    });
-  }
+  res.status(410).json({
+    success: false,
+    message: "Delivery is completed automatically when a booking is assigned.",
+  });
 };
 
 export const updateBooking = async (

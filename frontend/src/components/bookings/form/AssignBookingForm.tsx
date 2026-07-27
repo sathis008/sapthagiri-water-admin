@@ -133,7 +133,7 @@ const AssignBookingForm = ({ booking, onSuccess }: AssignBookingFormProps) => {
           Cancel
         </Button>
 
-        <Button type="submit">Assign Booking</Button>
+        <Button type="submit">Assign & Deliver</Button>
       </div>
     </form>
   );

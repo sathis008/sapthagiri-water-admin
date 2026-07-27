@@ -27,9 +27,9 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 const COLLECTION_LABELS: Record<string, string> = {
-  DRIVER_COLLECTION: "Driver Collection",
-  ACCOUNT_COLLECTION: "Account Collection",
-  OFFICE_COLLECTION: "Office Collection",
+  DRIVER: "Driver",
+  MANAGER: "Manager",
+  OFFICE: "Office",
 };
 
 const BookingView = ({ booking }: BookingViewProps) => {

@@ -4,7 +4,6 @@ import {
   Pencil,
   Trash2,
   Truck,
-  CircleCheckBig,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,6 @@ interface BookingRowActionsProps {
   onView: (booking: Booking) => void;
   onEdit: (booking: Booking) => void;
   onAssign: (booking: Booking) => void;
-  onComplete: (booking: Booking) => void;
   onDelete: (booking: Booking) => void;
 }
 
@@ -33,7 +31,6 @@ const BookingRowActions = ({
   onView,
   onEdit,
   onAssign,
-  onComplete,
   onDelete,
 }: BookingRowActionsProps) => {
   const { user } = useAppSelector((state) => state.auth);
@@ -58,18 +55,11 @@ const BookingRowActions = ({
           Edit
         </DropdownMenuItem>
 
-        {/* Assign only available when status is CONFIRMED */}
+        {/* Assigning completes delivery, so this is available only when confirmed. */}
         {booking.status === "CONFIRMED" && (
           <DropdownMenuItem onClick={() => onAssign(booking)}>
             <Truck className="mr-2 h-4 w-4" />
-            Assign
-          </DropdownMenuItem>
-        )}
-
-        {booking.status === "ASSIGNED" && (
-          <DropdownMenuItem onClick={() => onComplete(booking)}>
-            <CircleCheckBig className="mr-2 h-4 w-4" />
-            Complete Delivery
+            Assign & Deliver
           </DropdownMenuItem>
         )}
 

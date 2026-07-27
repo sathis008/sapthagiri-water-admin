@@ -7,7 +7,6 @@ interface BookingColumnProps {
   onView: (booking: Booking) => void;
   onEdit: (booking: Booking) => void;
   onAssign: (booking: Booking) => void;
-  onComplete: (booking: Booking) => void;
   onDelete: (booking: Booking) => void;
 }
 
@@ -24,16 +23,15 @@ const PAYMENT_STYLES: Record<string, string> = {
 };
 
 const COLLECTION_LABELS: Record<string, string> = {
-  DRIVER_COLLECTION: "Driver Collection",
-  ACCOUNT_COLLECTION: "Account Collection",
-  OFFICE_COLLECTION: "Office Collection",
+  DRIVER: "Driver",
+  MANAGER: "Manager",
+  OFFICE: "Office",
 };
 
 export const bookingColumns = ({
   onView,
   onEdit,
   onAssign,
-  onComplete,
   onDelete,
 }: BookingColumnProps): ColumnDef<Booking>[] => [
   {
@@ -108,7 +106,6 @@ export const bookingColumns = ({
         onView={onView}
         onEdit={onEdit}
         onAssign={onAssign}
-        onComplete={onComplete}
         onDelete={onDelete}
       />
     ),

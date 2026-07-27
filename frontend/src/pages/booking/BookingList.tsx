@@ -14,7 +14,6 @@ import DeleteDialog from "@/components/common/DeleteDialog";
 
 import BookingDialog from "@/components/bookings/BookingDialog";
 import AssignBookingDialog from "@/components/bookings/AssignBookingDialog";
-import CompleteDeliveryDialog from "@/components/bookings/CompleteDeliveryDialog";
 import BookingViewDialog from "@/components/bookings/BookingViewDialog";
 import EditBookingDialog from "@/components/bookings/EditBookingDialog";
 
@@ -39,7 +38,6 @@ const BookingList = () => {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [openBookingDialog, setOpenBookingDialog] = useState(false);
   const [openAssignDialog, setOpenAssignDialog] = useState(false);
-  const [openCompleteDialog, setOpenCompleteDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openViewDialog, setOpenViewDialog] = useState(false);
@@ -89,10 +87,6 @@ const BookingList = () => {
     onAssign: (booking) => {
       setSelectedBooking(booking);
       setOpenAssignDialog(true);
-    },
-    onComplete: (booking) => {
-      setSelectedBooking(booking);
-      setOpenCompleteDialog(true);
     },
     onDelete: (booking) => {
       setSelectedBooking(booking);
@@ -192,13 +186,6 @@ const BookingList = () => {
         open={openAssignDialog}
         booking={selectedBooking}
         onOpenChange={setOpenAssignDialog}
-        onSuccess={fetchBookings}
-      />
-
-      <CompleteDeliveryDialog
-        open={openCompleteDialog}
-        booking={selectedBooking}
-        onOpenChange={setOpenCompleteDialog}
         onSuccess={fetchBookings}
       />
 
