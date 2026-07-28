@@ -1,6 +1,7 @@
 import { Document, model, Schema } from 'mongoose';
 
 export interface IDriver extends Document {
+  isDriver: boolean;
   name: string;
   phone: string;
   alternatePhone?: string;
@@ -8,12 +9,14 @@ export interface IDriver extends Document {
   licenseNumber: string;
   licenseExpiry: Date;
   licenseDocument?: string;
+  assignedVehicleId?: Schema.Types.ObjectId;
   notes?: string;
   status: 'ACTIVE' | 'INACTIVE';
 }
 
 const driverschema = new Schema<IDriver>(
   {
+    isDriver: { type: Boolean, default: true },
     name: {
       type: String,
       required: true,
@@ -31,22 +34,19 @@ const driverschema = new Schema<IDriver>(
     },
     address: {
       type: String,
-      required: true,
       trim: true,
     },
     licenseNumber: {
       type: String,
-      required: true,
-      unique: true,
       trim: true,
     },
     licenseExpiry: {
       type: Date,
-      required: true,
     },
     licenseDocument: {
       type: String,
     },
+    assignedVehicleId: { type: Schema.Types.ObjectId, ref: 'Vehicle', default: null },
     notes: {
       type: String,
     },
@@ -58,6 +58,10 @@ const driverschema = new Schema<IDriver>(
   },
   { timestamps: true }
 );
+
+// Office employees do not have a licence. A sparse index permits any number of
+// documents where this field is absent while retaining uniqueness for drivers.
+driverschema.index({ licenseNumber: 1 }, { unique: true, sparse: true });
 
 const Driver = model<IDriver>('Driver', driverschema);
 

@@ -9,10 +9,15 @@ import {
   deleteDriverThunk,
   uploadDriverLicenseThunk,
   searchDriversThunk,
+  getEmployeesThunk,
+  createEmployeeThunk,
+  updateEmployeeThunk,
+  deleteEmployeeThunk,
 } from "./driverThunk";
 
 interface DriverState {
   drivers: Driver[];
+  employees: Driver[];
 
   pagination: {
     page: number;
@@ -30,6 +35,7 @@ interface DriverState {
 
 const initialState: DriverState = {
   drivers: [],
+  employees: [],
 
   pagination: {
     page: 1,
@@ -97,7 +103,10 @@ const driverSlice = createSlice({
         state.loading = false;
 
         state.error = action.payload as string;
-      });
+      })
+      .addCase(getEmployeesThunk.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(getEmployeesThunk.fulfilled, (state, action) => { state.loading = false; state.employees = action.payload.data; })
+      .addCase(getEmployeesThunk.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
 
     /**
      * Create Driver
@@ -193,7 +202,15 @@ const driverSlice = createSlice({
         state.loading = false;
 
         state.error = action.payload as string;
-      });
+      })
+      .addCase(createEmployeeThunk.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(createEmployeeThunk.fulfilled, (state, action) => { state.loading = false; state.employees.unshift(action.payload); if (action.payload.isDriver) state.drivers.unshift(action.payload); })
+      .addCase(createEmployeeThunk.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; })
+      .addCase(updateEmployeeThunk.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(updateEmployeeThunk.fulfilled, (state, action) => { state.loading = false; state.employees = state.employees.map((employee) => employee._id === action.payload._id ? action.payload : employee); state.drivers = action.payload.isDriver ? [...state.drivers.filter((driver) => driver._id !== action.payload._id), action.payload] : state.drivers.filter((driver) => driver._id !== action.payload._id); })
+      .addCase(updateEmployeeThunk.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; })
+      .addCase(deleteEmployeeThunk.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(deleteEmployeeThunk.fulfilled, (state, action) => { state.loading = false; state.employees = state.employees.filter((employee) => employee._id !== action.payload); state.drivers = state.drivers.filter((driver) => driver._id !== action.payload); });
   },
 });
 

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { createExpenseThunk, getExpensesThunk, updateExpenseThunk } from "@/redux/expense";
+import { getEmployeesThunk } from "@/redux/driver";
 import type { Expense, ExpenseCategory, ExpensePayload } from "@/types/expense";
 
 const subCategories: Record<ExpenseCategory, string[]> = {
@@ -24,7 +25,9 @@ const ExpenseForm = ({ expense, onSuccess, onCancel }: { expense?: Expense | nul
   const dispatch = useAppDispatch();
   const { loading } = useAppSelector((state) => state.expense);
   const { vehicles } = useAppSelector((state) => state.vehicle);
-  const { drivers } = useAppSelector((state) => state.driver);
+  const { drivers, employees } = useAppSelector((state) => state.driver);
+
+  useEffect(() => { dispatch(getEmployeesThunk({ limit: 100 })); }, [dispatch]);
   const form = useForm<ExpensePayload>({ defaultValues: { expenseCategory: undefined, expenseSubCategory: "", vehicleId: null, driverId: null, employeeName: "", vendor: "", notes: "", amount: null, spareAmount: null, labourAmount: null, diesel: null, dieselAmount: null, mileage: null, count: null, month: "", expiryDate: "", expenseDate: formatDate(new Date().toISOString()) } });
   const category = useWatch({ control: form.control, name: "expenseCategory" });
   const subCategory = useWatch({ control: form.control, name: "expenseSubCategory" });
@@ -64,7 +67,7 @@ const ExpenseForm = ({ expense, onSuccess, onCancel }: { expense?: Expense | nul
     {category && select("expenseSubCategory", "Expense Sub Category *", subCategories[category].map((value) => ({ value, label: value })))}
     {subCategory && vehicleSubs.includes(subCategory) && select("vehicleId", "Vehicle *", vehicles.map((vehicle) => ({ value: vehicle._id, label: vehicle.vehicleNumber })))}
     {subCategory === "Driver" && <>{select("driverId", "Driver *", drivers.map((driver) => ({ value: driver._id, label: driver.name })))}{select("vehicleId", "Vehicle *", vehicles.map((vehicle) => ({ value: vehicle._id, label: vehicle.vehicleNumber })))}</>}
-    {subCategory === "Office" && field("employeeName", "Employee *")}
+    {subCategory === "Office" && select("employeeName", "Employee *", employees.filter((employee) => employee.isDriver === false).map((employee) => ({ value: employee.name, label: employee.name })))}
     {subCategory === "Tyre" && field("count", "Count *", "number")}
     {withVendor.includes(subCategory) && field("vendor", maintenance || ["RTO", "Fast Tag", "Insurance", "Other Point Expense"].includes(subCategory) ? "Vendor *" : "Vendor")}
     {maintenance && <>{field("spareAmount", "Spare Amount *", "number")}{field("labourAmount", "Labour Amount *", "number")}<div className="space-y-2"><Label>Total Amount</Label><Input type="number" value={spareAmount + labourAmount} disabled /></div></>}

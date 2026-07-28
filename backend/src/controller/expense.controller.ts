@@ -19,7 +19,7 @@ const normalizePayload = (body: Record<string, unknown>) => {
   return payload;
 };
 
-const validationError = (payload: Record<string, unknown>) => {
+const validationError = async (payload: Record<string, unknown>) => {
   if (!payload.expenseCategory || !payload.expenseSubCategory || !payload.expenseDate) return "Expense category, sub category and date are required.";
   const vehicleSubs = ["Vehicle Maintenance", "Vehicle Expense", "RTO", "Fast Tag", "Insurance", "Other Point Expense"];
   if (vehicleSubs.includes(String(payload.expenseSubCategory)) && !payload.vehicleId) return "Vehicle is required.";
@@ -35,7 +35,7 @@ const validationError = (payload: Record<string, unknown>) => {
 export const createExpense = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const payload = normalizePayload(req.body);
-    const error = validationError(payload);
+    const error = await validationError(payload);
     if (error) { res.status(400).json({ success: false, message: error }); return; }
     const expense = await Expense.create({ ...payload, createdBy: req.user?.id, updatedBy: req.user?.id });
     res.status(201).json({ success: true, message: "Expense created successfully.", data: expense });
@@ -80,7 +80,7 @@ export const getExpenseById = async (req: Request, res: Response): Promise<void>
 export const updateExpense = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const payload = normalizePayload(req.body);
-    const error = validationError(payload);
+    const error = await validationError(payload);
     if (error) { res.status(400).json({ success: false, message: error }); return; }
     const expense = await Expense.findOneAndUpdate({ _id: req.params.id, isDeleted: false }, { ...payload, updatedBy: req.user?.id }, { new: true, runValidators: true });
     if (!expense) { res.status(404).json({ success: false, message: "Expense not found." }); return; }

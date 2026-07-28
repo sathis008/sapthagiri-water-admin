@@ -21,11 +21,13 @@ const DriverDetails = ({ driver }: Props) => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Driver Information</CardTitle>
+          <CardTitle>Employee Information</CardTitle>
         </CardHeader>
 
         <CardContent>
-          <DetailRow label="Driver Name" value={driver.name} />
+          <DetailRow label="Employee Name" value={driver.name} />
+
+          <DetailRow label="Type" value={driver.isDriver !== false ? 'Driver' : 'Office Employee'} />
 
           <DetailRow label="Mobile" value={driver.phone} />
 
@@ -37,7 +39,7 @@ const DriverDetails = ({ driver }: Props) => {
         </CardContent>
       </Card>
 
-      <Card>
+      {driver.isDriver !== false && <Card>
         <CardHeader>
           <CardTitle>Driving License</CardTitle>
         </CardHeader>
@@ -47,9 +49,11 @@ const DriverDetails = ({ driver }: Props) => {
 
           <DetailRow label="License Expiry" value={driver.licenseExpiry} />
 
+          <DetailRow label="Assigned Vehicle" value={typeof driver.assignedVehicleId === 'object' ? driver.assignedVehicleId?.vehicleNumber : driver.assignedVehicleId} />
+
           <DetailRow label="Document" value={driver.licenseDocument ? 'Uploaded' : '-'} />
         </CardContent>
-      </Card>
+      </Card>}
 
       <Card>
         <CardHeader>

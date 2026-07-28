@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 
 import {
   Select,
@@ -24,25 +25,38 @@ interface DriverBasicInfoProps {
   control: Control<DriverFormValues>;
 
   isEdit?: boolean;
+  onDriverChange?: (isDriver: boolean) => void;
 }
 
-const DriverBasicInfo = ({ control, isEdit = false }: DriverBasicInfoProps) => {
+const DriverBasicInfo = ({ control, isEdit = false, onDriverChange }: DriverBasicInfoProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Driver Information</CardTitle>
+          <CardTitle>Employee Information</CardTitle>
       </CardHeader>
 
       <CardContent className="grid gap-5 md:grid-cols-2">
-        {/* Driver Name */}
+        <div className="flex items-center gap-3 md:col-span-2">
+          <Controller
+            name="isDriver"
+            control={control}
+            render={({ field }) => <Checkbox id="isDriver" checked={field.value} onCheckedChange={(checked) => { const enabled = checked === true; field.onChange(enabled); onDriverChange?.(enabled); }} />}
+          />
+          <div>
+            <Label htmlFor="isDriver">Driver</Label>
+            <p className="text-sm text-muted-foreground">Enable to capture driving licence and vehicle details.</p>
+          </div>
+        </div>
+
+        {/* Employee Name */}
 
         <div className="space-y-2">
-          <Label>Driver Name *</Label>
+          <Label>Employee Name *</Label>
 
           <Controller
             name="name"
             control={control}
-            render={({ field }) => <Input placeholder="Driver Name" {...field} />}
+            render={({ field }) => <Input placeholder="Employee Name" {...field} />}
           />
         </div>
 

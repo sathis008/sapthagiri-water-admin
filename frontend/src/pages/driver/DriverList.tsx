@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Plus } from 'lucide-react';
 
@@ -14,7 +14,7 @@ import type { Driver } from '@/types/driver';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 
-import { getDriversThunk, deleteDriverThunk } from '@/redux/driver';
+import { getEmployeesThunk, deleteEmployeeThunk } from '@/redux/driver';
 
 const DriverList = () => {
   const dispatch = useAppDispatch();
@@ -27,23 +27,23 @@ const DriverList = () => {
 
   const [viewDriver, setViewDriver] = useState<Driver | null>(null);
 
-  const { drivers, loading } = useAppSelector((state) => state.driver);
+  const { employees, loading } = useAppSelector((state) => state.driver);
 
   useEffect(() => {
-    dispatch(getDriversThunk());
+    dispatch(getEmployeesThunk({ limit: 100 }));
   }, [dispatch]);
 
   /**
-   * Add Driver
+   * Add Employee
    */
-  const handleAddDriver = () => {
+  const handleAddEmployee = () => {
     setSelectedDriver(null);
 
     setOpen(true);
   };
 
   /**
-   * View Driver
+   * View Employee
    */
   const handleViewDriver = (driver: Driver) => {
     setViewDriver(driver);
@@ -52,7 +52,7 @@ const DriverList = () => {
   };
 
   /**
-   * Edit Driver
+   * Edit Employee
    */
   const handleEditDriver = (driver: Driver) => {
     setSelectedDriver(driver);
@@ -61,33 +61,30 @@ const DriverList = () => {
   };
 
   /**
-   * Delete Driver
+   * Delete Employee
    */
   const handleDeleteDriver = async (driver: Driver) => {
     const confirmed = window.confirm(`Are you sure you want to delete ${driver.name}?`);
 
     if (!confirmed) return;
 
-    await dispatch(deleteDriverThunk(driver._id));
+    await dispatch(deleteEmployeeThunk(driver._id));
   };
 
-  const columns = useMemo(
-    () => driverColumns(handleViewDriver, handleEditDriver, handleDeleteDriver),
-    []
-  );
+  const columns = driverColumns(handleViewDriver, handleEditDriver, handleDeleteDriver);
 
   return (
     <div className="space-y-6">
       <DataTable
         columns={columns}
-        data={drivers}
+        data={employees}
         loading={loading}
         searchColumn="name"
-        searchPlaceholder="Search drivers..."
+        searchPlaceholder="Search employees..."
         toolbarActions={
-          <Button onClick={handleAddDriver}>
+          <Button onClick={handleAddEmployee}>
             <Plus className="mr-2 h-4 w-4" />
-            Add Driver
+            Add Employee
           </Button>
         }
       />

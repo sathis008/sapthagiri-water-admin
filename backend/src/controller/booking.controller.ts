@@ -272,7 +272,7 @@ export const assignBooking = async (
      */
     const driver = await Driver.findById(driverId);
 
-    if (!driver) {
+    if (!driver || driver.isDriver === false) {
       res.status(404).json({
         success: false,
 

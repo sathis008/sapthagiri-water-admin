@@ -12,6 +12,7 @@ export const createDriver = async (
 ): Promise<void> => {
   try {
     const { phone } = req.body;
+    const isDriver = req.body.isDriver !== false;
 
     const existingDriver = await Driver.findOne({
       phone: phone.trim(),
@@ -25,7 +26,15 @@ export const createDriver = async (
       return;
     }
 
-    const driver = await Driver.create(req.body);
+    const payload = { ...req.body, isDriver };
+    if (!isDriver) {
+      delete payload.licenseNumber;
+      delete payload.licenseExpiry;
+      delete payload.licenseDocument;
+      delete payload.assignedVehicleId;
+    }
+
+    const driver = await Driver.create(payload);
 
     res.status(201).json({
       success: true,
@@ -49,7 +58,9 @@ export const getDrivers = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const drivers = await Driver.find().sort({
+    const isDriver = req.query.isDriver === 'false' ? false : req.query.isDriver === 'all' ? undefined : true;
+    const filter = isDriver === undefined ? {} : isDriver ? { $or: [{ isDriver: true }, { isDriver: { $exists: false } }] } : { isDriver: false };
+    const drivers = await Driver.find(filter).sort({
       createdAt: -1,
     });
 
@@ -104,7 +115,18 @@ export const updateDriver = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const driver = await Driver.findByIdAndUpdate(req.params.id, req.body, {
+    const isDriver = req.body.isDriver !== false;
+    const update: Record<string, unknown> = { ...req.body, isDriver };
+    if (!isDriver) {
+      delete update.licenseNumber;
+      delete update.licenseExpiry;
+      delete update.licenseDocument;
+      delete update.assignedVehicleId;
+    }
+    const driver = await Driver.findByIdAndUpdate(req.params.id, isDriver ? update : {
+      $set: update,
+      $unset: { licenseNumber: '', licenseExpiry: '', licenseDocument: '', assignedVehicleId: '' },
+    }, {
       new: true,
       runValidators: true,
     });
@@ -218,7 +240,7 @@ export const getDriverOptions = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const drivers = await Driver.find()
+    const drivers = await Driver.find({ $or: [{ isDriver: true }, { isDriver: { $exists: false } }] })
       .select("_id name")
       .sort({ name: 1 })
       .lean();

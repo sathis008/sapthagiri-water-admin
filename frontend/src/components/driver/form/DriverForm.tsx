@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -11,7 +11,8 @@ import { driverSchema, type DriverFormValues } from './driverSchema';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 
-import { createDriverThunk, updateDriverThunk, uploadDriverLicenseThunk } from '@/redux/driver';
+import { createEmployeeThunk, updateEmployeeThunk, uploadDriverLicenseThunk } from '@/redux/driver';
+import { getVehiclesThunk } from '@/redux/vehicle';
 
 import type { Driver, CreateDriverRequest, UpdateDriverRequest } from '@/types/driver';
 
@@ -21,12 +22,14 @@ interface DriverFormProps {
   onSuccess: () => void;
 
   onCancel: () => void;
+  defaultIsDriver?: boolean;
 }
 
-const DriverForm = ({ driver, onSuccess, onCancel }: DriverFormProps) => {
+const DriverForm = ({ driver, onSuccess, onCancel, defaultIsDriver = false }: DriverFormProps) => {
   const dispatch = useAppDispatch();
 
   const { loading } = useAppSelector((state) => state.driver);
+  const { vehicles } = useAppSelector((state) => state.vehicle);
 
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
 
@@ -34,6 +37,7 @@ const DriverForm = ({ driver, onSuccess, onCancel }: DriverFormProps) => {
     resolver: zodResolver(driverSchema),
 
     defaultValues: {
+      isDriver: defaultIsDriver,
       name: '',
 
       phone: '',
@@ -49,12 +53,14 @@ const DriverForm = ({ driver, onSuccess, onCancel }: DriverFormProps) => {
       notes: '',
 
       status: 'ACTIVE',
+      assignedVehicleId: null,
     },
   });
 
   useEffect(() => {
     if (driver) {
       form.reset({
+        isDriver: driver.isDriver !== false,
         name: driver.name,
 
         phone: driver.phone,
@@ -70,26 +76,33 @@ const DriverForm = ({ driver, onSuccess, onCancel }: DriverFormProps) => {
         notes: driver.notes || '',
 
         status: driver.status,
+        assignedVehicleId: typeof driver.assignedVehicleId === 'object' ? driver.assignedVehicleId?._id : driver.assignedVehicleId || null,
       });
     }
   }, [driver, form]);
+
+  const isDriver = useWatch({ control: form.control, name: 'isDriver' });
+
+  useEffect(() => {
+    dispatch(getVehiclesThunk());
+  }, [dispatch]);
 
   const onSubmit = async (values: DriverFormValues) => {
     let result;
 
     if (driver) {
       result = await dispatch(
-        updateDriverThunk({
+        updateEmployeeThunk({
           id: driver._id,
 
           payload: values as UpdateDriverRequest,
         })
       );
     } else {
-      result = await dispatch(createDriverThunk(values as CreateDriverRequest));
+      result = await dispatch(createEmployeeThunk(values as CreateDriverRequest));
     }
 
-    if (createDriverThunk.fulfilled.match(result) || updateDriverThunk.fulfilled.match(result)) {
+    if (createEmployeeThunk.fulfilled.match(result) || updateEmployeeThunk.fulfilled.match(result)) {
       const driverId = result.payload._id;
 
       if (licenseFile && driverId) {
@@ -110,13 +123,25 @@ const DriverForm = ({ driver, onSuccess, onCancel }: DriverFormProps) => {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <DriverBasicInfo control={form.control} isEdit={!!driver} />
+      <DriverBasicInfo
+        control={form.control}
+        isEdit={!!driver}
+        onDriverChange={(enabled) => {
+          if (!enabled) {
+            form.setValue('licenseNumber', '');
+            form.setValue('licenseExpiry', '');
+            form.setValue('assignedVehicleId', null);
+            setLicenseFile(null);
+          }
+        }}
+      />
 
-      <DriverLicense
+      {isDriver && <DriverLicense
         control={form.control}
         licenseFile={licenseFile}
         setLicenseFile={setLicenseFile}
-      />
+        vehicles={vehicles}
+      />}
 
       <div className="flex justify-end gap-3">
         <button type="button" className="rounded-md border px-4 py-2" onClick={onCancel}>
@@ -128,7 +153,7 @@ const DriverForm = ({ driver, onSuccess, onCancel }: DriverFormProps) => {
           disabled={loading}
           className="rounded-md bg-primary px-4 py-2 text-white"
         >
-          {loading ? 'Saving...' : driver ? 'Update Driver' : 'Save Driver'}
+          {loading ? 'Saving...' : driver ? 'Update Employee' : 'Save Employee'}
         </button>
       </div>
     </form>

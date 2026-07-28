@@ -35,7 +35,8 @@ const AppRoutes = () => {
           <Route path={APP_ROUTES.DASHBOARD} element={<Dashboard />} />
           <Route path={APP_ROUTES.CUSTOMERS} element={<CustomerList />} />
           <Route path={APP_ROUTES.VEHICLES} element={<VehicleList />} />
-          <Route path={APP_ROUTES.DRIVERS} element={<DriverList />} />
+          <Route path={APP_ROUTES.EMPLOYEES} element={<DriverList />} />
+          <Route path={APP_ROUTES.DRIVERS} element={<Navigate to={APP_ROUTES.EMPLOYEES} replace />} />
           <Route path={APP_ROUTES.BOOKINGS} element={<BookingList />} />
           <Route path={APP_ROUTES.PAYMENTS} element={<PaymentList />} />
           <Route path={APP_ROUTES.EXPENSES} element={<ExpenseList />} />

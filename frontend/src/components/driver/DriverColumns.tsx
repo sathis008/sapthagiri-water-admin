@@ -16,7 +16,15 @@ export const driverColumns = (
   {
     accessorKey: 'name',
 
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Driver" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Employee" />,
+  },
+
+  {
+    accessorKey: 'isDriver',
+
+    header: 'Type',
+
+    cell: ({ row }) => <Badge variant={row.original.isDriver !== false ? 'default' : 'secondary'}>{row.original.isDriver !== false ? 'Driver' : 'Office'}</Badge>,
   },
 
   {
@@ -30,7 +38,7 @@ export const driverColumns = (
 
     header: ({ column }) => <DataTableColumnHeader column={column} title="License Expiry" />,
 
-    cell: ({ row }) => row.original.licenseExpiry || '-',
+    cell: ({ row }) => row.original.isDriver !== false ? row.original.licenseExpiry || '-' : '-',
   },
 
   {

@@ -13,6 +13,8 @@ export const APP_ROUTES = {
 
   DRIVERS: "/drivers",
 
+  EMPLOYEES: "/employees",
+
   VEHICLES: "/vehicles",
 
   BOOKINGS: "/bookings",

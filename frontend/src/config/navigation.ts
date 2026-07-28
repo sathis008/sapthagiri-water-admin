@@ -55,9 +55,9 @@ export const navigation: NavigationItem[] = [
     showInBreadcrumb: true,
   },
   {
-    id: "drivers",
-    title: "Drivers",
-    path: "/drivers",
+    id: "employees",
+    title: "Employees",
+    path: "/employees",
     icon: Truck,
     roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,

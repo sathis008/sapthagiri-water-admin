@@ -19,6 +19,7 @@ class DriverService {
     page?: number;
     limit?: number;
     search?: string;
+    isDriver?: boolean | "all";
   }): Promise<DriverListResponse> {
     const response = await api.get<DriverListResponse>(
       API_ENDPOINTS.DRIVER.LIST,
