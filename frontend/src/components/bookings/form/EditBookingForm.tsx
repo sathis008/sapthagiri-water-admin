@@ -42,7 +42,7 @@ const EditBookingForm = ({ booking, onSuccess }: EditBookingFormProps) => {
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
 
   const [collectionMethod, setCollectionMethod] =
-    useState<CollectionMethod>("DRIVER_COLLECTION");
+    useState<CollectionMethod>("DRIVER");
 
   const [deliveryNotes, setDeliveryNotes] = useState("");
 
@@ -130,7 +130,7 @@ const EditBookingForm = ({ booking, onSuccess }: EditBookingFormProps) => {
     setBookingDate(booking.bookingDate.split("T")[0]);
 
     setNotes(booking.notes ?? "");
-    setCollectionMethod(booking.collectionMethod ?? "DRIVER_COLLECTION");
+    setCollectionMethod(booking.collectionMethod ?? "DRIVER");
 
     setDeliveryNotes(booking.notes ?? "");
 

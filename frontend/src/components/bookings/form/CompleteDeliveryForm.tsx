@@ -33,7 +33,7 @@ const CompleteDeliveryForm = ({
   const dispatch = useAppDispatch();
 
   const [collectionMethod, setCollectionMethod] =
-    useState<CollectionMethod>("DRIVER_COLLECTION");
+    useState<CollectionMethod>("DRIVER");
 
   const [notes, setNotes] = useState("");
 
@@ -75,13 +75,13 @@ const CompleteDeliveryForm = ({
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value="DRIVER_COLLECTION">Driver Collection</SelectItem>
+            <SelectItem value="DRIVER">Driver Collection</SelectItem>
 
-            <SelectItem value="ACCOUNT_COLLECTION">
+            <SelectItem value="MANAGER">
               Account Collection
             </SelectItem>
 
-            <SelectItem value="OFFICE_COLLECTION">Office Collection</SelectItem>
+            <SelectItem value="OFFICE">Office Collection</SelectItem>
           </SelectContent>
         </Select>
       </div>

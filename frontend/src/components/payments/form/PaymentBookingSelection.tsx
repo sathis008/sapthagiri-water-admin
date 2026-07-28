@@ -114,15 +114,12 @@ const PaymentBookingSelection = ({
 
   const getBadgeVariant = (method?: Booking["collectionMethod"]) => {
     switch (method) {
-      case "DRIVER_COLLECTION":
       case "DRIVER":
         return "default";
 
-      case "ACCOUNT_COLLECTION":
       case "MANAGER":
         return "secondary";
 
-      case "OFFICE_COLLECTION":
       case "OFFICE":
         return "outline";
 

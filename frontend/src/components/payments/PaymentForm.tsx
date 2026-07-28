@@ -92,10 +92,8 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
     if (!driver) return;
 
     const driverCollectionBookings = pendingBookings.filter(
-          (booking) =>
-            booking.collectionMethod === "DRIVER" ||
-            booking.collectionMethod === "DRIVER_COLLECTION",
-        );
+      (booking) => booking.collectionMethod === "DRIVER",
+    );
     setSelectedBookings(
       driverCollectionBookings
         .map((booking) => booking._id),
