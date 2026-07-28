@@ -120,6 +120,10 @@ export const navigation: NavigationItem[] = [
         path: "/reports/payments",
         roles: ["ADMIN"], // Manager cannot see Payment Report
       },
+      { id: "expense-report", title: "Expense Report", path: "/reports/expenses" },
+      { id: "vehicle-expense-report", title: "Vehicle Expense Report", path: "/reports/vehicle-expenses" },
+      { id: "salary-report", title: "Salary Report", path: "/reports/salary" },
+      { id: "profit-loss", title: "Profit & Loss", path: "/reports/profit-loss", roles: ["ADMIN"] },
       {
         id: "customer-ledger",
         title: "Customer Ledger",

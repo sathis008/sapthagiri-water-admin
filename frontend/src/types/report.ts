@@ -34,6 +34,9 @@ export interface PaymentReportRow {
   paymentNumber: string;
   paymentDate: string;
   customerName: string;
+  bookingNumber?: string;
+  driverName?: string;
+  status?: string;
   collectedBy: string;
   paymentMode: string;
   totalAmount: number;
@@ -108,3 +111,24 @@ export interface CustomerLedgerResponse {
 
   rows: CustomerLedgerRow[];
 }
+
+export interface ExpenseReportRow {
+  _id: string;
+  expenseCategory: string;
+  expenseSubCategory: string;
+  vehicleId?: { _id: string; vehicleNumber: string } | string | null;
+  driverId?: { _id: string; name: string } | string | null;
+  employeeName?: string | null;
+  vendor?: string | null;
+  notes?: string | null;
+  amount?: number | null;
+  dieselAmount?: number | null;
+  mileage?: number | null;
+  expenseDate: string;
+}
+export interface ExpenseReportResponse {
+  rows: ExpenseReportRow[];
+  summary: { totalAmount: number; totalRecords: number; totalDiesel: number };
+  pagination: Pagination;
+}
+export interface ProfitAndLossReport { totalRevenue: number; vehicleExpense: number; officeExpense: number; salaryExpense: number; dieselExpense: number; totalExpense: number; netProfit: number; }

@@ -16,6 +16,10 @@ import {
   getDailyCollection,
   exportDailyCollectionExcel,
   exportDailyCollectionPDF,
+  getExpenseReport,
+  getVehicleExpenseReport,
+  getSalaryReport,
+  getProfitAndLossReport,
 } from "../controller/report.controller";
 
 import { authenticate } from "../middleware/auth.middleware";
@@ -63,5 +67,10 @@ router.post("/driver-settlement/export/pdf", exportDriverSettlementPDF);
 router.get("/daily-collection", getDailyCollection);
 router.post("/daily-collection/export/excel", exportDailyCollectionExcel);
 router.post("/daily-collection/export/pdf", exportDailyCollectionPDF);
+
+router.get("/expenses", getExpenseReport);
+router.get("/vehicle-expenses", getVehicleExpenseReport);
+router.get("/salary", getSalaryReport);
+router.get("/profit-loss", authorize("ADMIN"), getProfitAndLossReport);
 
 export default router;

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 
 import Booking from "../models/booking.model";
 
@@ -7,6 +8,9 @@ import { getPagination } from "../utils/pagination";
 import { successResponse, errorResponse } from "../utils/response";
 import Customer from "../models/customer.model";
 import Payment from "../models/payment.model";
+import PaymentItem from "../models/paymentItem.model";
+import Expense from "../models/expense.model";
+import { AuthRequest } from "../middleware/auth.middleware";
 import { exportExcel } from "../utils/excel";
 import { exportPDF } from "../utils/pdf";
 import {
@@ -22,6 +26,37 @@ import {
   paymentReportExcelColumns,
   paymentReportPdfColumns,
 } from "../utils/reportColumns";
+
+const managerDatesAllowed = (req: AuthRequest, res: Response): boolean => {
+  if (req.user?.role !== "MANAGER") return true;
+  const { fromDate, toDate } = req.query;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const valid = (value: unknown) => {
+    if (!value) return true;
+    const date = new Date(String(value));
+    return !Number.isNaN(date.getTime()) && date >= firstDay && date <= today;
+  };
+  if (!valid(fromDate) || !valid(toDate)) {
+    res.status(403).json({ success: false, message: "Managers can only access reports for the current month through today." });
+    return false;
+  }
+  return true;
+};
+
+const dateFilter = (params: Record<string, unknown>, field: string) => {
+  const filter: Record<string, Date> = {};
+  if (params.fromDate) filter.$gte = new Date(String(params.fromDate));
+  if (params.toDate) filter.$lte = new Date(`${String(params.toDate)}T23:59:59.999Z`);
+  return Object.keys(filter).length ? { [field]: filter } : {};
+};
+
+const reportPagination = (params: Record<string, unknown>) => {
+  const page = Math.max(1, Number(params.page || 1));
+  const limit = Math.max(1, Math.min(100, Number(params.limit || 10)));
+  return { page, limit, skip: (page - 1) * limit };
+};
 
 /**
  * Booking Report Data
@@ -236,8 +271,15 @@ const getPaymentReportData = async (source: Request | Record<string, any>) => {
     ]),
   ]);
 
+  const paymentItems = await PaymentItem.find({ paymentId: { $in: rows.map((row: any) => row._id) } }).populate("bookingId", "bookingNumber").lean();
+  const bookingNumbers = new Map<string, string>();
+  paymentItems.forEach((item: any) => {
+    const booking = item.bookingId as any;
+    if (booking?.bookingNumber && !bookingNumbers.has(String(item.paymentId))) bookingNumbers.set(String(item.paymentId), booking.bookingNumber);
+  });
+
   return {
-    rows,
+    rows: rows.map((row: any) => ({ ...row, bookingNumber: bookingNumbers.get(String(row._id)) ?? "-", status: "PAID" })),
 
     summary: summary[0] ?? {
       totalPayments: 0,
@@ -353,6 +395,7 @@ export const getBookingReport = async (
   res: Response,
 ): Promise<void> => {
   try {
+    if (!managerDatesAllowed(req as AuthRequest, res)) return;
     const data = await getBookingReportData(req);
 
     successResponse(res, "Booking report fetched successfully.", data);
@@ -363,6 +406,84 @@ export const getBookingReport = async (
       error instanceof Error ? error.message : "Something went wrong",
     );
   }
+};
+
+const getExpenseReportData = async (params: Record<string, unknown>, vehicleOnly = false, salaryOnly = false) => {
+  const filter: Record<string, any> = { isDeleted: false, ...dateFilter(params, "expenseDate") };
+  if (vehicleOnly) {
+    filter.$or = [
+      { expenseCategory: "Vehicle Expense" },
+      { expenseCategory: "Salary Expense", expenseSubCategory: "Driver", dieselAmount: { $gt: 0 } },
+    ];
+  }
+  if (salaryOnly) filter.expenseCategory = "Salary Expense";
+  if (params.expenseCategory) filter.expenseCategory = params.expenseCategory;
+  if (params.expenseSubCategory) {
+    if (vehicleOnly && params.expenseSubCategory === "Diesel") {
+      filter.$or = [{ expenseCategory: "Salary Expense", expenseSubCategory: "Driver", dieselAmount: { $gt: 0 } }];
+    } else {
+      filter.expenseSubCategory = params.expenseSubCategory;
+    }
+  }
+  if (params.vehicleId && mongoose.isValidObjectId(String(params.vehicleId))) {
+    filter.vehicleId = new mongoose.Types.ObjectId(String(params.vehicleId));
+  }
+  if (params.driverId && mongoose.isValidObjectId(String(params.driverId))) {
+    filter.driverId = new mongoose.Types.ObjectId(String(params.driverId));
+  }
+  if (params.vendor) filter.vendor = new RegExp(String(params.vendor), "i");
+  if (params.salaryType) filter.expenseSubCategory = params.salaryType;
+  if (params.employeeName) filter.employeeName = params.employeeName;
+  const { page, limit, skip } = reportPagination(params);
+  const amountExpression = vehicleOnly
+    ? { $cond: [{ $eq: ["$expenseCategory", "Salary Expense"] }, { $ifNull: ["$dieselAmount", 0] }, { $ifNull: ["$amount", 0] }] }
+    : { $ifNull: ["$amount", 0] };
+  const [rows, total, totals] = await Promise.all([
+    Expense.find(filter).populate("vehicleId", "vehicleNumber").populate("driverId", "name isDriver").sort({ expenseDate: -1 }).skip(skip).limit(limit).lean(),
+    Expense.countDocuments(filter),
+    Expense.aggregate([{ $match: filter }, { $group: { _id: null, totalAmount: { $sum: amountExpression }, totalRecords: { $sum: 1 }, totalDiesel: { $sum: { $ifNull: ["$dieselAmount", 0] } } } }]),
+  ]);
+  const displayRows = vehicleOnly ? rows.map((row: any) => row.expenseCategory === "Salary Expense" ? { ...row, expenseSubCategory: "Diesel", amount: row.dieselAmount || 0, vendor: null, notes: row.notes || "Driver salary diesel" } : row) : rows;
+  return { rows: displayRows, summary: totals[0] ?? { totalAmount: 0, totalRecords: 0, totalDiesel: 0 }, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+};
+
+export const getExpenseReport = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!managerDatesAllowed(req as AuthRequest, res)) return;
+    successResponse(res, "Expense report fetched successfully.", await getExpenseReportData(req.query as Record<string, unknown>));
+  } catch (error) { errorResponse(res, 500, error instanceof Error ? error.message : "Failed to fetch expense report."); }
+};
+
+export const getVehicleExpenseReport = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!managerDatesAllowed(req as AuthRequest, res)) return;
+    successResponse(res, "Vehicle expense report fetched successfully.", await getExpenseReportData(req.query as Record<string, unknown>, true));
+  } catch (error) { errorResponse(res, 500, error instanceof Error ? error.message : "Failed to fetch vehicle expense report."); }
+};
+
+export const getSalaryReport = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!managerDatesAllowed(req as AuthRequest, res)) return;
+    successResponse(res, "Salary report fetched successfully.", await getExpenseReportData(req.query as Record<string, unknown>, false, true));
+  } catch (error) { errorResponse(res, 500, error instanceof Error ? error.message : "Failed to fetch salary report."); }
+};
+
+export const getProfitAndLossReport = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const params = req.query as Record<string, unknown>;
+    const [revenue, expenses] = await Promise.all([
+      Payment.aggregate([{ $match: dateFilter(params, "paymentDate") }, { $group: { _id: null, total: { $sum: "$totalAmount" } } }]),
+      Expense.aggregate([{ $match: { isDeleted: false, ...dateFilter(params, "expenseDate") } }, { $group: { _id: "$expenseCategory", salaryAmount: { $sum: { $ifNull: ["$amount", 0] } }, dieselAmount: { $sum: { $ifNull: ["$dieselAmount", 0] } } } }]),
+    ]);
+    const expenseByCategory = Object.fromEntries(expenses.map((item) => [item._id, item]));
+    const vehicleExpense = Number(expenseByCategory["Vehicle Expense"]?.salaryAmount || 0);
+    const officeExpense = Number(expenseByCategory["Office Expense"]?.salaryAmount || 0);
+    const salaryExpense = Number(expenseByCategory["Salary Expense"]?.salaryAmount || 0);
+    const dieselExpense = Number(expenseByCategory["Salary Expense"]?.dieselAmount || 0);
+    const totalExpense = vehicleExpense + officeExpense + salaryExpense + dieselExpense;
+    const totalRevenue = Number(revenue[0]?.total || 0);
+    successResponse(res, "Profit and loss report fetched successfully.", { totalRevenue, vehicleExpense, officeExpense, salaryExpense, dieselExpense, totalExpense, netProfit: totalRevenue - totalExpense });
+  } catch (error) { errorResponse(res, 500, error instanceof Error ? error.message : "Failed to fetch profit and loss report."); }
 };
 
 export const exportBookingExcel = async (

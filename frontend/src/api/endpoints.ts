@@ -136,5 +136,10 @@ export const API_ENDPOINTS = {
     DAILY_COLLECTION_EXCEL: "/api/reports/daily-collection/export/excel",
 
     DAILY_COLLECTION_PDF: "/api/reports/daily-collection/export/pdf",
+
+    EXPENSES: "/api/reports/expenses",
+    VEHICLE_EXPENSES: "/api/reports/vehicle-expenses",
+    SALARY: "/api/reports/salary",
+    PROFIT_LOSS: "/api/reports/profit-loss",
   },
 } as const;

@@ -19,6 +19,8 @@ import DailyCollection from "@/pages/reports/DailyCollection";
 import DriverSettlement from "@/pages/reports/DriverSettlement";
 import PaymentReport from "@/pages/reports/PaymentReport";
 import ExpenseList from "@/pages/expense/ExpenseList";
+import { ExpenseReport, SalaryReport, VehicleExpenseReport } from "@/pages/reports/ExpenseReports";
+import ProfitAndLoss from "@/pages/reports/ProfitAndLoss";
 
 const AppRoutes = () => {
   return (
@@ -52,10 +54,14 @@ const AppRoutes = () => {
             path="/reports/daily-collection"
             element={<DailyCollection />}
           />
+          <Route path="/reports/expenses" element={<ExpenseReport />} />
+          <Route path="/reports/vehicle-expenses" element={<VehicleExpenseReport />} />
+          <Route path="/reports/salary" element={<SalaryReport />} />
 
           {/* Payment Report — Admin only (full financial data) */}
           <Route element={<RoleGuard allowedRoles={["ADMIN"]} />}>
             <Route path="/reports/payments" element={<PaymentReport />} />
+            <Route path="/reports/profit-loss" element={<ProfitAndLoss />} />
           </Route>
         </Route>
       </Route>

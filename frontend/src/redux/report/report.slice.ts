@@ -6,6 +6,10 @@ import {
   getCustomerLedgerThunk,
   getDriverSettlementThunk,
   getDailyCollectionThunk,
+  getExpenseReportThunk,
+  getVehicleExpenseReportThunk,
+  getSalaryReportThunk,
+  getProfitAndLossReportThunk,
 } from "./report.thunk";
 import type {
   BookingReportResponse,
@@ -13,6 +17,8 @@ import type {
   DriverSettlementResponse,
   DailyCollectionResponse,
   CustomerLedgerResponse,
+  ExpenseReportResponse,
+  ProfitAndLossReport,
 } from "@/types/report";
 
 interface ReportState {
@@ -25,6 +31,10 @@ interface ReportState {
   driverSettlement: DriverSettlementResponse | null;
 
   dailyCollection: DailyCollectionResponse | null;
+  expenseReport: ExpenseReportResponse | null;
+  vehicleExpenseReport: ExpenseReportResponse | null;
+  salaryReport: ExpenseReportResponse | null;
+  profitAndLossReport: ProfitAndLossReport | null;
 
   loading: boolean;
 
@@ -41,6 +51,10 @@ const initialState: ReportState = {
   driverSettlement: null,
 
   dailyCollection: null,
+  expenseReport: null,
+  vehicleExpenseReport: null,
+  salaryReport: null,
+  profitAndLossReport: null,
 
   loading: false,
 
@@ -88,6 +102,10 @@ const reportSlice = createSlice({
     builder.addCase(getDailyCollectionThunk.fulfilled, (state, action) => {
       state.dailyCollection = action.payload;
     });
+    builder.addCase(getExpenseReportThunk.fulfilled, (state, action) => { state.loading = false; state.expenseReport = action.payload; });
+    builder.addCase(getVehicleExpenseReportThunk.fulfilled, (state, action) => { state.loading = false; state.vehicleExpenseReport = action.payload; });
+    builder.addCase(getSalaryReportThunk.fulfilled, (state, action) => { state.loading = false; state.salaryReport = action.payload; });
+    builder.addCase(getProfitAndLossReportThunk.fulfilled, (state, action) => { state.loading = false; state.profitAndLossReport = action.payload; });
   },
 });
 

@@ -3,6 +3,8 @@ import { API_ENDPOINTS } from "@/api/endpoints";
 import type {
   BookingReportResponse,
   PaymentReportResponse,
+  ExpenseReportResponse,
+  ProfitAndLossReport,
 } from "@/types/report";
 
 class ReportService {
@@ -31,6 +33,11 @@ class ReportService {
 
     return response.data.data;
   }
+
+  async getExpenseReport(params?: Record<string, unknown>): Promise<ExpenseReportResponse> { return (await api.get(API_ENDPOINTS.REPORT.EXPENSES, { params })).data.data; }
+  async getVehicleExpenseReport(params?: Record<string, unknown>): Promise<ExpenseReportResponse> { return (await api.get(API_ENDPOINTS.REPORT.VEHICLE_EXPENSES, { params })).data.data; }
+  async getSalaryReport(params?: Record<string, unknown>): Promise<ExpenseReportResponse> { return (await api.get(API_ENDPOINTS.REPORT.SALARY, { params })).data.data; }
+  async getProfitAndLossReport(params?: Record<string, unknown>): Promise<ProfitAndLossReport> { return (await api.get(API_ENDPOINTS.REPORT.PROFIT_LOSS, { params })).data.data; }
 
   /**
    * Driver Settlement

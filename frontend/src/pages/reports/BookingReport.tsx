@@ -39,6 +39,9 @@ const BookingReport = () => {
 
   const { user } = useAppSelector((state) => state.auth);
   const adminView = isAdmin(user?.role);
+  const now = new Date();
+  const managerMinDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+  const managerMaxDate = now.toISOString().slice(0, 10);
 
   const [search, setSearch] = useState("");
 
@@ -239,6 +242,8 @@ const BookingReport = () => {
               customers={customerOptions}
               drivers={driverOptions}
               vehicles={vehicleOptions}
+              minDate={adminView ? undefined : managerMinDate}
+              maxDate={adminView ? undefined : managerMaxDate}
               onChange={(field, value) =>
                 setFilters((prev) => ({
                   ...prev,
