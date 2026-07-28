@@ -11,43 +11,25 @@ import {
 } from "../controller/driver.controller";
 
 import { uploadDriverDocument } from "../middleware/upload.middleware";
+import { authenticate } from "../middleware/auth.middleware";
+import { authorize } from "../middleware/role.middleware";
 
 const router = Router();
 
-/**
- * Create Driver
- */
-router.post("/", createDriver);
+router.post("/", authenticate, createDriver);
+router.get("/", authenticate, getDrivers);
+router.get("/options", authenticate, getDriverOptions);
+router.get("/:id", authenticate, getDriverById);
+router.put("/:id", authenticate, updateDriver);
 
-/**
- * Get All Drivers
- */
-router.get("/", getDrivers);
+// Delete requires ADMIN role
+router.delete("/:id", authenticate, authorize("ADMIN"), deleteDriver);
 
-/**
- * Get Driver By Id
- */
-router.get("/:id", getDriverById);
-
-/**
- * Update Driver
- */
-router.put("/:id", updateDriver);
-
-/**
- * Delete Driver
- */
-router.delete("/:id", deleteDriver);
-
-/**
- * Upload Driving License
- */
 router.post(
   "/:id/upload",
+  authenticate,
   uploadDriverDocument.single("file"),
   uploadDriverLicense,
 );
-
-router.get("/options", getDriverOptions);
 
 export default router;

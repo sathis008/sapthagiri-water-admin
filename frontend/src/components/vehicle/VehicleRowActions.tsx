@@ -1,27 +1,33 @@
-import { Eye, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
-import type { Vehicle } from '@/types/vehicle';
-
-import { Button } from '@/components/ui/button';
-
+import type { Vehicle } from "@/types/vehicle";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
+
+import { useAppSelector } from "@/redux/hooks";
+import { canDelete } from "@/utills/auth";
 
 interface VehicleRowActionsProps {
   vehicle: Vehicle;
-
   onView: (vehicle: Vehicle) => void;
-
   onEdit: (vehicle: Vehicle) => void;
-
   onDelete: (vehicle: Vehicle) => void;
 }
 
-const VehicleRowActions = ({ vehicle, onView, onEdit, onDelete }: VehicleRowActionsProps) => {
+const VehicleRowActions = ({
+  vehicle,
+  onView,
+  onEdit,
+  onDelete,
+}: VehicleRowActionsProps) => {
+  const { user } = useAppSelector((state) => state.auth);
+  const showDelete = canDelete(user?.role);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -41,10 +47,15 @@ const VehicleRowActions = ({ vehicle, onView, onEdit, onDelete }: VehicleRowActi
           Edit
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="text-red-600" onClick={() => onDelete(vehicle)}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
-        </DropdownMenuItem>
+        {showDelete && (
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => onDelete(vehicle)}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

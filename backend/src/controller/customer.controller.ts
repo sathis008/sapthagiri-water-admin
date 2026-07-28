@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Customer from "../models/customer.model";
+import Booking from "../models/booking.model";
 import { errorResponse, successResponse } from "../utils/response";
 
 // =======================
@@ -22,6 +23,7 @@ export const createCustomer = async (
       capacity,
       price,
       status,
+      collectionMethod,
       notes,
     } = req.body;
 
@@ -65,6 +67,7 @@ export const createCustomer = async (
       capacity,
       price,
       status,
+      collectionMethod,
       notes: notes?.trim(),
     });
 
@@ -228,6 +231,7 @@ export const updateCustomer = async (
       capacity,
       price,
       status,
+      collectionMethod,
       notes,
     } = req.body;
 
@@ -272,9 +276,18 @@ export const updateCustomer = async (
     customer.capacity = capacity ?? customer.capacity;
     customer.price = price ?? customer.price;
     customer.status = status ?? customer.status;
+    customer.collectionMethod = collectionMethod ?? customer.collectionMethod;
     customer.notes = notes ?? customer.notes;
 
     await customer.save();
+
+    // Keep unpaid bookings in sync so payment collection details are visible.
+    if (collectionMethod) {
+      await Booking.updateMany(
+        { customerId: customer._id, paymentStatus: "PENDING" },
+        { collectionMethod },
+      );
+    }
 
     res.status(200).json({
       success: true,

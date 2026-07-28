@@ -90,9 +90,21 @@ export const getPaymentByIdThunk = createAsyncThunk<
  */
 export const getPendingBookingsThunk = createAsyncThunk(
   "payment/getPendingBookings",
-  async (customerId: string, { rejectWithValue }) => {
+  async (
+    {
+      customerId,
+      driverId,
+      fromDate,
+      toDate,
+    }: { customerId?: string; driverId?: string; fromDate?: string; toDate?: string },
+    { rejectWithValue },
+  ) => {
     try {
-      return await bookingService.getPendingBookingsByCustomer(customerId);
+      return await bookingService.getPendingBookingsByCustomer(customerId, {
+        driverId,
+        fromDate,
+        toDate,
+      });
     } catch (error) {
       const axiosError = error as AxiosError<{
         message: string;

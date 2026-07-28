@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import DocumentUploadCard from '@/components/common/DocumentUploadCard';
 
 import type { DriverFormValues } from './driverSchema';
+import type { Vehicle } from '@/types/vehicle';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface DriverLicenseProps {
   control: Control<DriverFormValues>;
@@ -20,9 +22,10 @@ interface DriverLicenseProps {
   licenseFile: File | null;
 
   setLicenseFile: (file: File | null) => void;
+  vehicles: Vehicle[];
 }
 
-const DriverLicense = ({ control, licenseFile, setLicenseFile }: DriverLicenseProps) => {
+const DriverLicense = ({ control, licenseFile, setLicenseFile, vehicles }: DriverLicenseProps) => {
   return (
     <Card>
       <CardHeader>
@@ -73,6 +76,20 @@ const DriverLicense = ({ control, licenseFile, setLicenseFile }: DriverLicensePr
             name="notes"
             control={control}
             render={({ field }) => <Textarea rows={4} placeholder="Notes" {...field} />}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Assigned Vehicle</Label>
+          <Controller
+            name="assignedVehicleId"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value || ''} onValueChange={field.onChange}>
+                <SelectTrigger><SelectValue placeholder="Select vehicle" /></SelectTrigger>
+                <SelectContent>{vehicles.map((vehicle) => <SelectItem key={vehicle._id} value={vehicle._id}>{vehicle.vehicleNumber}</SelectItem>)}</SelectContent>
+              </Select>
+            )}
           />
         </div>
       </CardContent>

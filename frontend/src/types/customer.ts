@@ -1,3 +1,5 @@
+export type CollectionMethod = "DRIVER" | "MANAGER" | "OFFICE";
+
 export interface Customer {
   _id: string;
 
@@ -18,6 +20,8 @@ export interface Customer {
 
   status: "ACTIVE" | "INACTIVE";
 
+  collectionMethod?: CollectionMethod;
+
   notes?: string;
 
   createdAt: string;
@@ -36,6 +40,7 @@ export interface CreateCustomerRequest {
   capacity?: string;
   price?: number;
   status?: "ACTIVE" | "INACTIVE";
+  collectionMethod?: CollectionMethod;
   notes?: string;
 }
 

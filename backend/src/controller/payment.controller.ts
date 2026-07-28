@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 
 import Booking from "../models/booking.model";
-import Customer from "../models/customer.model";
 import Driver from "../models/driver.models";
 import PaymentItem from "../models/paymentItem.model";
 import Payment from "../models/payment.model";
@@ -33,20 +32,6 @@ export const createPayment = async (
     }
 
     /**
-     * Customer
-     */
-    const customer = await Customer.findById(customerId);
-
-    if (!customer) {
-      res.status(404).json({
-        success: false,
-        message: "Customer not found.",
-      });
-
-      return;
-    }
-
-    /**
      * Driver
      */
     let driver = null;
@@ -67,13 +52,14 @@ export const createPayment = async (
     /**
      * Get Pending Bookings
      */
-    const bookings = await Booking.find({
+    const bookingFilter: Record<string, unknown> = {
       _id: { $in: bookingIds },
-
-      customerId,
-
       paymentStatus: "PENDING",
-    });
+    };
+
+    if (customerId) bookingFilter.customerId = customerId;
+
+    const bookings = await Booking.find(bookingFilter);
 
     if (!bookings.length) {
       res.status(400).json({
@@ -84,76 +70,52 @@ export const createPayment = async (
       return;
     }
 
-    /**
-     * Calculate Total
-     */
-    const totalAmount = bookings.reduce(
-      (sum, booking) => sum + booking.price,
-      0,
-    );
+    // A driver can collect payments for several customers. Each customer gets
+    // their own payment record, while all selected bookings are processed once.
+    const bookingsByCustomer = new Map<string, typeof bookings>();
+    for (const booking of bookings) {
+      const key = booking.customerId.toString();
+      bookingsByCustomer.set(key, [...(bookingsByCustomer.get(key) ?? []), booking]);
+    }
 
-    /**
-     * Create Payment
-     */
-    const payment = await Payment.create({
-      paymentNumber: await generatePaymentNumber(),
+    const payments = [];
+    for (const [selectedCustomerId, customerBookings] of bookingsByCustomer) {
+      const payment = await Payment.create({
+        paymentNumber: await generatePaymentNumber(),
+        customerId: selectedCustomerId,
+        customerName: customerBookings[0].customerName,
+        totalAmount: customerBookings.reduce((sum, booking) => sum + booking.price, 0),
+        paymentMode,
+        collectedBy,
+        driverId: driver?._id,
+        driverName: driver?.name,
+        paymentDate: new Date(),
+        notes,
+      });
 
-      customerId,
+      await PaymentItem.insertMany(
+        customerBookings.map((booking) => ({
+          paymentId: payment._id,
+          bookingId: booking._id,
+          bookingNumber: booking.bookingNumber,
+          amount: booking.price,
+        })),
+      );
 
-      customerName: customer.name,
+      await Booking.updateMany(
+        { _id: { $in: customerBookings.map((booking) => booking._id) } },
+        { paymentStatus: "PAID", paymentId: payment._id },
+      );
 
-      totalAmount,
-
-      paymentMode,
-
-      collectedBy,
-
-      driverId: driver?._id,
-
-      driverName: driver?.name,
-
-      paymentDate: new Date(),
-
-      notes,
-    });
-
-    /**
-     * Create Payment Items
-     */
-    const paymentItems = bookings.map((booking) => ({
-      paymentId: payment._id,
-
-      bookingId: booking._id,
-
-      bookingNumber: booking.bookingNumber,
-
-      amount: booking.price,
-    }));
-
-    await PaymentItem.insertMany(paymentItems);
-
-    /**
-     * Update Bookings
-     */
-    await Booking.updateMany(
-      {
-        _id: {
-          $in: bookingIds,
-        },
-      },
-      {
-        paymentStatus: "PAID",
-
-        paymentId: payment._id,
-      },
-    );
+      payments.push(payment);
+    }
 
     res.status(201).json({
       success: true,
 
       message: "Payment received successfully.",
 
-      data: payment,
+      data: payments,
     });
   } catch (error: any) {
     res.status(500).json({

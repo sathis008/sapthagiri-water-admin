@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import type { Customer } from "@/types/customer";
+import type { Driver } from "@/types/driver";
 import type { CollectedBy, PaymentMode } from "@/types/payment";
 
 import { createPaymentThunk, getPendingBookingsThunk } from "@/redux/payment";
@@ -23,8 +24,9 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
   const { pendingBookings } = useAppSelector((state) => state.payment);
 
   const [customer, setCustomer] = useState<Customer | null>(null);
-
-  //const [driver, setDriver] = useState<Driver | null>(null);
+  const [driver, setDriver] = useState<Driver | null>(null);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   const [selectedBookings, setSelectedBookings] = useState<string[]>([]);
 
@@ -61,16 +63,44 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCustomer(null);
-    // setDriver(null);
+    setDriver(null);
+    setFromDate("");
+    setToDate("");
     setSelectedBookings([]);
     setCollectedBy("OFFICE");
     setPaymentMode("CASH");
     setNotes("");
   }, []);
 
-  //------------------------------------------
-  // Auto Payment Information
-  //------------------------------------------
+  useEffect(() => {
+    if (!customer && !driver) return;
+
+    setSelectedBookings([]);
+    dispatch(
+      getPendingBookingsThunk({
+        customerId: customer?._id,
+        driverId: driver?._id,
+        fromDate: fromDate || undefined,
+        toDate: toDate || undefined,
+      }),
+    );
+  }, [customer, driver, fromDate, toDate, dispatch]);
+
+  // A selected driver collects payments for Driver-collection bookings.
+  // Select those rows automatically once the filtered list has loaded.
+  useEffect(() => {
+    if (!driver) return;
+
+    const driverCollectionBookings = pendingBookings.filter(
+          (booking) =>
+            booking.collectionMethod === "DRIVER" ||
+            booking.collectionMethod === "DRIVER_COLLECTION",
+        );
+    setSelectedBookings(
+      driverCollectionBookings
+        .map((booking) => booking._id),
+    );
+  }, [driver, pendingBookings]);
 
   useEffect(() => {
     if (!collectionMethod || !selectedBookingObjects.length) {
@@ -84,7 +114,7 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
     const booking = selectedBookingObjects[0];
 
     switch (booking.collectionMethod) {
-      case "DRIVER_COLLECTION":
+      case "DRIVER":
         setCollectedBy("DRIVER");
         setPaymentMode("CASH");
 
@@ -95,13 +125,13 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
 
         break;
 
-      case "ACCOUNT_COLLECTION":
-        setCollectedBy("OFFICE");
+      case "MANAGER":
+        setCollectedBy("MANAGER");
         setPaymentMode("BANK");
         //   setDriver(null);
         break;
 
-      case "OFFICE_COLLECTION":
+      case "OFFICE":
         setCollectedBy("OFFICE");
 
         /**
@@ -127,8 +157,8 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!customer) {
-      alert("Please select customer.");
+    if (!customer && !driver) {
+      alert("Please select a customer or driver.");
       return;
     }
 
@@ -140,7 +170,7 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
     try {
       await dispatch(
         createPaymentThunk({
-          customerId: customer._id,
+          customerId: customer?._id,
 
           bookingIds: selectedBookings,
 
@@ -149,8 +179,8 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
           paymentMode,
 
           driverId:
-            collectionMethod === "DRIVER_COLLECTION"
-              ? selectedBookingObjects[0]?.driverId
+            collectedBy === "DRIVER"
+              ? (driver?._id ?? selectedBookingObjects[0]?.driverId)
               : undefined,
 
           notes,
@@ -162,7 +192,9 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
       // -----------------------------
 
       setCustomer(null);
-      //   setDriver(null);
+      setDriver(null);
+      setFromDate("");
+      setToDate("");
       setSelectedBookings([]);
       setCollectedBy("OFFICE");
       setPaymentMode("CASH");
@@ -180,28 +212,38 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
 
       <PaymentCustomer
         customer={customer}
+        driver={driver}
         onCustomerSelect={(customer) => {
-          setCustomer(customer);
-
+          setCustomer((current) =>
+            current?._id === customer._id ? null : customer,
+          );
           setSelectedBookings([]);
-
-          dispatch(getPendingBookingsThunk(customer._id));
+        }}
+        onDriverSelect={(driver) => {
+          setDriver((current) =>
+            current?._id === driver._id ? null : driver,
+          );
+          setSelectedBookings([]);
         }}
       />
 
       {/* Pending Bookings */}
 
       <PaymentBookingSelection
-        bookings={pendingBookings}
+        bookings={customer || driver ? pendingBookings : []}
         selectedBookings={selectedBookings}
         onSelectionChange={setSelectedBookings}
+        fromDate={fromDate}
+        toDate={toDate}
+        onFromDateChange={setFromDate}
+        onToDateChange={setToDate}
       />
 
       {/* Payment Information */}
 
       {collectionMethod && (
         <>
-          {collectionMethod === "OFFICE_COLLECTION" ? (
+          {collectionMethod === "OFFICE" ? (
             <PaymentInformation
               paymentMode={paymentMode}
               notes={notes}
@@ -265,7 +307,7 @@ const PaymentForm = ({ onSuccess }: PaymentFormProps) => {
 
         <Button
           type="submit"
-          disabled={!customer || selectedBookings.length === 0}
+          disabled={(!customer && !driver) || selectedBookings.length === 0}
         >
           Receive Payment
         </Button>

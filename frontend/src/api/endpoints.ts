@@ -66,6 +66,8 @@ export const API_ENDPOINTS = {
 
     PENDING: (customerId: string) =>
       `/api/bookings/customer/${customerId}/pending`,
+
+    PENDING_FILTERED: "/api/bookings/pending",
   },
 
   PAYMENT: {
@@ -76,6 +78,14 @@ export const API_ENDPOINTS = {
     DETAILS: (id: string) => `/api/payments/${id}`,
 
     DELETE: (id: string) => `/api/payments/${id}`,
+  },
+
+  EXPENSE: {
+    LIST: "/api/expenses",
+    CREATE: "/api/expenses",
+    DETAILS: (id: string) => `/api/expenses/${id}`,
+    UPDATE: (id: string) => `/api/expenses/${id}`,
+    DELETE: (id: string) => `/api/expenses/${id}`,
   },
 
   DASHBOARD: {
@@ -126,5 +136,10 @@ export const API_ENDPOINTS = {
     DAILY_COLLECTION_EXCEL: "/api/reports/daily-collection/export/excel",
 
     DAILY_COLLECTION_PDF: "/api/reports/daily-collection/export/pdf",
+
+    EXPENSES: "/api/reports/expenses",
+    VEHICLE_EXPENSES: "/api/reports/vehicle-expenses",
+    SALARY: "/api/reports/salary",
+    PROFIT_LOSS: "/api/reports/profit-loss",
   },
 } as const;

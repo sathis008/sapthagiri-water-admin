@@ -21,8 +21,7 @@ export interface IBooking extends Document {
 
   paymentStatus: "PENDING" | "PAID";
 
-  collectionMethod?:
-    "DRIVER_COLLECTION" | "ACCOUNT_COLLECTION" | "OFFICE_COLLECTION";
+  collectionMethod?: "DRIVER" | "MANAGER" | "OFFICE";
 
   vehicleId?: mongoose.Types.ObjectId;
 
@@ -101,7 +100,7 @@ const BookingSchema = new Schema<IBooking>(
 
     collectionMethod: {
       type: String,
-      enum: ["DRIVER_COLLECTION", "ACCOUNT_COLLECTION", "OFFICE_COLLECTION"],
+      enum: ["DRIVER", "MANAGER", "OFFICE"],
     },
 
     vehicleId: {

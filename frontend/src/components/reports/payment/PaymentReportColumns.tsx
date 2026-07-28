@@ -6,6 +6,9 @@ export interface PaymentReportRow {
   paymentNumber: string;
   paymentDate: string;
   customerName: string;
+  bookingNumber?: string;
+  driverName?: string;
+  status?: string;
   collectedBy: string;
   paymentMode: string;
   totalAmount: number;
@@ -13,8 +16,22 @@ export interface PaymentReportRow {
 
 export const paymentReportColumns: ColumnDef<PaymentReportRow>[] = [
   {
+    accessorKey: "bookingNumber",
+    header: "Booking No",
+  },
+  {
+    accessorKey: "driverName",
+    header: "Driver",
+    cell: ({ row }) => row.original.driverName || "-",
+  },
+  {
     accessorKey: "paymentNumber",
     header: "Receipt No",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => <Badge>{row.original.status || "PAID"}</Badge>,
   },
   {
     accessorKey: "paymentDate",

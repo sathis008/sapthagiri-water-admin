@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 
 import ReportService from "@/services/report.service";
+import type { ExpenseReportResponse, ProfitAndLossReport } from "@/types/report";
 
 export const getBookingReportThunk = createAsyncThunk(
   "report/getBookingReport",
@@ -34,6 +35,18 @@ export const getPaymentReportThunk = createAsyncThunk(
     }
   },
 );
+
+const reportThunk = <T,>(type: string, method: (params?: Record<string, unknown>) => Promise<T>, fallback: string) => createAsyncThunk<T, Record<string, unknown>, { rejectValue: string }>(
+  type,
+  async (params: Record<string, unknown>, { rejectWithValue }) => {
+    try { return await method(params); } catch (error) { return rejectWithValue((error as AxiosError<{ message: string }>).response?.data?.message ?? fallback); }
+  },
+);
+
+export const getExpenseReportThunk = reportThunk<ExpenseReportResponse>("report/getExpenseReport", ReportService.getExpenseReport.bind(ReportService), "Failed to fetch expense report.");
+export const getVehicleExpenseReportThunk = reportThunk<ExpenseReportResponse>("report/getVehicleExpenseReport", ReportService.getVehicleExpenseReport.bind(ReportService), "Failed to fetch vehicle expense report.");
+export const getSalaryReportThunk = reportThunk<ExpenseReportResponse>("report/getSalaryReport", ReportService.getSalaryReport.bind(ReportService), "Failed to fetch salary report.");
+export const getProfitAndLossReportThunk = reportThunk<ProfitAndLossReport>("report/getProfitAndLossReport", ReportService.getProfitAndLossReport.bind(ReportService), "Failed to fetch profit and loss report.");
 
 export const getDriverSettlementThunk = createAsyncThunk(
   "report/getDriverSettlement",

@@ -1,146 +1,111 @@
-import type { ColumnDef } from '@tanstack/react-table';
-
-import { Badge } from '@/components/ui/badge';
-
-import BookingRowActions from './BookingRowActions';
-
-import type { Booking } from '@/types/booking';
+import type { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
+import BookingRowActions from "./BookingRowActions";
+import type { Booking } from "@/types/booking";
 
 interface BookingColumnProps {
   onView: (booking: Booking) => void;
-
   onEdit: (booking: Booking) => void;
-
   onAssign: (booking: Booking) => void;
-
-  onComplete: (booking: Booking) => void;
-
   onDelete: (booking: Booking) => void;
 }
 
-const getStatusVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
-  switch (status) {
-    case 'CONFIRMED':
-      return 'secondary';
-
-    case 'ASSIGNED':
-      return 'default';
-
-    case 'DELIVERED':
-      return 'outline';
-
-    case 'CANCELLED':
-      return 'destructive';
-
-    default:
-      return 'secondary';
-  }
+const STATUS_STYLES: Record<string, string> = {
+  CONFIRMED: "bg-blue-100 text-blue-700 hover:bg-blue-100",
+  ASSIGNED: "bg-amber-100 text-amber-700 hover:bg-amber-100",
+  DELIVERED: "bg-green-100 text-green-700 hover:bg-green-100",
+  CANCELLED: "bg-red-100 text-red-700 hover:bg-red-100",
 };
 
-const getPaymentVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
-  switch (status) {
-    case 'PAID':
-      return 'default';
+const PAYMENT_STYLES: Record<string, string> = {
+  PAID: "bg-green-100 text-green-700 hover:bg-green-100",
+  PENDING: "bg-orange-100 text-orange-700 hover:bg-orange-100",
+};
 
-    case 'PENDING':
-      return 'secondary';
-
-    default:
-      return 'secondary';
-  }
+const COLLECTION_LABELS: Record<string, string> = {
+  DRIVER: "Driver",
+  MANAGER: "Manager",
+  OFFICE: "Office",
 };
 
 export const bookingColumns = ({
   onView,
   onEdit,
   onAssign,
-  onComplete,
   onDelete,
 }: BookingColumnProps): ColumnDef<Booking>[] => [
   {
-    accessorKey: 'bookingNumber',
-
-    header: 'Booking No',
+    accessorKey: "bookingNumber",
+    header: "Booking No",
   },
-
   {
-    accessorKey: 'customerName',
-
-    header: 'Customer',
+    accessorKey: "customerName",
+    header: "Customer",
   },
-
   {
-    accessorKey: 'phone',
-
-    header: 'Mobile',
+    accessorKey: "phone",
+    header: "Mobile",
   },
-
   {
-    accessorKey: 'bookingDate',
-
-    header: 'Booking Date',
-
-    cell: ({ row }) => new Date(row.original.bookingDate).toLocaleDateString(),
+    accessorKey: "bookingDate",
+    header: "Date",
+    cell: ({ row }) =>
+      new Date(row.original.bookingDate).toLocaleDateString("en-IN"),
   },
-
   {
-    accessorKey: 'vehicleNumber',
-
-    header: 'Vehicle',
-
-    cell: ({ row }) => row.original.vehicleNumber || '-',
+    accessorKey: "vehicleNumber",
+    header: "Vehicle",
+    cell: ({ row }) => row.original.vehicleNumber || "-",
   },
-
   {
-    accessorKey: 'driverName',
-
-    header: 'Driver',
-
-    cell: ({ row }) => row.original.driverName || '-',
+    accessorKey: "driverName",
+    header: "Driver",
+    cell: ({ row }) => row.original.driverName || "-",
   },
-
   {
-    accessorKey: 'price',
-
-    header: 'Amount',
-
-    cell: ({ row }) => `₹${row.original.price}`,
+    accessorKey: "collectionMethod",
+    header: "Collection",
+    cell: ({ row }) => {
+      const m = row.original.collectionMethod;
+      return m ? (
+        <Badge variant="outline">{COLLECTION_LABELS[m] ?? m}</Badge>
+      ) : (
+        <span className="text-slate-400">-</span>
+      );
+    },
   },
-
   {
-    accessorKey: 'status',
-
-    header: 'Status',
-
+    accessorKey: "price",
+    header: "Amount",
+    cell: ({ row }) => `₹${row.original.price.toLocaleString("en-IN")}`,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
     cell: ({ row }) => (
-      <Badge variant={getStatusVariant(row.original.status)}>{row.original.status}</Badge>
+      <Badge className={STATUS_STYLES[row.original.status] ?? ""}>
+        {row.original.status}
+      </Badge>
     ),
   },
-
   {
-    accessorKey: 'paymentStatus',
-
-    header: 'Payment',
-
+    accessorKey: "paymentStatus",
+    header: "Payment",
     cell: ({ row }) => (
-      <Badge variant={getPaymentVariant(row.original.paymentStatus)}>
+      <Badge className={PAYMENT_STYLES[row.original.paymentStatus] ?? ""}>
         {row.original.paymentStatus}
       </Badge>
     ),
   },
-
   {
-    id: 'actions',
-
-    header: 'Actions',
-
+    id: "actions",
+    header: "Actions",
     cell: ({ row }) => (
       <BookingRowActions
         booking={row.original}
         onView={onView}
         onEdit={onEdit}
         onAssign={onAssign}
-        onComplete={onComplete}
         onDelete={onDelete}
       />
     ),

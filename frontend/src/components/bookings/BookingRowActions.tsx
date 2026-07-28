@@ -1,8 +1,12 @@
-import { MoreHorizontal } from "lucide-react";
-import { Eye, Pencil, Trash2, Truck, CircleCheckBig } from "lucide-react";
+import {
+  MoreHorizontal,
+  Eye,
+  Pencil,
+  Trash2,
+  Truck,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,18 +15,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import type { Booking } from "@/types/booking";
+import { useAppSelector } from "@/redux/hooks";
+import { canDelete } from "@/utills/auth";
 
 interface BookingRowActionsProps {
   booking: Booking;
-
   onView: (booking: Booking) => void;
-
   onEdit: (booking: Booking) => void;
-
   onAssign: (booking: Booking) => void;
-
-  onComplete: (booking: Booking) => void;
-
   onDelete: (booking: Booking) => void;
 }
 
@@ -31,9 +31,11 @@ const BookingRowActions = ({
   onView,
   onEdit,
   onAssign,
-  onComplete,
   onDelete,
 }: BookingRowActionsProps) => {
+  const { user } = useAppSelector((state) => state.auth);
+  const showDelete = canDelete(user?.role);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -53,27 +55,21 @@ const BookingRowActions = ({
           Edit
         </DropdownMenuItem>
 
+        {/* Assigning completes delivery, so this is available only when confirmed. */}
         {booking.status === "CONFIRMED" && (
-          <>
-            <DropdownMenuItem onClick={() => onAssign(booking)}>
-              <Truck className="mr-2 h-4 w-4" />
-              Assign
-            </DropdownMenuItem>
-          </>
+          <DropdownMenuItem onClick={() => onAssign(booking)}>
+            <Truck className="mr-2 h-4 w-4" />
+            Assign & Deliver
+          </DropdownMenuItem>
         )}
 
-        <DropdownMenuItem
-          className="text-red-600"
-          onClick={() => onDelete(booking)}
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
-        </DropdownMenuItem>
-
-        {booking.status === "ASSIGNED" && (
-          <DropdownMenuItem onClick={() => onComplete(booking)}>
-            <CircleCheckBig className="mr-2 h-4 w-4" />
-            Complete Delivery
+        {showDelete && (
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => onDelete(booking)}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

@@ -75,6 +75,10 @@ export const createBooking = async (
       bookingDate,
 
       notes,
+
+      // Delivery collection method is configured on the customer profile.
+      collectionMethod: customer.collectionMethod ?? undefined,
+
     });
 
     res.status(201).json({
@@ -268,7 +272,7 @@ export const assignBooking = async (
      */
     const driver = await Driver.findById(driverId);
 
-    if (!driver) {
+    if (!driver || driver.isDriver === false) {
       res.status(404).json({
         success: false,
 
@@ -288,14 +292,19 @@ export const assignBooking = async (
 
     booking.notes = notes;
 
-    booking.status = "ASSIGNED";
+    // Use the latest collection method selected on the customer profile.
+    const customer = await Customer.findById(booking.customerId);
+    booking.collectionMethod = customer?.collectionMethod ?? undefined;
+
+    // Assigning a driver and vehicle completes the delivery workflow.
+    booking.status = "DELIVERED";
 
     await booking.save();
 
     res.status(200).json({
       success: true,
 
-      message: "Booking assigned successfully.",
+      message: "Booking assigned and delivered successfully.",
 
       data: booking,
     });
@@ -309,54 +318,16 @@ export const assignBooking = async (
 };
 
 /**
- * Complete Delivery
+ * Legacy endpoint: delivery is completed when the booking is assigned.
  */
 export const completeDelivery = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  try {
-    const { collectionMethod, notes } = req.body;
-
-    const booking = await Booking.findById(req.params.id);
-
-    if (!booking) {
-      res.status(404).json({
-        success: false,
-        message: "Booking not found.",
-      });
-
-      return;
-    }
-
-    booking.collectionMethod = collectionMethod;
-
-    booking.notes = notes;
-
-    booking.status = "DELIVERED";
-
-    if (collectionMethod === "ACCOUNT_COLLECTION") {
-      booking.paymentStatus = "PAID";
-    } else {
-      booking.paymentStatus = "PENDING";
-    }
-
-    await booking.save();
-
-    res.status(200).json({
-      success: true,
-
-      message: "Delivery completed successfully.",
-
-      data: booking,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-
-      message: error.message || "Failed to complete delivery.",
-    });
-  }
+  res.status(410).json({
+    success: false,
+    message: "Delivery is completed automatically when a booking is assigned.",
+  });
 };
 
 export const updateBooking = async (
@@ -489,9 +460,7 @@ export const updateBooking = async (
        */
       case "DELIVERED->ASSIGNED":
         booking.collectionMethod = undefined;
-
         booking.paymentStatus = "PENDING";
-
         break;
 
       /**
@@ -500,14 +469,10 @@ export const updateBooking = async (
       case "DELIVERED->CONFIRMED":
         booking.driverId = undefined;
         booking.driverName = undefined;
-
         booking.vehicleId = undefined;
         booking.vehicleNumber = undefined;
-
         booking.collectionMethod = undefined;
-
         booking.paymentStatus = "PENDING";
-
         break;
 
       default:
@@ -572,19 +537,38 @@ export const getPendingBookingsByCustomer = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const { customerId } = req.params;
+    const { customerId: customerIdParam } = req.params;
+    const { customerId, driverId, fromDate, toDate } = req.query;
 
-    const bookings = await Booking.find({
-      customerId,
+    const bookingDate: Record<string, Date> = {};
+    if (typeof fromDate === "string" && !Number.isNaN(Date.parse(fromDate))) {
+      bookingDate.$gte = new Date(fromDate);
+    }
+    if (typeof toDate === "string" && !Number.isNaN(Date.parse(toDate))) {
+      const endOfDay = new Date(toDate);
+      endOfDay.setDate(endOfDay.getDate() + 1);
+      bookingDate.$lt = endOfDay;
+    }
+
+    const filter: Record<string, unknown> = {
       status: "DELIVERED",
       paymentStatus: "PENDING",
       isDeleted: false,
-    })
+    };
+
+    const selectedCustomerId = customerIdParam || customerId;
+    if (typeof selectedCustomerId === "string" && selectedCustomerId) {
+      filter.customerId = selectedCustomerId;
+    }
+    if (typeof driverId === "string" && driverId) filter.driverId = driverId;
+    if (Object.keys(bookingDate).length) filter.bookingDate = bookingDate;
+
+    const bookings = await Booking.find(filter)
       .sort({
         bookingDate: 1,
       })
       .select(
-        "_id bookingNumber bookingDate capacity price collectionMethod driverId driverName vehicleId vehicleNumber",
+        "_id customerId customerName bookingNumber bookingDate capacity price collectionMethod driverId driverName vehicleId vehicleNumber",
       );
 
     successResponse(res, "Pending bookings fetched successfully.", bookings);

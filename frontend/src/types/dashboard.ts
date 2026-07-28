@@ -15,6 +15,9 @@ export interface DashboardSummary {
   totalDrivers: number;
 
   totalVehicles: number;
+
+  // Added for Manager dashboard
+  pendingDeliveries?: number;
 }
 
 export interface BookingStatus {

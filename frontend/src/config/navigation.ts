@@ -7,32 +7,31 @@ import {
   Car,
   Package,
   Wallet,
+  ReceiptIndianRupee,
   BarChart3,
   Settings,
-  //LogOut,
 } from "lucide-react";
 
-export type UserRole = "admin" | "manager";
+// Must match backend User model enum values (case-insensitive comparison via hasRole)
+export type UserRole = "ADMIN" | "MANAGER";
 
 export interface NavigationChild {
   id: string;
   title: string;
   path: string;
+  /** Optional role restriction for child items */
+  roles?: UserRole[];
 }
 
 export interface NavigationItem {
   id: string;
   title: string;
   path?: string;
-
   icon: LucideIcon;
-
+  /** Which roles can see this menu item */
   roles: UserRole[];
-
   showInSidebar: boolean;
-
   showInBreadcrumb: boolean;
-
   children?: NavigationChild[];
 }
 
@@ -42,79 +41,73 @@ export const navigation: NavigationItem[] = [
     title: "Dashboard",
     path: "/dashboard",
     icon: LayoutDashboard,
-    roles: ["admin", "manager"],
+    roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,
     showInBreadcrumb: true,
   },
-
   {
     id: "customers",
     title: "Customers",
     path: "/customers",
     icon: Users,
-    roles: ["admin", "manager"],
+    roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,
     showInBreadcrumb: true,
   },
-
   {
-    id: "drivers",
-    title: "Drivers",
-    path: "/drivers",
+    id: "employees",
+    title: "Employees",
+    path: "/employees",
     icon: Truck,
-    roles: ["admin", "manager"],
+    roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,
     showInBreadcrumb: true,
   },
-
   {
     id: "vehicles",
     title: "Vehicles",
     path: "/vehicles",
     icon: Car,
-    roles: ["admin", "manager"],
+    roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,
     showInBreadcrumb: true,
   },
-
   {
     id: "bookings",
     title: "Bookings",
     path: "/bookings",
     icon: Package,
-    roles: ["admin", "manager"],
+    roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,
     showInBreadcrumb: true,
   },
-
   {
     id: "payments",
     title: "Payments",
     path: "/payments",
     icon: Wallet,
-    roles: ["admin", "manager"],
+    // Both Admin and Manager can see Payments
+    roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,
     showInBreadcrumb: true,
   },
-
   {
     id: "expenses",
     title: "Expenses",
     path: "/expenses",
-    icon: Wallet,
-    roles: ["admin"],
+    icon: ReceiptIndianRupee,
+    roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,
     showInBreadcrumb: true,
   },
-
   {
     id: "reports",
     title: "Reports",
     icon: BarChart3,
-    roles: ["admin"],
+    // Show in sidebar for both roles, but routes are protected via RoleGuard
+    roles: ["ADMIN", "MANAGER"],
     showInSidebar: true,
     showInBreadcrumb: false,
-
     children: [
       {
         id: "booking-report",
@@ -125,7 +118,12 @@ export const navigation: NavigationItem[] = [
         id: "payment-report",
         title: "Payment Report",
         path: "/reports/payments",
+        roles: ["ADMIN"], // Manager cannot see Payment Report
       },
+      { id: "expense-report", title: "Expense Report", path: "/reports/expenses" },
+      { id: "vehicle-expense-report", title: "Vehicle Expense Report", path: "/reports/vehicle-expenses" },
+      { id: "salary-report", title: "Salary Report", path: "/reports/salary" },
+      { id: "profit-loss", title: "Profit & Loss", path: "/reports/profit-loss", roles: ["ADMIN"] },
       {
         id: "customer-ledger",
         title: "Customer Ledger",
@@ -143,24 +141,14 @@ export const navigation: NavigationItem[] = [
       },
     ],
   },
-
   {
     id: "settings",
     title: "Settings",
     path: "/settings",
     icon: Settings,
-    roles: ["admin"],
+    // Manager must NOT see Settings / future User Management
+    roles: ["ADMIN"],
     showInSidebar: true,
     showInBreadcrumb: true,
   },
-
-  // {
-  //   id: "logout",
-  //   title: "Logout",
-  //   path: "/logout",
-  //   icon: LogOut,
-  //   roles: ["admin", "manager"],
-  //   showInSidebar: true,
-  //   showInBreadcrumb: false,
-  // },
 ];

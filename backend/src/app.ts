@@ -11,6 +11,7 @@ import bookingRoutes from "./routes/booking.routes";
 import paymentRoutes from "./routes/payment.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
 import reportRoutes from "./routes/report.routes";
+import expenseRoutes from "./routes/expense.routes";
 const app = express();
 
 // Middleware
@@ -28,6 +29,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/expenses", expenseRoutes);
 
 // Test Route
 app.get("/", (req, res) => {

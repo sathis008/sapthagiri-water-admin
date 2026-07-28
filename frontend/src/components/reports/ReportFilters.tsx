@@ -36,6 +36,8 @@ interface ReportFiltersProps {
   onChange: (field: string, value: string) => void;
 
   onReset: () => void;
+  minDate?: string;
+  maxDate?: string;
 }
 
 const ReportFilters = ({
@@ -65,18 +67,24 @@ const ReportFilters = ({
 
   onChange,
   onReset,
+  minDate,
+  maxDate,
 }: ReportFiltersProps) => {
   return (
     <div className="grid gap-4 lg:grid-cols-4">
       <Input
         type="date"
         value={fromDate}
+        min={minDate}
+        max={maxDate}
         onChange={(e) => onChange("fromDate", e.target.value)}
       />
 
       <Input
         type="date"
         value={toDate}
+        min={minDate}
+        max={maxDate}
         onChange={(e) => onChange("toDate", e.target.value)}
       />
 

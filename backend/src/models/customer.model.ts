@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface ICustomer extends Document {
   name: string;
@@ -21,7 +21,9 @@ export interface ICustomer extends Document {
 
   price?: number;
 
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
+
+  collectionMethod?: "DRIVER" | "MANAGER" | "OFFICE";
 
   notes?: string;
 
@@ -90,14 +92,21 @@ const customerSchema = new Schema<ICustomer>(
 
     status: {
       type: String,
-      enum: ['ACTIVE', 'INACTIVE'],
-      default: 'ACTIVE',
+      enum: ["ACTIVE", "INACTIVE"],
+      default: "ACTIVE",
     },
 
     notes: {
       type: String,
       trim: true,
     },
+
+    collectionMethod: {
+      type: String,
+      enum: ["DRIVER", "MANAGER", "OFFICE"],
+      default: null,
+    },
+
     isDeleted: {
       type: Boolean,
       default: false,
@@ -105,7 +114,7 @@ const customerSchema = new Schema<ICustomer>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export default mongoose.model<ICustomer>('Customer', customerSchema);
+export default mongoose.model<ICustomer>("Customer", customerSchema);

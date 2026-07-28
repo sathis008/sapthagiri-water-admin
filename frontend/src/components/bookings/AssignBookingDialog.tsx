@@ -29,7 +29,7 @@ const AssignBookingDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Assign Booking</DialogTitle>
+          <DialogTitle>Assign & Deliver Booking</DialogTitle>
         </DialogHeader>
 
         {booking && (

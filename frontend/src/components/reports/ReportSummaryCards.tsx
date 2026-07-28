@@ -42,7 +42,7 @@ const ReportSummaryCards = ({ items }: ReportSummaryCardsProps) => {
             <p className="text-sm text-white/80">{item.title}</p>
 
             <h2 className="mt-3 text-3xl font-bold">
-              {item.value}
+              {item.prefix}{Number(item.value || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}
 
               {/* <CountUp end={item.value} duration={1} /> */}
             </h2>

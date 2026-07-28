@@ -15,11 +15,14 @@ import { getDriverSettlementThunk } from "@/redux/report";
 
 import ReportService from "@/services/report.service";
 import type { DriverSettlementRow } from "@/types/report";
+import { isAdmin } from "@/utills/auth";
 
 const DriverSettlement = () => {
   const dispatch = useAppDispatch();
 
   const { driverSettlement, loading } = useAppSelector((state) => state.report);
+  const { user } = useAppSelector((state) => state.auth);
+  const adminView = isAdmin(user?.role);
 
   const [search, setSearch] = useState("");
 
@@ -105,20 +108,25 @@ const DriverSettlement = () => {
               icon: <UserCheck size={70} />,
               color: "bg-gradient-to-r from-blue-500 to-cyan-500",
             },
-            {
-              title: "Collected",
-              value: summary.totalCollected,
-              prefix: "₹",
-              icon: <Wallet size={70} />,
-              color: "bg-gradient-to-r from-green-500 to-emerald-600",
-            },
-            {
-              title: "Pending",
-              value: summary.totalPending,
-              prefix: "₹",
-              icon: <Clock3 size={70} />,
-              color: "bg-gradient-to-r from-orange-500 to-red-500",
-            },
+            // Financial cards hidden for Manager
+            ...(adminView
+              ? [
+                  {
+                    title: "Collected",
+                    value: summary.totalCollected,
+                    prefix: "₹",
+                    icon: <Wallet size={70} />,
+                    color: "bg-gradient-to-r from-green-500 to-emerald-600",
+                  },
+                  {
+                    title: "Pending",
+                    value: summary.totalPending,
+                    prefix: "₹",
+                    icon: <Clock3 size={70} />,
+                    color: "bg-gradient-to-r from-orange-500 to-red-500",
+                  },
+                ]
+              : []),
           ]}
         />
       }

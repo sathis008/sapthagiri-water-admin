@@ -1,6 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-import type { Booking } from '@/types/booking';
+import type { Booking } from "@/types/booking";
 
 import {
   getBookingsThunk,
@@ -10,7 +10,7 @@ import {
   deleteBookingThunk,
   assignBookingThunk,
   completeDeliveryThunk,
-} from './bookingThunk';
+} from "./bookingThunk";
 
 interface BookingState {
   bookings: Booking[];
@@ -53,7 +53,7 @@ const initialState: BookingState = {
 };
 
 const bookingSlice = createSlice({
-  name: 'booking',
+  name: "booking",
 
   initialState,
 
@@ -120,7 +120,7 @@ const bookingSlice = createSlice({
      */
     builder.addCase(updateBookingThunk.fulfilled, (state, action) => {
       state.bookings = state.bookings.map((booking) =>
-        booking._id === action.payload._id ? action.payload : booking
+        booking._id === action.payload._id ? action.payload : booking,
       );
     });
 
@@ -128,7 +128,9 @@ const bookingSlice = createSlice({
      * Delete Booking
      */
     builder.addCase(deleteBookingThunk.fulfilled, (state, action) => {
-      state.bookings = state.bookings.filter((booking) => booking._id !== action.payload);
+      state.bookings = state.bookings.filter(
+        (booking) => booking._id !== action.payload,
+      );
     });
 
     /**
@@ -136,7 +138,7 @@ const bookingSlice = createSlice({
      */
     builder.addCase(assignBookingThunk.fulfilled, (state, action) => {
       state.bookings = state.bookings.map((booking) =>
-        booking._id === action.payload._id ? action.payload : booking
+        booking._id === action.payload._id ? action.payload : booking,
       );
     });
 
@@ -145,7 +147,7 @@ const bookingSlice = createSlice({
      */
     builder.addCase(completeDeliveryThunk.fulfilled, (state, action) => {
       state.bookings = state.bookings.map((booking) =>
-        booking._id === action.payload._id ? action.payload : booking
+        booking._id === action.payload._id ? action.payload : booking,
       );
     });
   },

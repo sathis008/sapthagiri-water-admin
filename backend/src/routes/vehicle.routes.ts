@@ -11,43 +11,25 @@ import {
 } from "../controller/vehicle.controller";
 
 import { uploadVehicleDocument } from "../middleware/upload.middleware";
+import { authenticate } from "../middleware/auth.middleware";
+import { authorize } from "../middleware/role.middleware";
 
 const router = Router();
 
-/**
- * Create Vehicle
- */
-router.post("/", createVehicle);
+router.post("/", authenticate, createVehicle);
+router.get("/", authenticate, getVehicles);
+router.get("/options", authenticate, getVehicleOptions);
+router.get("/:id", authenticate, getVehicleById);
+router.put("/:id", authenticate, updateVehicle);
 
-/**
- * Get All Vehicles
- */
-router.get("/", getVehicles);
+// Delete requires ADMIN role
+router.delete("/:id", authenticate, authorize("ADMIN"), deleteVehicle);
 
-/**
- * Get Vehicle By Id
- */
-router.get("/:id", getVehicleById);
-
-/**
- * Update Vehicle
- */
-router.put("/:id", updateVehicle);
-
-/**
- * Delete Vehicle
- */
-router.delete("/:id", deleteVehicle);
-
-/**
- * Upload Vehicle Document
- */
 router.post(
   "/:id/upload/:documentType",
+  authenticate,
   uploadVehicleDocument.single("file"),
   uploadVehicleDocumentById,
 );
-
-router.get("/options", getVehicleOptions);
 
 export default router;

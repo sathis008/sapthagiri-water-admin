@@ -36,6 +36,7 @@ interface DriverQuery {
   page?: number;
   limit?: number;
   search?: string;
+  isDriver?: boolean | "all";
 }
 
 export const getDriversThunk = createAsyncThunk<
@@ -148,6 +149,7 @@ export const searchDriversThunk = createAsyncThunk<
     page?: number;
     limit?: number;
     search?: string;
+    isDriver?: boolean | "all";
   },
   {
     rejectValue: string;
@@ -165,3 +167,39 @@ export const searchDriversThunk = createAsyncThunk<
     );
   }
 });
+
+export const getEmployeesThunk = createAsyncThunk<
+  DriverListResponse,
+  { page?: number; limit?: number; search?: string } | undefined,
+  { rejectValue: string }
+>("driver/getEmployees", async (params, { rejectWithValue }) => {
+  try { return await DriverService.getDrivers({ ...params, isDriver: "all" }); }
+  catch (error: unknown) {
+    const axiosError = error as AxiosError<{ message: string }>;
+    return rejectWithValue(axiosError.response?.data?.message ?? "Failed to fetch employees.");
+  }
+});
+
+export const createEmployeeThunk = createAsyncThunk(
+  "driver/createEmployee",
+  async (payload: CreateDriverRequest, { rejectWithValue }) => {
+    try { return await DriverService.createDriver(payload); }
+    catch (error: unknown) { const axiosError = error as AxiosError<{ message: string }>; return rejectWithValue(axiosError.response?.data?.message ?? "Failed to create employee."); }
+  },
+);
+
+export const updateEmployeeThunk = createAsyncThunk(
+  "driver/updateEmployee",
+  async ({ id, payload }: { id: string; payload: UpdateDriverRequest }, { rejectWithValue }) => {
+    try { return await DriverService.updateDriver(id, payload); }
+    catch (error: unknown) { const axiosError = error as AxiosError<{ message: string }>; return rejectWithValue(axiosError.response?.data?.message ?? "Failed to update employee."); }
+  },
+);
+
+export const deleteEmployeeThunk = createAsyncThunk(
+  "driver/deleteEmployee",
+  async (id: string, { rejectWithValue }) => {
+    try { await DriverService.deleteDriver(id); return id; }
+    catch (error: unknown) { const axiosError = error as AxiosError<{ message: string }>; return rejectWithValue(axiosError.response?.data?.message ?? "Failed to delete employee."); }
+  },
+);

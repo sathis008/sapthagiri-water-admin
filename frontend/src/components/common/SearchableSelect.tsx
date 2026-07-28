@@ -65,12 +65,6 @@ function SearchableSelect<T>({
     return () => clearTimeout(timer);
   }, [search]);
 
-  console.log("selectedOption:", selectedOption);
-  console.log(
-    "label:",
-    selectedOption ? getOptionLabel(selectedOption) : "EMPTY",
-  );
-
   return (
     <div className="space-y-2">
       {label && <label className="text-sm font-medium">{label}</label>}
@@ -90,7 +84,7 @@ function SearchableSelect<T>({
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent className="w-full p-0">
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
           <Command shouldFilter={false}>
             <CommandInput
               placeholder={placeholder}
@@ -98,7 +92,10 @@ function SearchableSelect<T>({
               onValueChange={setSearch}
             />
 
-            <CommandList>
+            <CommandList
+              className="max-h-64 overflow-y-auto"
+              onWheel={(event) => event.stopPropagation()}
+            >
               {loading && (
                 <div className="p-4 text-sm text-center">Loading...</div>
               )}

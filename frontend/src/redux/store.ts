@@ -10,6 +10,7 @@ import bookingReducer from "./booking";
 import paymentReducer from "./payment";
 import dashboardReducer from "./dashboard";
 import reportReducer from "./report";
+import expenseReducer from "./expense";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   payment: paymentReducer,
   dashboard: dashboardReducer,
   report: reportReducer,
+  expense: expenseReducer,
 });
 
 const storageEngine =

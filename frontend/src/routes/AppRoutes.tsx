@@ -5,7 +5,9 @@ import Dashboard from "@/pages/Dashboard/Dashboard";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
+import RoleGuard from "./RoleGuard";
 import { APP_ROUTES } from "@/constants/routes";
+
 import CustomerList from "@/pages/Customer/CustomerList";
 import VehicleList from "@/pages/vehicle/VehicleList";
 import DriverList from "@/pages/driver/DriverList";
@@ -16,52 +18,55 @@ import CustomerLedger from "@/pages/reports/CustomerLedger";
 import DailyCollection from "@/pages/reports/DailyCollection";
 import DriverSettlement from "@/pages/reports/DriverSettlement";
 import PaymentReport from "@/pages/reports/PaymentReport";
+import ExpenseList from "@/pages/expense/ExpenseList";
+import { ExpenseReport, SalaryReport, VehicleExpenseReport } from "@/pages/reports/ExpenseReports";
+import ProfitAndLoss from "@/pages/reports/ProfitAndLoss";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public */}
-
+      {/* ── Public ─────────────────────────────────────────────────── */}
       <Route element={<PublicRoute />}>
         <Route path={APP_ROUTES.LOGIN} element={<Login />} />
       </Route>
 
-      {/* Protected */}
-
+      {/* ── Protected (any authenticated user) ─────────────────────── */}
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
+          {/* Both Admin and Manager */}
           <Route path={APP_ROUTES.DASHBOARD} element={<Dashboard />} />
-
           <Route path={APP_ROUTES.CUSTOMERS} element={<CustomerList />} />
-
           <Route path={APP_ROUTES.VEHICLES} element={<VehicleList />} />
-
-          <Route path={APP_ROUTES.DRIVERS} element={<DriverList />} />
-
+          <Route path={APP_ROUTES.EMPLOYEES} element={<DriverList />} />
+          <Route path={APP_ROUTES.DRIVERS} element={<Navigate to={APP_ROUTES.EMPLOYEES} replace />} />
           <Route path={APP_ROUTES.BOOKINGS} element={<BookingList />} />
-
           <Route path={APP_ROUTES.PAYMENTS} element={<PaymentList />} />
+          <Route path={APP_ROUTES.EXPENSES} element={<ExpenseList />} />
 
-          {/* Reports */}
-
+          {/* Reports — both roles, financial cards filtered per role in each page */}
           <Route path="/reports/bookings" element={<BookingReport />} />
-
-          <Route path="/reports/payments" element={<PaymentReport />} />
-
           <Route path="/reports/customer-ledger" element={<CustomerLedger />} />
-
           <Route
             path="/reports/driver-settlement"
             element={<DriverSettlement />}
           />
-
           <Route
             path="/reports/daily-collection"
             element={<DailyCollection />}
           />
+          <Route path="/reports/expenses" element={<ExpenseReport />} />
+          <Route path="/reports/vehicle-expenses" element={<VehicleExpenseReport />} />
+          <Route path="/reports/salary" element={<SalaryReport />} />
+
+          {/* Payment Report — Admin only (full financial data) */}
+          <Route element={<RoleGuard allowedRoles={["ADMIN"]} />}>
+            <Route path="/reports/payments" element={<PaymentReport />} />
+            <Route path="/reports/profit-loss" element={<ProfitAndLoss />} />
+          </Route>
         </Route>
       </Route>
 
+      {/* Fallback */}
       <Route path="*" element={<Navigate to={APP_ROUTES.LOGIN} replace />} />
     </Routes>
   );

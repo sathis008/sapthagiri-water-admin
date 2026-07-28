@@ -1,5 +1,6 @@
 export interface Driver {
   _id: string;
+  isDriver: boolean;
 
   name: string;
 
@@ -14,6 +15,7 @@ export interface Driver {
   licenseExpiry?: string;
 
   licenseDocument?: string;
+  assignedVehicleId?: string | { _id: string; vehicleNumber: string } | null;
 
   notes?: string;
 
@@ -25,6 +27,7 @@ export interface Driver {
 }
 
 export interface CreateDriverRequest {
+  isDriver: boolean;
   name: string;
 
   phone: string;
@@ -38,6 +41,7 @@ export interface CreateDriverRequest {
   licenseExpiry?: string;
 
   notes?: string;
+  assignedVehicleId?: string | null;
 }
 
 export interface UpdateDriverRequest extends CreateDriverRequest {
