@@ -1,0 +1,11 @@
+import { ReactNode } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { ActivityIndicator, Button, Card, Chip, Text } from 'react-native-paper';
+import { theme } from './theme';
+export function Loading() { return <View style={styles.center}><ActivityIndicator size="large" color={theme.colors.primary} /></View>; }
+export function Empty({ title, action }: { title: string; action?: ReactNode }) { return <View style={styles.center}><Text variant="titleMedium">{title}</Text>{action}</View>; }
+export function ErrorState({ onRetry }: { onRetry: () => void }) { return <View style={styles.center}><Text variant="titleMedium">Could not load data</Text><Button onPress={onRetry}>Try again</Button></View>; }
+export function StatusChip({ status }: { status: string }) { const color = status === 'DELIVERED' || status === 'ACTIVE' ? '#087F5B' : status === 'CANCELLED' || status === 'INACTIVE' ? '#BA1A1A' : '#8A5A00'; return <Chip compact textStyle={{ color, fontWeight: '700' }} style={{ backgroundColor: `${color}18` }}>{status}</Chip>; }
+export function MetricCard({ label, value }: { label: string; value: string | number }) { return <Card style={styles.metric}><Card.Content><Text variant="labelLarge" style={{ color: '#5F6368' }}>{label}</Text><Text variant="headlineMedium" style={{ fontWeight: '700', color: theme.colors.primary }}>{value}</Text></Card.Content></Card>; }
+export function PaginationBar({ page, totalPages, total, onPrevious, onNext }: { page: number; totalPages: number; total: number; onPrevious: () => void; onNext: () => void }) { if (totalPages <= 1) return null; return <View style={styles.pagination}><Text variant="bodySmall">Page {page} of {totalPages} · {total} total</Text><View style={styles.paginationButtons}><Button compact icon="chevron-left" disabled={page === 1} onPress={onPrevious}>Prev</Button><Button compact contentStyle={{flexDirection:'row-reverse'}} icon="chevron-right" disabled={page === totalPages} onPress={onNext}>Next</Button></View></View>; }
+const styles = StyleSheet.create({ center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 }, metric: { width: '48%', marginBottom: 12, backgroundColor: '#fff' }, pagination:{paddingVertical:16,alignItems:'center',gap:5},paginationButtons:{flexDirection:'row',gap:4} });
