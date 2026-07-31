@@ -45,8 +45,8 @@ class MainApplication : Application(), ReactApplication {
     } catch (e: IllegalArgumentException) {
       ReleaseLevel.STABLE
     }
-    loadReactNative(this)
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
+    loadReactNative(this)
   }
 
   override fun onConfigurationChanged(newConfig: Configuration) {
